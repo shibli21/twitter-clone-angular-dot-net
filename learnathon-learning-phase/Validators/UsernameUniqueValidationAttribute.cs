@@ -9,16 +9,19 @@ namespace learnathon_learning_phase.Validators
         protected override ValidationResult IsValid(object value, ValidationContext validationContext)
         {
             var user = validationContext.ObjectInstance as UserRegistrationDto;
-            var email = user?.Email;
+            var username = user?.Username;
+
+
             var userService = (IUserService)validationContext.GetService(typeof(IUserService));
 
-            UserModel chUser = userService.GetUserByEmail(email);
+            UserModel chUser = userService.GetUserByUsername(username);
             if (chUser != null)
             {
-                return new ValidationResult("Email already taken");
+                return new ValidationResult("Username already taken");
             }
             return ValidationResult.Success;
         }
+
 
     }
 }
