@@ -1,0 +1,26 @@
+<header class="">
+  <div
+    class="container mx-auto flex flex-wrap py-5 flex-row items-center justify-center md:justify-between"
+  >
+    <a
+      class="text-2xl font-bold font-mono items-center text-orange-600"
+      [routerLink]="['/']"
+    >
+      Geeky Solution
+    </a>
+    <nav class="flex flex-wrap gap-2 items-center text-base justify-center">
+      <a
+        class="nav-link"
+        [routerLink]="['/register']"
+        routerLinkActive="nav-link-active"
+        >Register</a
+      >
+      <a
+        class="nav-link"
+        [routerLink]="['/login']"
+        routerLinkActive="nav-link-active"
+        >Login</a
+      >
+    </nav>
+  </div>
+</header>
