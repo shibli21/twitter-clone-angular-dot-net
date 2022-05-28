@@ -1,5 +1,6 @@
 ﻿using System.Security.Cryptography;
 using System.Text;
+using learnathon_learning_phase.Extentions;
 using learnathon_learning_phase.Models;
 using learnathon_learning_phase.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -29,13 +30,15 @@ namespace learnathon_learning_phase.Controllers
             return Ok(user);
         }
 
+
         [HttpPost]
         [Route("register")]
-        public async Task<ActionResult> create(UserRegistrationDto userRegistrationDto)
+        public async Task<ActionResult<UserResponseDto>> create(UserRegistrationDto userRegistrationDto)
         {
             var pass = this.CreatePasswordHash(userRegistrationDto.Password);
             var user = new UserModel
             {
+
                 Username = userRegistrationDto.Username,
                 Password = pass,
                 Email = userRegistrationDto.Email,
@@ -43,8 +46,7 @@ namespace learnathon_learning_phase.Controllers
             };
             await userService.RegisterUser(user);
 
-            return CreatedAtAction(nameof(GetUser), new { email = userRegistrationDto.Email }, user);
-
+            return CreatedAtAction(nameof(GetUser), new { email = userRegistrationDto.Email }, user.AsDto());
         }
 
 
