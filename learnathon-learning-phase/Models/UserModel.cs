@@ -1,6 +1,6 @@
-﻿using MongoDB.Bson;
+﻿using System.ComponentModel.DataAnnotations;
+using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
-using System.ComponentModel.DataAnnotations;
 
 namespace learnathon_learning_phase.Models
 {
@@ -11,18 +11,18 @@ namespace learnathon_learning_phase.Models
         public string Id { get; set; } = String.Empty;
 
         [BsonElement("username")]
-        public string? Username { get; set; }
+        public string Username { get; set; } = String.Empty;
 
         [EmailAddress]
         [BsonElement("email")]
-        public string? Email { get; set; }
+        public string Email { get; set; } = String.Empty;
 
         [BsonElement("password")]
-        public string? Password { get; set; }
+        public string Password { get; set; } = String.Empty;
 
         [BsonElement("dateOfBirth")]
         [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
-        public string? DateOfBirth { get; set; }
+        public string DateOfBirth { get; set; } = String.Empty;
     }
 }

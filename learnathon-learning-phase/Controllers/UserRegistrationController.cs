@@ -1,13 +1,12 @@
-﻿using learnathon_learning_phase.Models;
-using learnathon_learning_phase.Services;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using System.Security.Cryptography;
+﻿using System.Security.Cryptography;
 using System.Text;
+using learnathon_learning_phase.Models;
+using learnathon_learning_phase.Services;
+using Microsoft.AspNetCore.Mvc;
 
 namespace learnathon_learning_phase.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/user")]
     [ApiController]
     public class UserRegistrationController : ControllerBase
     {
@@ -19,7 +18,19 @@ namespace learnathon_learning_phase.Controllers
 
 
 
+        [HttpGet("{{email}}")]
+        public async Task<ActionResult<UserModel>> GetUser(string email)
+        {
+            UserModel user = await userService.GetUserByEmail(email);
+            if (user == null)
+            {
+                return NotFound();
+            }
+            return Ok(user);
+        }
+
         [HttpPost]
+        [Route("register")]
         public async Task<ActionResult> create(UserRegistrationDto userRegistrationDto)
         {
             var pass = this.CreatePasswordHash(userRegistrationDto.Password);
@@ -30,12 +41,11 @@ namespace learnathon_learning_phase.Controllers
                 Email = userRegistrationDto.Email,
                 DateOfBirth = userRegistrationDto.DateOfBirth
             };
-            userService.RegisterUser(user);
+            await userService.RegisterUser(user);
 
-            return Ok("User registered");
+            return CreatedAtAction(nameof(GetUser), new { email = userRegistrationDto.Email }, user);
+
         }
-
-
 
 
         private string CreatePasswordHash(string password)
