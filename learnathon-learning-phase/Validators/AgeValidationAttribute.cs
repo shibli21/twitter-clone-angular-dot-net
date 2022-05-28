@@ -1,6 +1,6 @@
 ﻿
-using learnathon_learning_phase.Models;
 using System.ComponentModel.DataAnnotations;
+using learnathon_learning_phase.Models;
 
 namespace learnathon_learning_phase.Validators
 {
@@ -9,7 +9,7 @@ namespace learnathon_learning_phase.Validators
         protected override ValidationResult IsValid(object value, ValidationContext validationContext)
         {
             var user = validationContext.ObjectInstance as UserRegistrationDto;
-            DateTime dateOfBirth = DateTime.Parse(user?.DateOfBirth);
+            DateTime dateOfBirth = DateTime.Parse(user.DateOfBirth);
             int age = DateTime.Now.Year - dateOfBirth.Year;
             if (dateOfBirth > DateTime.Now.AddYears(-age))
                 age--;

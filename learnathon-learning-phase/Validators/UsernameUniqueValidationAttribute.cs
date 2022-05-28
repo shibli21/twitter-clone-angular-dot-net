@@ -1,6 +1,6 @@
-﻿using learnathon_learning_phase.Models;
+﻿using System.ComponentModel.DataAnnotations;
+using learnathon_learning_phase.Models;
 using learnathon_learning_phase.Services;
-using System.ComponentModel.DataAnnotations;
 
 namespace learnathon_learning_phase.Validators
 {
@@ -12,16 +12,14 @@ namespace learnathon_learning_phase.Validators
             var username = user?.Username;
 
 
-            var userService = (IUserService)validationContext.GetService(typeof(IUserService));
+            var userService = validationContext.GetService(typeof(IUserService)) as IUserService;
 
-            UserModel chUser = userService.GetUserByUsername(username);
-            if (chUser != null)
+            Task<UserModel> chUser = userService.GetUserByUsername(username);
+            if (chUser.Result != null)
             {
                 return new ValidationResult("Username already taken");
             }
             return ValidationResult.Success;
         }
-
-
     }
 }
