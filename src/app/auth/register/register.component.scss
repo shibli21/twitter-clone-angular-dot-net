@@ -1,0 +1,18 @@
+.label {
+  @apply mb-1 text-gray-700 font-medium;
+}
+.input {
+  @apply hover:shadow-4xl-orange focus:shadow-4xl-orange block w-full px-3 py-1.5 text-base font-normal text-gray-700 bg-white bg-clip-padding border-2 border-solid border-gray-600 rounded transition ease-in-out m-0 focus:text-gray-700 focus:bg-white hover:border-orange-600 focus:border-orange-600 focus:outline-none;
+}
+
+.input-error {
+  @apply text-red-500 font-medium mt-1;
+}
+
+.btn {
+  @apply w-full disabled:bg-orange-300 disabled:shadow-4xl-orange disabled:cursor-not-allowed bg-orange-600 border-2 border-black shadow-4xl text-white hover:text-white  hover:bg-orange-500 rounded-lg py-1 px-3 text-lg font-bold font-mono;
+}
+
+input.ng-touched.ng-invalid {
+  @apply shadow-4xl-red  border-red-500;
+}

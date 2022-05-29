@@ -1,0 +1,162 @@
+<div class="flex justify-center items-center">
+  <div
+    class="bg-orange-50 mt-0 md:mt-20 shadow-8xl-orange inline-block border-2 border-orange-600 p-6 md:p-10 rounded-xl max-w-md w-[400px]"
+  >
+    <h1 class="text-3xl font-mono font-bold">Register Account</h1>
+    <h1 class="text-lg text-gray-500">Create new user here</h1>
+    <hr class="my-4 border-t-2 border-orange-600" />
+
+    <form
+      class="flex flex-col gap-3"
+      [formGroup]="profileForm"
+      (ngSubmit)="onSubmit()"
+    >
+      <div class="">
+        <label for="username" class="label">Username</label>
+        <input
+          type="text"
+          class="input"
+          id="username"
+          formControlName="username"
+        />
+        <div *ngIf="isInvalidTouchedDirty('username')">
+          <div
+            *ngIf="profileFormControl['username'].errors?.['required']"
+            class="input-error"
+          >
+            Username is required.
+          </div>
+          <div
+            *ngIf="profileFormControl['username'].errors?.['username']"
+            class="input-error"
+          >
+            {{profileFormControl['username'].errors?.['username']}}
+          </div>
+        </div>
+      </div>
+      <div class="">
+        <label for="email" class="label">Email</label>
+        <input
+          type="email"
+          class="input"
+          id="email"
+          formControlName="email"
+          email
+        />
+        <div *ngIf="isInvalidTouchedDirty('email')">
+          <div
+            *ngIf="profileFormControl['email'].errors?.['required']"
+            class="input-error"
+          >
+            Email is required.
+          </div>
+          <div
+            *ngIf="profileFormControl['email'].errors?.['email']"
+            class="input-error"
+          >
+            {{profileFormControl['email'].errors?.['email']}}
+          </div>
+        </div>
+      </div>
+      <div class="">
+        <label for="dateOfBirth" class="label">Date of birth</label>
+        <input
+          type="date"
+          class="input"
+          id="dateOfBirth"
+          formControlName="dateOfBirth"
+        />
+        <div *ngIf="isTouchedOrDirty('dateOfBirth')">
+          <div
+            *ngIf="profileFormControl['dateOfBirth'].errors?.['required']"
+            class="input-error"
+          >
+            Date of birth is required.
+          </div>
+          <div
+            *ngIf="profileFormControl['dateOfBirth'].errors?.['age']"
+            class="input-error"
+          >
+            Must be at least 18 years old.
+          </div>
+        </div>
+      </div>
+      <div class="">
+        <label for="password" class="label">Password</label>
+        <input
+          type="password"
+          class="input"
+          id="password"
+          formControlName="password"
+        />
+
+        <div
+          class="mt-3"
+          *ngIf="
+            profileFormControl['password'].value !== '' &&
+            (profileFormControl['password'].dirty ||
+              profileFormControl['password'].touched)
+          "
+        >
+          <div class="bg-gray-200 w-full h-1.5">
+            <div [class]="passwordHealth"></div>
+          </div>
+          <h1 class="font-semibold">{{ passwordStatus }}</h1>
+        </div>
+        <div *ngIf="isInvalidTouchedDirty('password')">
+          <div
+            *ngIf="profileFormControl['password'].errors?.['required']"
+            class="input-error"
+          >
+            Password is required.
+          </div>
+
+          <div
+            *ngIf="profileFormControl['password'].errors?.['pattern']"
+            class="input-error"
+          >
+            Password must contain
+            <div class="ml-4">
+              <li>at least 6 characters</li>
+              <li>at least 1 uppercase</li>
+              <li>at least 1 lowercase</li>
+              <li>at least 1 number</li>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="">
+        <label for="confirmPassword" class="label">Confirm Password</label>
+        <input
+          type="password"
+          class="input"
+          id="confirmPassword"
+          formControlName="confirmPassword"
+        />
+        <div *ngIf="isInvalidTouchedDirty('confirmPassword')">
+          <div
+            *ngIf="profileFormControl['confirmPassword'].errors?.['required']"
+            class="input-error"
+          >
+            Confirm password is required.
+          </div>
+
+          <span
+            class="input-error"
+            *ngIf="
+              profileFormControl['confirmPassword'].touched &&
+              profileFormControl['confirmPassword'].errors?.['matching']
+            "
+          >
+            Passwords doesn't match
+          </span>
+        </div>
+      </div>
+
+      <button type="submit" class="btn mt-3" [disabled]="profileForm.invalid">
+        <span *ngIf="!isLoading">Register </span>
+        <app-loading-spinner *ngIf="isLoading"></app-loading-spinner>
+      </button>
+    </form>
+  </div>
+</div>
