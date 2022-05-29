@@ -2,3 +2,16 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+html,
+body {
+  height: 100%;
+}
+body {
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+}
+
+.mat-snack-bar-container {
+  @apply text-black bg-orange-100 shadow-4xl shadow-orange-600 bottom-2  border-orange-600 rounded-xl font-medium;
+}
