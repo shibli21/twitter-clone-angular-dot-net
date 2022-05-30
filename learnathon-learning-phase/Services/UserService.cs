@@ -12,17 +12,19 @@ namespace learnathon_learning_phase.Services
             var database = mongoClient.GetDatabase(settings.DatabaseName);
             _user = database.GetCollection<UserModel>(settings.UserCollectionName);
         }
-        public void RegisterUser(UserModel user)
+        public async Task RegisterUser(UserModel user)
         {
-            _user.InsertOne(user);
+            await _user.InsertOneAsync(user);
         }
-        public UserModel GetUserByEmail(string email)
+
+        public async Task<UserModel> GetUserByEmail(string email)
         {
-            return _user.Find(user => user.Email == email).FirstOrDefault();
+            return await _user.Find(user => user.Email == email).FirstOrDefaultAsync();
         }
-        public UserModel GetUserByUsername(string username)
+
+        public async Task<UserModel> GetUserByUsername(string username)
         {
-            return _user.Find(user => user.Username == username).FirstOrDefault();
+            return await _user.Find(user => user.Username == username).FirstOrDefaultAsync();
         }
     }
 }

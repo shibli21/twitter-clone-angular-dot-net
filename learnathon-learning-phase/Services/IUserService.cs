@@ -4,9 +4,9 @@ namespace learnathon_learning_phase.Services
 {
     public interface IUserService
     {
-        void RegisterUser(UserModel user);
-        UserModel GetUserByEmail(string email);
+        Task RegisterUser(UserModel user);
+        Task<UserModel> GetUserByEmail(string email);
 
-        UserModel GetUserByUsername(string username);
+        Task<UserModel> GetUserByUsername(string username);
     }
 }
