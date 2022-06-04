@@ -98,6 +98,7 @@ export class RegisterComponent implements OnInit {
             verticalPosition: 'top',
             horizontalPosition: 'center',
           });
+          this.profileForm.reset();
         },
         (err) => {
           this.isLoading = false;
