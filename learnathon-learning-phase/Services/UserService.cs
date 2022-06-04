@@ -28,6 +28,13 @@ namespace learnathon_learning_phase.Services
             return user;
         }
 
+
+        public async Task<UserModel> UpdateUser(UserModel user)
+        {
+            await _user.ReplaceOneAsync(u => u.Id == user.Id, user);
+            return user;
+        }
+
         public async Task<UserModel> GetUserByEmail(string email)
         {
             return await _user.Find(user => user.Email == email).FirstOrDefaultAsync();
@@ -66,5 +73,6 @@ namespace learnathon_learning_phase.Services
                             .ToList()
             };
         }
+
     }
 }

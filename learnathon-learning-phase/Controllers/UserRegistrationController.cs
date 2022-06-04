@@ -38,6 +38,22 @@ namespace learnathon_learning_phase.Controllers
             return Ok(user.AsDto());
         }
 
+        [HttpPost("edit", Name = "EditUser")]
+        public async Task<ActionResult<UserResponseDto>> EditUser(UserEditRequestDto user)
+        {
+            UserModel userModel = await userService.GetUserById(user.Id);
+            if (userModel == null)
+            {
+                return NotFound();
+            }
+
+            userModel.Email = user.Email;
+            userModel.DateOfBirth = user.DateOfBirth;
+
+            await userService.UpdateUser(userModel);
+            return Ok(userModel.AsDto());
+        }
+
         [HttpPost]
         [Route("register")]
         public async Task<ActionResult<UserResponseDto>> create(UserRegistrationDto userRegistrationDto)
