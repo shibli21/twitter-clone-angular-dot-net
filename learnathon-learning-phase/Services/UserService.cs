@@ -74,5 +74,9 @@ namespace learnathon_learning_phase.Services
             };
         }
 
+        public Task DeleteUser(string id)
+        {
+            return _user.DeleteOneAsync(user => user.Id == id);
+        }
     }
 }

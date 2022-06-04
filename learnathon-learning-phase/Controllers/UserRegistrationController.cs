@@ -72,6 +72,18 @@ namespace learnathon_learning_phase.Controllers
         }
 
 
+        [HttpDelete("{id}")]
+        public async Task<ActionResult> DeleteUser(string id)
+        {
+            UserModel user = await userService.GetUserById(id);
+            if (user == null)
+            {
+                return NotFound();
+            }
+            await userService.DeleteUser(id);
+            return NoContent();
+        }
+
         private string CreatePasswordHash(string password)
         {
             using (SHA256 sha256Hash = SHA256.Create())
