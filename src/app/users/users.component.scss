@@ -1,0 +1,12 @@
+.ngx-datatable.material {
+  @apply border-2 border-orange-500 shadow-8xl-orange rounded-lg  font-mono;
+  .datatable-header {
+    @apply border-b  border-orange-500;
+    .datatable-header-cell {
+      @apply text-sm text-orange-500 font-semibold;
+    }
+  }
+  .datatable-body-row {
+    @apply border-b  border-orange-500;
+  }
+}

@@ -1,7 +1,9 @@
+import { RouterModule } from '@angular/router';
 import { AuthService } from './auth/auth.service';
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 
+import { MatIconModule } from '@angular/material/icon';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { NavComponent } from './nav/nav.component';
@@ -12,6 +14,9 @@ import { HttpClientModule } from '@angular/common/http';
 import { LoadingSpinnerComponent } from './shared/loading-spinner/loading-spinner.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { UsersComponent } from './users/users.component';
+import { NgxDatatableModule } from '@swimlane/ngx-datatable';
+import { UserEditComponent } from './users/user-edit/user-edit.component';
 
 @NgModule({
   declarations: [
@@ -20,6 +25,8 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
     RegisterComponent,
     LoginComponent,
     LoadingSpinnerComponent,
+    UsersComponent,
+    UserEditComponent,
   ],
   imports: [
     BrowserModule,
@@ -28,6 +35,9 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
     HttpClientModule,
     BrowserAnimationsModule,
     MatSnackBarModule,
+    NgxDatatableModule,
+    MatIconModule,
+    RouterModule,
   ],
   providers: [AuthService],
   bootstrap: [AppComponent],

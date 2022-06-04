@@ -11,6 +11,13 @@
     <nav class="flex flex-wrap gap-2 items-center text-base justify-center">
       <a
         class="nav-link"
+        [routerLink]="['/users']"
+        [routerLinkActiveOptions]="{ exact: true }"
+        routerLinkActive="nav-link-active"
+        >Users</a
+      >
+      <a
+        class="nav-link"
         [routerLink]="['/register']"
         routerLinkActive="nav-link-active"
         >Register</a
