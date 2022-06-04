@@ -9,27 +9,34 @@ namespace learnathon_learning_phase.Controllers
 {
     [Route("api/user")]
     [ApiController]
-    public class UserRegistrationController : ControllerBase
+    public class UsersController : ControllerBase
     {
         private readonly IUserService userService;
-        public UserRegistrationController(IUserService userService)
+        public UsersController(IUserService userService)
         {
             this.userService = userService;
         }
 
 
-
-        [HttpGet("{{email}}")]
-        public async Task<ActionResult<UserModel>> GetUser(string email)
+        [HttpGet("all")]
+        public ActionResult<PaginatedUserResponseDto> GetPaginatedUsers(
+            [FromQuery] int size = 5,
+            [FromQuery] int page = 0)
         {
-            UserModel user = await userService.GetUserByEmail(email);
+            return Ok(userService.GetPaginatedUsers(size, page));
+        }
+
+
+        [HttpGet("{id}")]
+        public async Task<ActionResult<UserResponseDto>> GetUserById(string id)
+        {
+            UserModel user = await userService.GetUserById(id);
             if (user == null)
             {
                 return NotFound();
             }
-            return Ok(user);
+            return Ok(user.AsDto());
         }
-
 
         [HttpPost]
         [Route("register")]
@@ -38,15 +45,14 @@ namespace learnathon_learning_phase.Controllers
             var pass = this.CreatePasswordHash(userRegistrationDto.Password);
             var user = new UserModel
             {
-
                 Username = userRegistrationDto.Username,
                 Password = pass,
                 Email = userRegistrationDto.Email,
                 DateOfBirth = userRegistrationDto.DateOfBirth
             };
-            await userService.RegisterUser(user);
+            UserModel newUser = await userService.RegisterUser(user);
 
-            return CreatedAtAction(nameof(GetUser), new { email = userRegistrationDto.Email }, user.AsDto());
+            return CreatedAtAction(nameof(GetUserById), new { id = newUser.Id }, user.AsDto());
         }
 
 
