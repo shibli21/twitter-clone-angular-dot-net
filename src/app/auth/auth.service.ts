@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { catchError, throwError } from 'rxjs';
+import { throwError } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 
 export interface RegisterResponseData {
   username: string;
