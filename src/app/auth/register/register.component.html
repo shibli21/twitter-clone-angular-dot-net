@@ -54,7 +54,13 @@
             *ngIf="profileFormControl['email'].errors?.['email']"
             class="input-error"
           >
-            {{profileFormControl['email'].errors?.['email']}}
+            Email is not valid.
+          </div>
+          <div
+            *ngIf="profileFormControl['email'].errors?.['serverErrorEmail']"
+            class="input-error"
+          >
+            {{profileFormControl['email'].errors?.['serverErrorEmail']}}
           </div>
         </div>
       </div>

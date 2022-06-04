@@ -92,8 +92,6 @@ export class RegisterComponent implements OnInit {
       .register(username, email, password, confirmPassword, dateOfBirth)
       .subscribe(
         (res: any) => {
-          console.log(res);
-
           this.isLoading = false;
           this._snackBar.open('You are registered successfully', '', {
             duration: 5 * 1000,
@@ -102,16 +100,15 @@ export class RegisterComponent implements OnInit {
           });
         },
         (err) => {
-          console.log('err.errors', err.error);
+          this.isLoading = false;
           if (err.error.errors) {
             this.profileForm.controls['email'].setErrors({
-              email: err.error.errors.Email[0],
+              serverErrorEmail: err.error.errors?.Email[0],
             });
             this.profileForm.controls['username'].setErrors({
               username: err.error.errors.Username[0],
             });
           }
-          this.isLoading = false;
         }
       );
   }
