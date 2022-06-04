@@ -1,0 +1,44 @@
+<ngx-datatable
+  class="material"
+  [rows]="rows"
+  [columnMode]="'force'"
+  [headerHeight]="50"
+  [footerHeight]="50"
+  [rowHeight]="'auto'"
+  [externalPaging]="true"
+  [count]="page.totalElements"
+  [offset]="page.page"
+  [limit]="page.size"
+  (page)="setPage($event)"
+  [externalPaging]="true"
+>
+  <ngx-datatable-column
+    [sortable]="false"
+    name="Username"
+  ></ngx-datatable-column>
+  <ngx-datatable-column [sortable]="false" name="Email"></ngx-datatable-column>
+  <ngx-datatable-column
+    [sortable]="false"
+    name="Date Of Birth"
+    prop="dateOfBirth"
+  ></ngx-datatable-column>
+  <ngx-datatable-column name="Actions" [sortable]="false">
+    <ng-template let-row="row" let-value="value" ngx-datatable-cell-template>
+      <div class="flex gap-4">
+        <button class="bg-blue-700 flex p-0.5 rounded-sm">
+          <mat-icon
+            class="text-white text-base"
+            [routerLink]="['/users/edit', row.id]"
+          >
+            edit
+          </mat-icon>
+        </button>
+        <button class="bg-rose-500 flex p-0.5 rounded-sm">
+          <mat-icon class="text-white text-base" (click)="onDeleteUser(row.id)">
+            delete
+          </mat-icon>
+        </button>
+      </div>
+    </ng-template>
+  </ngx-datatable-column>
+</ngx-datatable>
