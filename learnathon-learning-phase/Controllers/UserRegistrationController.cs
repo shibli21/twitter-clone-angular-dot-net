@@ -1,9 +1,13 @@
-﻿using System.Security.Cryptography;
+﻿using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 using learnathon_learning_phase.Extentions;
 using learnathon_learning_phase.Models;
 using learnathon_learning_phase.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 
 namespace learnathon_learning_phase.Controllers
 {
@@ -12,13 +16,18 @@ namespace learnathon_learning_phase.Controllers
     public class UsersController : ControllerBase
     {
         private readonly IUserService userService;
-        public UsersController(IUserService userService)
+        private readonly IConfiguration _configuration;
+
+
+        public UsersController(IUserService userService, IConfiguration configuration)
         {
             this.userService = userService;
+            this._configuration = configuration;
+
         }
 
 
-        [HttpGet("all")]
+        [HttpGet("all"), Authorize(Roles = "User")]
         public ActionResult<PaginatedUserResponseDto> GetPaginatedUsers(
             [FromQuery] int size = 5,
             [FromQuery] int page = 0)
@@ -72,6 +81,26 @@ namespace learnathon_learning_phase.Controllers
         }
 
 
+
+        [HttpPost]
+        [Route("login")]
+        public async Task<ActionResult<String>> signin(UserLoginDto request)
+        {
+            Task<UserModel> user = userService.GetUserByEmail(request.Email);
+            if (user.Result == null)
+                return BadRequest("User not found");
+            if (!this.VerifyPasswordHash(request.Password, user.Result.Password))
+                return BadRequest("Password is incorrect");
+
+            string token = this.CreateToken(user.Result);
+            return Ok(token);
+        }
+
+
+
+
+
+
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteUser(string id)
         {
@@ -99,5 +128,40 @@ namespace learnathon_learning_phase.Controllers
             }
         }
 
+        private bool VerifyPasswordHash(string password, string hash)
+        {
+            using (SHA256 sha256Hash = SHA256.Create())
+            {
+                byte[] bytes = sha256Hash.ComputeHash(Encoding.UTF8.GetBytes(password));
+
+                StringBuilder stringbuilder = new StringBuilder();
+                for (int i = 0; i < bytes.Length; i++)
+                {
+                    stringbuilder.Append(bytes[i].ToString("x2"));
+                }
+                return stringbuilder.ToString().Equals(hash);
+            }
+        }
+
+        private string CreateToken(UserModel user)
+        {
+            var claims = new[]
+            {
+                new Claim(ClaimTypes.Name, user.Username),
+                new Claim(ClaimTypes.NameIdentifier, user.Id),
+                new Claim(ClaimTypes.Email, user.Email),
+                new Claim(ClaimTypes.DateOfBirth, user.DateOfBirth.ToString()),
+                new Claim(ClaimTypes.Role, "User")
+            };
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration.GetSection("AppSettings:Token").Value));
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256Signature);
+            var token = new JwtSecurityToken(
+                claims: claims,
+                expires: DateTime.Now.AddDays(1),
+                signingCredentials: creds
+            );
+            return new JwtSecurityTokenHandler().WriteToken(token);
+
+        }
     }
 }
