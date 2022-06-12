@@ -1,9 +1,13 @@
-﻿using System.Security.Cryptography;
+﻿using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 using learnathon_learning_phase.Extentions;
 using learnathon_learning_phase.Models;
 using learnathon_learning_phase.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 
 namespace learnathon_learning_phase.Controllers
 {
@@ -12,18 +16,24 @@ namespace learnathon_learning_phase.Controllers
     public class UsersController : ControllerBase
     {
         private readonly IUserService userService;
-        public UsersController(IUserService userService)
+        private readonly IConfiguration _configuration;
+
+
+        public UsersController(IUserService userService, IConfiguration configuration)
         {
             this.userService = userService;
+            this._configuration = configuration;
+
         }
 
 
-        [HttpGet("all")]
-        public ActionResult<PaginatedUserResponseDto> GetPaginatedUsers(
+        [HttpGet("all"), Authorize(Roles = "User")]
+        public async Task< ActionResult<PaginatedUserResponseDto>> GetPaginatedUsers(
             [FromQuery] int size = 5,
             [FromQuery] int page = 0)
         {
-            return Ok(userService.GetPaginatedUsers(size, page));
+            object response = await userService.GetPaginatedUsers(size, page);
+            return Ok(response);
         }
 
 
@@ -72,6 +82,46 @@ namespace learnathon_learning_phase.Controllers
         }
 
 
+
+        [HttpPost]
+        [Route("login")]
+        public async Task<ActionResult<object>> signin(UserLoginDto request)
+        {
+            UserModel user = await userService.GetUserByEmail(request.Email);
+            
+            // through error
+            
+
+
+            if (user == null)
+                return BadRequest(new { field = "email", message = "User not found" });
+            if (!this.VerifyPasswordHash(request.Password, user.Password))
+                return BadRequest(new { field = "password", message = "Wrong password" });
+
+            string token = this.CreateToken(user);
+            return Ok(new { token, expires = DateTime.Now.AddDays(1) });
+            //return Ok();
+        }
+
+
+
+
+        [HttpGet("current-user"), Authorize]
+        public async Task<ActionResult<UserRegistrationDto>> GetCurrentUser()
+        {
+            UserModel? user = await userService.GetAuthUser();
+            if (user == null)
+            {
+                return NotFound();
+            }
+            return Ok(user.AsDto());
+        }
+
+
+
+
+
+
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteUser(string id)
         {
@@ -99,5 +149,37 @@ namespace learnathon_learning_phase.Controllers
             }
         }
 
+        private bool VerifyPasswordHash(string password, string hash)
+        {
+            using (SHA256 sha256Hash = SHA256.Create())
+            {
+                byte[] bytes = sha256Hash.ComputeHash(Encoding.UTF8.GetBytes(password));
+
+                StringBuilder stringbuilder = new StringBuilder();
+                for (int i = 0; i < bytes.Length; i++)
+                {
+                    stringbuilder.Append(bytes[i].ToString("x2"));
+                }
+                return stringbuilder.ToString().Equals(hash);
+            }
+        }
+
+        private string CreateToken(UserModel user)
+        {
+            var claims = new[]
+            {
+                new Claim(ClaimTypes.NameIdentifier, user.Id),
+                new Claim(ClaimTypes.Role, "User")
+            };
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration.GetSection("AppSettings:Token").Value));
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256Signature);
+            var token = new JwtSecurityToken(
+                claims: claims,
+                expires: DateTime.Now.AddDays(1),
+                signingCredentials: creds
+            );
+            return new JwtSecurityTokenHandler().WriteToken(token);
+
+        }
     }
 }
