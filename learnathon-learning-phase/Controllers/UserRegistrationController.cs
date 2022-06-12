@@ -28,11 +28,12 @@ namespace learnathon_learning_phase.Controllers
 
 
         [HttpGet("all"), Authorize(Roles = "User")]
-        public ActionResult<PaginatedUserResponseDto> GetPaginatedUsers(
+        public async Task< ActionResult<PaginatedUserResponseDto>> GetPaginatedUsers(
             [FromQuery] int size = 5,
             [FromQuery] int page = 0)
         {
-            return Ok(userService.GetPaginatedUsers(size, page));
+            object response = await userService.GetPaginatedUsers(size, page);
+            return Ok(response);
         }
 
 
@@ -84,16 +85,36 @@ namespace learnathon_learning_phase.Controllers
 
         [HttpPost]
         [Route("login")]
-        public async Task<ActionResult<String>> signin(UserLoginDto request)
+        public async Task<ActionResult<object>> signin(UserLoginDto request)
         {
-            Task<UserModel> user = userService.GetUserByEmail(request.Email);
-            if (user.Result == null)
-                return BadRequest("User not found");
-            if (!this.VerifyPasswordHash(request.Password, user.Result.Password))
-                return BadRequest("Password is incorrect");
+            UserModel user = await userService.GetUserByEmail(request.Email);
+            
+            // through error
+            
 
-            string token = this.CreateToken(user.Result);
-            return Ok(token);
+
+            if (user == null)
+                return BadRequest(new { field = "email", message = "User not found" });
+            if (!this.VerifyPasswordHash(request.Password, user.Password))
+                return BadRequest(new { field = "password", message = "Wrong password" });
+
+            string token = this.CreateToken(user);
+            return Ok(new { token, expires = DateTime.Now.AddDays(1) });
+            //return Ok();
+        }
+
+
+
+
+        [HttpGet("current-user"), Authorize]
+        public async Task<ActionResult<UserRegistrationDto>> GetCurrentUser()
+        {
+            UserModel? user = await userService.GetAuthUser();
+            if (user == null)
+            {
+                return NotFound();
+            }
+            return Ok(user.AsDto());
         }
 
 
@@ -147,10 +168,7 @@ namespace learnathon_learning_phase.Controllers
         {
             var claims = new[]
             {
-                new Claim(ClaimTypes.Name, user.Username),
                 new Claim(ClaimTypes.NameIdentifier, user.Id),
-                new Claim(ClaimTypes.Email, user.Email),
-                new Claim(ClaimTypes.DateOfBirth, user.DateOfBirth.ToString()),
                 new Claim(ClaimTypes.Role, "User")
             };
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration.GetSection("AppSettings:Token").Value));

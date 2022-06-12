@@ -1,17 +1,20 @@
 ﻿using learnathon_learning_phase.Extentions;
 using learnathon_learning_phase.Models;
 using MongoDB.Driver;
+using System.Security.Claims;
 
 namespace learnathon_learning_phase.Services
 {
     public class UserService : IUserService
     {
         private readonly IMongoCollection<UserModel> _user;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public UserService(IUserDatabaseSetting settings, IMongoClient mongoClient)
+        public UserService(IUserDatabaseSetting settings, IMongoClient mongoClient, IHttpContextAccessor httpContextAccessor)
         {
             var database = mongoClient.GetDatabase(settings.DatabaseName);
             _user = database.GetCollection<UserModel>(settings.UserCollectionName);
+            _httpContextAccessor = httpContextAccessor;
         }
         public async Task<List<UserModel>> GetUsers(int limit, int page)
         {
@@ -51,10 +54,10 @@ namespace learnathon_learning_phase.Services
         }
 
 
-        public Object GetPaginatedUsers(int? size, int? page)
+        public  async Task<Object> GetPaginatedUsers(int? size, int? page)
         {
             var filter = Builders<UserModel>.Filter.Empty;
-            var find = _user.Find(filter);
+            var find =  _user.Find(filter);
             int perPage = size.GetValueOrDefault();
             var total_elements = find.CountDocuments();
 
@@ -65,7 +68,7 @@ namespace learnathon_learning_phase.Services
                 Size = perPage,
                 LastPage = (int)Math.Ceiling((double)total_elements / perPage) - 1,
                 TotalPages = (int)Math.Ceiling((double)total_elements / perPage),
-                Users = find.Skip(page * perPage)
+                Users =  find.Skip(page * perPage)
                             .Limit(perPage)
                             .ToList()
                             .AsEnumerable()
@@ -77,6 +80,27 @@ namespace learnathon_learning_phase.Services
         public Task DeleteUser(string id)
         {
             return _user.DeleteOneAsync(user => user.Id == id);
+        }
+
+        public async Task<UserModel?> GetAuthUser()
+        {
+
+            UserModel? user ;
+           
+            if (_httpContextAccessor.HttpContext != null)
+            {
+                string? id = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                if (id != null)
+                {
+                    user = await GetUserById(id);
+                }
+                else
+                {
+                    user = null;
+                }
+                return user;
+            }
+            return null;
         }
     }
 }

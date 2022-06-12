@@ -8,8 +8,9 @@ namespace learnathon_learning_phase.Services
         Task<UserModel> UpdateUser(UserModel user);
         Task DeleteUser(string id);
         Task<UserModel> GetUserById(string id);
-        Object GetPaginatedUsers(int? size, int? page);
+        Task<Object> GetPaginatedUsers(int? size, int? page);
         Task<UserModel> GetUserByEmail(string email);
         Task<UserModel> GetUserByUsername(string username);
+        Task<UserModel?> GetAuthUser();
     }
 }
