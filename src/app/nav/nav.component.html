@@ -10,6 +10,7 @@
     </a>
     <nav class="flex flex-wrap gap-2 items-center text-base justify-center">
       <a
+        *ngIf="isAuthenticated"
         class="nav-link"
         [routerLink]="['/users']"
         [routerLinkActiveOptions]="{ exact: true }"
@@ -17,16 +18,24 @@
         >Users</a
       >
       <a
+        *ngIf="!isAuthenticated"
         class="nav-link"
         [routerLink]="['/register']"
         routerLinkActive="nav-link-active"
         >Register</a
       >
       <a
+        *ngIf="!isAuthenticated"
         class="nav-link"
         [routerLink]="['/login']"
         routerLinkActive="nav-link-active"
         >Login</a
+      >
+      <a
+        *ngIf="isAuthenticated"
+        class="hover:bg-red-500 nav-link"
+        (click)="onLogout()"
+        >Logout</a
       >
     </nav>
   </div>
