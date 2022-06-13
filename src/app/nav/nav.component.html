@@ -1,14 +1,16 @@
-<header class="">
+<header class="relative">
   <div
-    class="container mx-auto flex flex-wrap py-5 flex-row items-center justify-center md:justify-between"
+    class="container flex flex-row flex-wrap items-center justify-between px-4 py-5 mx-auto"
   >
     <a
-      class="text-2xl font-bold font-mono items-center text-orange-600"
+      class="items-center font-mono text-2xl font-bold text-orange-600"
       [routerLink]="['/']"
     >
       Geeky Solution
     </a>
-    <nav class="flex flex-wrap gap-2 items-center text-base justify-center">
+    <nav
+      class="flex-wrap items-center justify-center hidden gap-2 text-base md:flex"
+    >
       <a
         *ngIf="isAuthenticated"
         class="nav-link"
@@ -42,5 +44,56 @@
         >Logout</a
       >
     </nav>
+    <div class="block md:hidden">
+      <mat-icon (click)="onToggle()"> menu </mat-icon>
+    </div>
+  </div>
+
+  <div
+    (click)="onToggle()"
+    class="fixed z-50 mx-4 transition-all duration-500 ease-in-out rounded shadow-4xl"
+    [ngClass]="
+      opened
+        ? 'w-[calc(100%-32px)]  opacity-100 h-[200px] bg-orange-400 '
+        : 'h-[200px] opacity-0'
+    "
+  >
+    <aside
+      class="flex flex-col flex-1 p-4 transition-all duration-500 ease-in-out"
+      [ngClass]="opened ? 'block' : 'hidden'"
+    >
+      <a
+        *ngIf="isAuthenticated"
+        class="nav-link"
+        [routerLink]="['/users']"
+        [routerLinkActiveOptions]="{ exact: true }"
+        routerLinkActive="nav-link-active"
+        >Users</a
+      >
+      <a
+        *ngIf="!isAuthenticated"
+        class="nav-link"
+        [routerLink]="['/register']"
+        routerLinkActive="nav-link-active"
+        >Register</a
+      >
+      <a
+        *ngIf="!isAuthenticated"
+        class="nav-link"
+        [routerLink]="['/login']"
+        routerLinkActive="nav-link-active"
+        >Login</a
+      >
+      <a
+        *ngIf="user"
+        class="nav-link"
+        [routerLink]="['/profile']"
+        routerLinkActive="nav-link-active"
+        >{{ user?.username }}</a
+      >
+      <a *ngIf="isAuthenticated" class="nav-link" (click)="onLogout()"
+        >Logout</a
+      >
+    </aside>
   </div>
 </header>
