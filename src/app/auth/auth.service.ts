@@ -103,6 +103,7 @@ export class AuthService {
     if (this.tokenExpirationTimer) {
       clearTimeout(this.tokenExpirationTimer);
     }
+    this.user.next(null);
   }
 
   autoLogout(expirationDuration: number) {
