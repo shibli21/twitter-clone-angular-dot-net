@@ -18,9 +18,10 @@ import { ProfileComponent } from './profile/profile.component';
 import { LoadingSpinnerComponent } from './shared/loading-spinner/loading-spinner.component';
 import { UserEditComponent } from './users/user-edit/user-edit.component';
 import { UsersComponent } from './users/users.component';
+import { HomeComponent } from './home/home.component';
 
 @NgModule({
-  declarations: [
+  declarations: [	
     AppComponent,
     NavComponent,
     RegisterComponent,
@@ -29,7 +30,8 @@ import { UsersComponent } from './users/users.component';
     UsersComponent,
     UserEditComponent,
     ProfileComponent,
-  ],
+      HomeComponent
+   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
