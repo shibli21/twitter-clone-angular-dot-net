@@ -7,10 +7,5 @@ export class User {
     public username: string,
     public email: string,
     public dateOfBirth: Date
-  ) {
-    this.id = id;
-    this.username = username;
-    this.email = email;
-    this.dateOfBirth = dateOfBirth;
-  }
+  ) {}
 }
