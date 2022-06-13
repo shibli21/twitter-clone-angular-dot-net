@@ -32,9 +32,13 @@
         >Login</a
       >
       <a
-        *ngIf="isAuthenticated"
-        class="hover:bg-red-500 nav-link"
-        (click)="onLogout()"
+        *ngIf="user"
+        class="nav-link"
+        [routerLink]="['/profile']"
+        routerLinkActive="nav-link-active"
+        >{{ user?.username }}</a
+      >
+      <a *ngIf="isAuthenticated" class="nav-link" (click)="onLogout()"
         >Logout</a
       >
     </nav>

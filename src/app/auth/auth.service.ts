@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import * as moment from 'moment';
 import { BehaviorSubject, throwError } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
+import { User } from '../users/model/user';
 import { AuthCredential } from './../users/model/authCredential';
 
 export interface RegisterResponseData {
@@ -24,6 +25,8 @@ export interface LoginResponseData {
 })
 export class AuthService {
   authCredential = new BehaviorSubject<AuthCredential | null>(null);
+  user = new BehaviorSubject<User | null>(null);
+
   private tokenExpirationTimer: any;
   baseUrl = 'http://noobmasters.learnathon.net/api1/api/user/';
 
@@ -67,14 +70,30 @@ export class AuthService {
       );
   }
 
+  currentUser() {
+    return this.http.get<User>(this.baseUrl + 'current-user').pipe(
+      catchError((error) => {
+        return throwError(error);
+      }),
+      tap((resData) => {
+        this.user.next(resData);
+      })
+    );
+  }
+
   private handleAuthentication(token: string, expirationDate: Date) {
     const authCredential = new AuthCredential(token, expirationDate);
+
     this.authCredential.next(authCredential);
 
     const expiresIn = moment(expirationDate).diff(new Date(), 'seconds');
     this.autoLogout(expiresIn * 1000);
 
     localStorage.setItem('authData', JSON.stringify(authCredential));
+
+    this.currentUser().subscribe((user) => {
+      this.user.next(user);
+    });
   }
 
   logout() {
@@ -112,6 +131,9 @@ export class AuthService {
         new Date(authData._tokenExpirationDate).getTime() -
         new Date().getTime();
       this.autoLogout(expirationDuration);
+      this.currentUser().subscribe((user) => {
+        this.user.next(user);
+      });
     }
   }
 }

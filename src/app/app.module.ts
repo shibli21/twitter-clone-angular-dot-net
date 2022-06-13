@@ -18,9 +18,10 @@ import { NavComponent } from './nav/nav.component';
 import { LoadingSpinnerComponent } from './shared/loading-spinner/loading-spinner.component';
 import { UserEditComponent } from './users/user-edit/user-edit.component';
 import { UsersComponent } from './users/users.component';
+import { ProfileComponent } from './profile/profile.component';
 
 @NgModule({
-  declarations: [
+  declarations: [	
     AppComponent,
     NavComponent,
     RegisterComponent,
@@ -28,7 +29,8 @@ import { UsersComponent } from './users/users.component';
     LoadingSpinnerComponent,
     UsersComponent,
     UserEditComponent,
-  ],
+      ProfileComponent
+   ],
   imports: [
     BrowserModule,
     AppRoutingModule,

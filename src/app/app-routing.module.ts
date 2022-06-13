@@ -1,3 +1,4 @@
+import { ProfileComponent } from './profile/profile.component';
 import { AuthGuard } from './auth/auth.guard';
 import { UserEditComponent } from './users/user-edit/user-edit.component';
 import { NgModule } from '@angular/core';
@@ -7,6 +8,10 @@ import { RegisterComponent } from './auth/register/register.component';
 import { UsersComponent } from './users/users.component';
 
 const routes: Routes = [
+  {
+    path: 'profile',
+    component: ProfileComponent,
+  },
   {
     path: 'register',
     component: RegisterComponent,
