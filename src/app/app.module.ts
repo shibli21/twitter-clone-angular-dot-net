@@ -1,8 +1,6 @@
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
-import { MatIconModule } from '@angular/material/icon';
-import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterModule } from '@angular/router';
@@ -14,14 +12,15 @@ import { AuthInterceptor } from './auth/auth.interceptor.service';
 import { AuthService } from './auth/auth.service';
 import { LoginComponent } from './auth/login/login.component';
 import { RegisterComponent } from './auth/register/register.component';
+import { MaterialModule } from './modules/material.module';
 import { NavComponent } from './nav/nav.component';
+import { ProfileComponent } from './profile/profile.component';
 import { LoadingSpinnerComponent } from './shared/loading-spinner/loading-spinner.component';
 import { UserEditComponent } from './users/user-edit/user-edit.component';
 import { UsersComponent } from './users/users.component';
-import { ProfileComponent } from './profile/profile.component';
 
 @NgModule({
-  declarations: [	
+  declarations: [
     AppComponent,
     NavComponent,
     RegisterComponent,
@@ -29,18 +28,17 @@ import { ProfileComponent } from './profile/profile.component';
     LoadingSpinnerComponent,
     UsersComponent,
     UserEditComponent,
-      ProfileComponent
-   ],
+    ProfileComponent,
+  ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     ReactiveFormsModule,
     HttpClientModule,
     BrowserAnimationsModule,
-    MatSnackBarModule,
     NgxDatatableModule,
-    MatIconModule,
     RouterModule,
+    MaterialModule,
   ],
   providers: [
     AuthService,

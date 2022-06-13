@@ -11,6 +11,7 @@
   [limit]="page.size"
   (page)="setPage($event)"
   [externalPaging]="true"
+  [scrollbarH]="true"
 >
   <ngx-datatable-column
     [sortable]="false"
@@ -22,19 +23,19 @@
     name="Date Of Birth"
     prop="dateOfBirth"
   ></ngx-datatable-column>
-  <ngx-datatable-column name="Actions" [sortable]="false">
+  <ngx-datatable-column name="Actions" [sortable]="false" [width]="150">
     <ng-template let-row="row" let-value="value" ngx-datatable-cell-template>
       <div class="flex gap-4">
         <button class="bg-blue-700 flex p-0.5 rounded-sm">
           <mat-icon
-            class="text-white text-base"
+            class="text-base text-white"
             [routerLink]="['/users/edit', row.id]"
           >
             edit
           </mat-icon>
         </button>
         <button class="bg-rose-500 flex p-0.5 rounded-sm">
-          <mat-icon class="text-white text-base" (click)="onDeleteUser(row.id)">
+          <mat-icon class="text-base text-white" (click)="onDeleteUser(row.id)">
             delete
           </mat-icon>
         </button>
