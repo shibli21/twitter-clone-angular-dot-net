@@ -6,7 +6,7 @@ namespace learnathon_learning_phase.Validators
 {
     public class UsernameUniqueValidationAttribute : ValidationAttribute
     {
-        protected override ValidationResult IsValid(object value, ValidationContext validationContext)
+        protected override ValidationResult? IsValid(object? value, ValidationContext validationContext)
         {
             var user = validationContext.ObjectInstance as UserRegistrationDto;
             var username = user?.Username;
@@ -14,7 +14,7 @@ namespace learnathon_learning_phase.Validators
 
             var userService = validationContext.GetService(typeof(IUserService)) as IUserService;
 
-            Task<UserModel> chUser = userService.GetUserByUsername(username);
+            Task<UserModel> chUser = userService!.GetUserByUsername(username!);
             if (chUser.Result != null)
             {
                 return new ValidationResult("Username already taken");
