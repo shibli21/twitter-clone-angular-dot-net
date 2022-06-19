@@ -18,6 +18,11 @@ builder.Services.AddSingleton<IUserDatabaseSetting>(sp => sp.GetRequiredService<
 builder.Services.AddSingleton<IMongoClient>(sp => new MongoClient(builder.Configuration.GetValue<string>("UserDatabaseSetting:ConnectionString")));
 builder.Services.AddSingleton<IUserService, UserService>();
 
+builder.Services.Configure<RefreshTokenDatabaseSetting>(builder.Configuration.GetSection(nameof(RefreshTokenDatabaseSetting)));
+builder.Services.AddSingleton<IRefreshTokenDatabaseSetting>(sp => sp.GetRequiredService<IOptions<RefreshTokenDatabaseSetting>>().Value);
+builder.Services.AddSingleton<IMongoClient>(sp => new MongoClient(builder.Configuration.GetValue<string>("RefreshTokenDatabaseSetting:ConnectionString")));
+builder.Services.AddSingleton<IRefreshTokenService, RefreshTokenService>();
+
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
@@ -26,8 +31,9 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateIssuerSigningKey = true,
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration.GetSection("AppSettings:Token").Value)),
             ValidateIssuer = false,
-            ValidateAudience = false
-
+            ValidateAudience = false,
+            ValidateLifetime = true,
+            ClockSkew = TimeSpan.Zero
         };
     });
 
