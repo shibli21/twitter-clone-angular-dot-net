@@ -1,7 +1,7 @@
-﻿using learnathon_learning_phase.Extentions;
+﻿using System.Security.Claims;
+using learnathon_learning_phase.Extentions;
 using learnathon_learning_phase.Models;
 using MongoDB.Driver;
-using System.Security.Claims;
 
 namespace learnathon_learning_phase.Services
 {
@@ -54,12 +54,12 @@ namespace learnathon_learning_phase.Services
         }
 
 
-        public  async Task<Object> GetPaginatedUsers(int? size, int? page)
+        public async Task<Object> GetPaginatedUsers(int? size, int? page)
         {
             var filter = Builders<UserModel>.Filter.Empty;
-            var find =  _user.Find(filter);
+            var find = _user.Find(filter);
             int perPage = size.GetValueOrDefault();
-            var total_elements = find.CountDocuments();
+            var total_elements = await find.CountDocumentsAsync();
 
             return new PaginatedUserResponseDto()
             {
@@ -68,7 +68,7 @@ namespace learnathon_learning_phase.Services
                 Size = perPage,
                 LastPage = (int)Math.Ceiling((double)total_elements / perPage) - 1,
                 TotalPages = (int)Math.Ceiling((double)total_elements / perPage),
-                Users =  find.Skip(page * perPage)
+                Users = find.Skip(page * perPage)
                             .Limit(perPage)
                             .ToList()
                             .AsEnumerable()
@@ -85,8 +85,8 @@ namespace learnathon_learning_phase.Services
         public async Task<UserModel?> GetAuthUser()
         {
 
-            UserModel? user ;
-           
+            UserModel? user;
+
             if (_httpContextAccessor.HttpContext != null)
             {
                 string? id = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;

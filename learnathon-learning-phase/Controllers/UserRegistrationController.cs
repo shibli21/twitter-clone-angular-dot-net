@@ -28,7 +28,7 @@ namespace learnathon_learning_phase.Controllers
 
 
         [HttpGet("all"), Authorize(Roles = "User")]
-        public async Task< ActionResult<PaginatedUserResponseDto>> GetPaginatedUsers(
+        public async Task<ActionResult<PaginatedUserResponseDto>> GetPaginatedUsers(
             [FromQuery] int size = 5,
             [FromQuery] int page = 0)
         {
@@ -48,7 +48,7 @@ namespace learnathon_learning_phase.Controllers
             return Ok(user.AsDto());
         }
 
-        [HttpPost("edit", Name = "EditUser")]
+        [HttpPatch("edit", Name = "EditUser")]
         public async Task<ActionResult<UserResponseDto>> EditUser(UserEditRequestDto user)
         {
             UserModel userModel = await userService.GetUserById(user.Id);
@@ -88,9 +88,9 @@ namespace learnathon_learning_phase.Controllers
         public async Task<ActionResult<object>> signin(UserLoginDto request)
         {
             UserModel user = await userService.GetUserByEmail(request.Email);
-            
+
             // through error
-            
+
 
 
             if (user == null)
@@ -104,8 +104,6 @@ namespace learnathon_learning_phase.Controllers
         }
 
 
-
-
         [HttpGet("current-user"), Authorize]
         public async Task<ActionResult<UserRegistrationDto>> GetCurrentUser()
         {
@@ -116,10 +114,6 @@ namespace learnathon_learning_phase.Controllers
             }
             return Ok(user.AsDto());
         }
-
-
-
-
 
 
         [HttpDelete("{id}")]

@@ -6,10 +6,10 @@ namespace learnathon_learning_phase.Validators
 {
     public class AgeValidationAttribute : ValidationAttribute
     {
-        protected override ValidationResult IsValid(object value, ValidationContext validationContext)
+        protected override ValidationResult? IsValid(object? value, ValidationContext validationContext)
         {
             var user = validationContext.ObjectInstance as UserRegistrationDto;
-            DateTime dateOfBirth = DateTime.Parse(user.DateOfBirth);
+            DateTime dateOfBirth = DateTime.Parse(user!.DateOfBirth);
             int age = DateTime.Now.Year - dateOfBirth.Year;
             if (dateOfBirth > DateTime.Now.AddYears(-age))
                 age--;
