@@ -13,6 +13,11 @@ namespace learnathon_learning_phase.Services
             _refresh_token = database.GetCollection<RefreshTokenModel>(settings.RefreshTokenCollectionName);
         }
 
+        public async Task<DeleteResult> DeleteToken(string id)
+        {
+            return await _refresh_token.DeleteOneAsync(refreshToken => refreshToken.Id == id);
+        }
+
         public async Task<RefreshTokenModel> GetTokenByToken(string token)
         {
             return await _refresh_token.Find(refreshToken => refreshToken.Token == token).FirstOrDefaultAsync();

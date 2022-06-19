@@ -123,7 +123,30 @@ namespace learnathon_learning_phase.Controllers
         }
 
 
-        [HttpPost]
+        [HttpDelete("logout"), Authorize]
+        public async Task<ActionResult<object>> logout()
+        {
+            UserModel? user = await userService.GetAuthUser();
+            if (user == null)
+                return Unauthorized(new { field = "user", message = "User not found" });
+            
+            var refreshTokenString = Request.Cookies["refreshToken"];
+            if (string.IsNullOrEmpty(refreshTokenString))
+            {
+                return Unauthorized(new { field = "refreshToken", message = "Refresh token not found" });
+            }
+            RefreshTokenModel refreshToken = await refreshTokenService.GetTokenByToken(refreshTokenString);
+            if (refreshToken == null || refreshToken.UserId != user.Id)
+            {
+                return Unauthorized(new { field = "refreshToken", message = "Refresh token not found" });
+            }
+            await refreshTokenService.DeleteToken(refreshToken.Id);
+            return Ok(new { message = "Logout success" });
+        }
+
+
+
+            [HttpPost]
         [Route("refresh-token")]
         public async Task<ActionResult<object>> RefreshToken()
         {

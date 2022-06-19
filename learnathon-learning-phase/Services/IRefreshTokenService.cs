@@ -1,4 +1,5 @@
 ﻿using learnathon_learning_phase.Models;
+using MongoDB.Driver;
 
 namespace learnathon_learning_phase.Services
 {
@@ -8,5 +9,6 @@ namespace learnathon_learning_phase.Services
         Task<RefreshTokenModel> StoreToken(RefreshTokenModel refreshTokenModel);
 
         Task<RefreshTokenModel> UpdateToken(string id ,RefreshTokenModel refreshTokenModel);
+        Task<DeleteResult> DeleteToken(string id);
     }
 }
