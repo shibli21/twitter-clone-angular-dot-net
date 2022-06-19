@@ -1,3 +1,4 @@
+using System.Text;
 using learnathon_learning_phase.Models;
 using learnathon_learning_phase.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -6,21 +7,14 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using MongoDB.Driver;
 using Swashbuckle.AspNetCore.Filters;
-using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
 
 
-builder.Services.Configure<UserDatabaseSetting>(builder.Configuration.GetSection(nameof(UserDatabaseSetting)));
-builder.Services.AddSingleton<IUserDatabaseSetting>(sp => sp.GetRequiredService<IOptions<UserDatabaseSetting>>().Value);
-builder.Services.AddSingleton<IMongoClient>(sp => new MongoClient(builder.Configuration.GetValue<string>("UserDatabaseSetting:ConnectionString")));
+
+builder.Services.AddSingleton<IMongoClient>(sp => new MongoClient(builder.Configuration.GetValue<string>("NoobMastersDatabaseSettings:ConnectionString")));
 builder.Services.AddSingleton<IUserService, UserService>();
-
-builder.Services.Configure<RefreshTokenDatabaseSetting>(builder.Configuration.GetSection(nameof(RefreshTokenDatabaseSetting)));
-builder.Services.AddSingleton<IRefreshTokenDatabaseSetting>(sp => sp.GetRequiredService<IOptions<RefreshTokenDatabaseSetting>>().Value);
-builder.Services.AddSingleton<IMongoClient>(sp => new MongoClient(builder.Configuration.GetValue<string>("RefreshTokenDatabaseSetting:ConnectionString")));
 builder.Services.AddSingleton<IRefreshTokenService, RefreshTokenService>();
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
