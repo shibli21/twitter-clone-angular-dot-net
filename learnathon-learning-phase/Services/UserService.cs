@@ -84,9 +84,9 @@ namespace learnathon_learning_phase.Services
             };
         }
 
-        public Task DeleteUser(string id)
+        public async Task<DeleteResult> DeleteUser(string id)
         {
-            return _user.DeleteOneAsync(user => user.Id == id);
+            return await _user.DeleteOneAsync(user => user.Id == id);
         }
 
         public async Task<UserModel?> GetAuthUser()
