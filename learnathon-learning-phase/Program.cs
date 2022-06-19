@@ -11,7 +11,9 @@ using Swashbuckle.AspNetCore.Filters;
 var builder = WebApplication.CreateBuilder(args);
 
 
-
+builder.Services.Configure<NoobMastersDatabaseSettings>(
+    builder.Configuration.GetSection("NoobMastersDatabaseSettings")
+);
 
 builder.Services.AddSingleton<IMongoClient>(sp => new MongoClient(builder.Configuration.GetValue<string>("NoobMastersDatabaseSettings:ConnectionString")));
 builder.Services.AddSingleton<IUserService, UserService>();
