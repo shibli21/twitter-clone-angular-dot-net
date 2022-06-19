@@ -16,12 +16,14 @@ namespace learnathon_learning_phase.Controllers
     public class UsersController : ControllerBase
     {
         private readonly IUserService userService;
+        private readonly IRefreshTokenService refreshTokenService;
         private readonly IConfiguration _configuration;
 
 
-        public UsersController(IUserService userService, IConfiguration configuration)
+        public UsersController(IUserService userService, IRefreshTokenService refreshTokenService , IConfiguration configuration)
         {
             this.userService = userService;
+            this.refreshTokenService = refreshTokenService;
             this._configuration = configuration;
 
         }
@@ -88,19 +90,64 @@ namespace learnathon_learning_phase.Controllers
         public async Task<ActionResult<object>> signin(UserLoginDto request)
         {
             UserModel user = await userService.GetUserByEmail(request.Email);
-
-            // through error
-
-
-
             if (user == null)
                 return BadRequest(new { field = "email", message = "User not found" });
             if (!this.VerifyPasswordHash(request.Password, user.Password))
                 return BadRequest(new { field = "password", message = "Wrong password" });
 
+            
+            var refreshTokenString = Request.Cookies["refreshToken"];
+            RefreshTokenModel refreshToken = this.CreateRefreshToken(user);
+            RefreshTokenModel newRefreshToken;
+
+            if (string.IsNullOrEmpty(refreshTokenString))
+            {
+                newRefreshToken = await refreshTokenService.StoreToken(refreshToken);
+            }
+            else
+            {
+                RefreshTokenModel oldToken = await refreshTokenService.GetTokenByToken(refreshTokenString);
+                if (oldToken == null || oldToken.Expires < DateTime.Now || oldToken.UserId != user.Id)
+                {
+                    newRefreshToken = await refreshTokenService.StoreToken(refreshToken);
+                }
+                else
+                {
+                    refreshToken.Id = oldToken.Id;
+                    newRefreshToken = await refreshTokenService.UpdateToken(oldToken.Id ,refreshToken);
+                }
+            }
             string token = this.CreateToken(user);
-            return Ok(new { token, expires = DateTime.Now.AddDays(1) });
-            //return Ok();
+            this.SetRefreshToken(newRefreshToken);
+            return Ok(new { token, expires = DateTime.Now.AddMinutes(30) });
+        }
+
+
+        [HttpPost]
+        [Route("refresh-token")]
+        public async Task<ActionResult<object>> RefreshToken()
+        {
+
+            var refreshTokenString = Request.Cookies["refreshToken"];
+            if (string.IsNullOrEmpty(refreshTokenString))
+                return Unauthorized(new { field = "refreshToken", message = "Refresh token is required." });
+            RefreshTokenModel oldToken = await refreshTokenService.GetTokenByToken(refreshTokenString);
+            if (oldToken == null)
+                return Unauthorized(new { field = "refreshToken", message = "Refresh token is invalid." });
+            if (oldToken.Expires < DateTime.Now)
+                return Unauthorized(new { field = "refreshToken", message = "Refresh token is expired." });
+
+            UserModel user = await userService.GetUserById(oldToken.UserId);
+
+            if (user == null)
+                return Unauthorized(new { field = "refreshToken", message = "User not found." });
+            
+            
+            string token = this.CreateToken(user);
+            RefreshTokenModel refreshToken = this.CreateRefreshToken(user);
+            RefreshTokenModel newRefreshToken = await refreshTokenService.UpdateToken(oldToken.Id ,refreshToken);
+            this.SetRefreshToken(newRefreshToken);
+            return Ok(new { token, expires = DateTime.Now.AddMinutes(30) });
         }
 
 
@@ -169,11 +216,38 @@ namespace learnathon_learning_phase.Controllers
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256Signature);
             var token = new JwtSecurityToken(
                 claims: claims,
-                expires: DateTime.Now.AddDays(1),
+                expires: DateTime.Now.AddMinutes(30),
                 signingCredentials: creds
             );
             return new JwtSecurityTokenHandler().WriteToken(token);
 
         }
+
+        private RefreshTokenModel CreateRefreshToken(UserModel user)
+        {
+            var refreshToken = new RefreshTokenModel
+            {
+                Token = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64)),
+                Created = DateTime.Now,
+                Expires = DateTime.Now.AddDays(7),
+                UserId = user.Id
+            };
+            return refreshToken;
+        }
+
+
+        private void SetRefreshToken(RefreshTokenModel refreshToken)
+        {
+            var cookieOptions = new CookieOptions
+            {
+                Expires = refreshToken.Expires,
+                HttpOnly = true
+            };
+            Response.Cookies.Append("refreshToken", refreshToken.Token, cookieOptions);
+        }
+
+
+
+
     }
 }
