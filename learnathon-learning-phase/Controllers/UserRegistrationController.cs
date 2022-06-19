@@ -141,6 +141,7 @@ namespace learnathon_learning_phase.Controllers
                 return Unauthorized(new { field = "refreshToken", message = "Refresh token not found" });
             }
             await refreshTokenService.DeleteToken(refreshToken.Id);
+            Response.Cookies.Delete("refreshToken");
             return Ok(new { message = "Logout success" });
         }
 
