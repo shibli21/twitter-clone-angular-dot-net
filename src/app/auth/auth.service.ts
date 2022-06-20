@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import * as moment from 'moment';
 import { BehaviorSubject, throwError } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
+import { environment } from 'src/environments/environment';
 import { User } from '../users/model/user';
 import { AuthCredential } from './../users/model/authCredential';
 
@@ -28,7 +29,7 @@ export class AuthService {
   user = new BehaviorSubject<User | null>(null);
 
   private tokenExpirationTimer: any;
-  baseUrl = 'http://noobmasters.learnathon.net/api1/api/user/';
+  baseUrl = environment.baseUrl + '/user/';
 
   constructor(private http: HttpClient, private router: Router) {}
 

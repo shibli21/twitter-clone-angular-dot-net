@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
+import { environment } from 'src/environments/environment';
 
 import { Page } from './model/page';
 import { User } from './model/user';
@@ -13,7 +14,7 @@ import { UserPagedData } from './model/user-paged-data';
 })
 export class UsersService {
   constructor(private http: HttpClient) {}
-  baseUrl = 'http://noobmasters.learnathon.net/api1/api/user/';
+  baseUrl = environment.baseUrl + '/user/';
 
   public getPaginatedUsers(page: Page): Observable<UserPagedData<User>> {
     return this.http.get<UserPagedData<User>>(
