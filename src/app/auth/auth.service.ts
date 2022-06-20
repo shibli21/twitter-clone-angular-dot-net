@@ -57,10 +57,16 @@ export class AuthService {
 
   login(email: string, password: string) {
     return this.http
-      .post<LoginResponseData>(this.baseUrl + `login`, {
-        email: email,
-        password: password,
-      })
+      .post<LoginResponseData>(
+        this.baseUrl + `login`,
+        {
+          email: email,
+          password: password,
+        },
+        {
+          withCredentials: true,
+        }
+      )
       .pipe(
         catchError((error) => {
           return throwError(error);
@@ -87,7 +93,9 @@ export class AuthService {
 
     this.authCredential.next(authCredential);
 
-    const expiresIn = moment(expirationDate).diff(new Date(), 'seconds');
+    const expiresIn = moment(expirationDate)
+      .subtract(moment.duration(2, 'minute'))
+      .diff(new Date(), 'seconds');
     this.autoLogout(expiresIn * 1000);
 
     localStorage.setItem('authData', JSON.stringify(authCredential));
@@ -98,6 +106,10 @@ export class AuthService {
   }
 
   logout() {
+    this.http
+      .delete(this.baseUrl + 'logout', { withCredentials: true })
+      .subscribe();
+
     this.authCredential.next(null);
     this.router.navigate(['/login']);
     localStorage.removeItem('authData');
@@ -109,7 +121,7 @@ export class AuthService {
 
   autoLogout(expirationDuration: number) {
     this.tokenExpirationTimer = setTimeout(() => {
-      this.logout();
+      this.getRefreshToken().subscribe();
     }, expirationDuration);
   }
 
@@ -137,5 +149,25 @@ export class AuthService {
         this.user.next(user);
       });
     }
+  }
+
+  getRefreshToken() {
+    return this.http
+      .post<LoginResponseData>(
+        this.baseUrl + 'refresh-token',
+        {},
+        {
+          withCredentials: true,
+        }
+      )
+      .pipe(
+        catchError((error) => {
+          this.logout();
+          return throwError(error);
+        }),
+        tap((resData) => {
+          this.handleAuthentication(resData.token, resData.expires);
+        })
+      );
   }
 }
