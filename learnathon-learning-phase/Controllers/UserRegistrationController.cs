@@ -168,6 +168,7 @@ namespace learnathon_learning_phase.Controllers
 
             string token = this.CreateToken(user);
             RefreshTokenModel refreshToken = this.CreateRefreshToken(user);
+            refreshToken.Id = oldToken.Id;
             RefreshTokenModel newRefreshToken = await refreshTokenService.UpdateToken(oldToken.Id, refreshToken);
             this.SetRefreshToken(newRefreshToken);
             return Ok(new { token, expires = DateTime.Now.AddMinutes(30) });
