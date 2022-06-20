@@ -140,7 +140,13 @@ namespace learnathon_learning_phase.Controllers
                 return Unauthorized(new { field = "refreshToken", message = "Refresh token not found" });
             }
             await refreshTokenService.DeleteToken(refreshToken.Id);
-            Response.Cookies.Delete("refreshToken");
+            Response.Cookies.Delete("refreshToken", new CookieOptions
+            {
+                Expires = DateTime.Now.AddDays(-1),
+                HttpOnly = true,
+                SameSite = SameSiteMode.None,
+                Secure = true
+            });
             return Ok(new { message = "Logout success" });
         }
 
@@ -171,7 +177,12 @@ namespace learnathon_learning_phase.Controllers
             refreshToken.Id = oldToken.Id;
             RefreshTokenModel newRefreshToken = await refreshTokenService.UpdateToken(oldToken.Id, refreshToken);
             this.SetRefreshToken(newRefreshToken);
-            return Ok(new { token, expires = DateTime.Now.AddMinutes(30) });
+
+            return Ok(new
+            {
+                token,
+                expires = DateTime.Now.AddMinutes(30)
+            });
         }
 
 
@@ -265,7 +276,9 @@ namespace learnathon_learning_phase.Controllers
             var cookieOptions = new CookieOptions
             {
                 Expires = refreshToken.Expires,
-                HttpOnly = true
+                HttpOnly = true,
+                SameSite = SameSiteMode.None,
+                Secure = true
             };
             Response.Cookies.Append("refreshToken", refreshToken.Token, cookieOptions);
         }

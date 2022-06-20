@@ -2,7 +2,6 @@ using System.Text;
 using learnathon_learning_phase.Models;
 using learnathon_learning_phase.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using MongoDB.Driver;
@@ -35,7 +34,10 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 builder.Services.AddCors(p => p.AddPolicy("corsapp", builder =>
    {
-       builder.WithOrigins("*").AllowAnyMethod().AllowAnyHeader();
+       builder.AllowAnyMethod()
+              .AllowAnyHeader()
+              .AllowCredentials()
+              .WithOrigins("http://localhost:4200");
    }));
 
 builder.Services.AddControllers();
