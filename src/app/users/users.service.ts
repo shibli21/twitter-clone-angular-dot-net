@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 
 import { Observable, throwError } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { catchError, delay, map, repeat, retry, timeout } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 
 import { Page } from './model/page';
@@ -46,5 +46,23 @@ export class UsersService {
         return throwError(error);
       })
     );
+  }
+
+  public setUserOnline() {
+    return this.http.post(`${this.baseUrl}set-online`, {}).pipe(
+      timeout(1000),
+      catchError((error) => {
+        console.log(error);
+
+        return throwError(error);
+      }),
+      retry(),
+      delay(1000 * 60),
+      repeat()
+    );
+  }
+
+  public getOnlineUsers() {
+    return this.http.get<User[]>(this.baseUrl + 'online');
   }
 }
