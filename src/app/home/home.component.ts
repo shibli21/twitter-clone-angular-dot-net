@@ -16,9 +16,5 @@ export class HomeComponent implements OnInit {
     this.usersService.getOnlineUsers().subscribe((users) => {
       this.onlineUsers = users;
     });
-    console.log(this.onlineUsers);
-    this.usersService.setUserOnline().subscribe((data) => {
-      console.log(data);
-    });
   }
 }
