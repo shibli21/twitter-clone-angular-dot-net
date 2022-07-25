@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using MongoDB.Driver;
+using StackExchange.Redis;
 using Swashbuckle.AspNetCore.Filters;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -17,6 +18,8 @@ builder.Services.Configure<NoobMastersDatabaseSettings>(
 builder.Services.AddSingleton<IMongoClient>(sp => new MongoClient(builder.Configuration.GetValue<string>("NoobMastersDatabaseSettings:ConnectionString")));
 builder.Services.AddSingleton<IUserService, UserService>();
 builder.Services.AddSingleton<IRefreshTokenService, RefreshTokenService>();
+builder.Services.AddSingleton<IConnectionMultiplexer>(x => ConnectionMultiplexer.Connect(builder.Configuration.GetValue<string>("RedisConnection")));
+builder.Services.AddSingleton<ICacheService, RedisCacheService>();
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>

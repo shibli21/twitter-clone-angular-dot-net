@@ -8,6 +8,8 @@ using learnathon_learning_phase.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json;
+
 
 namespace learnathon_learning_phase.Controllers
 {
@@ -17,15 +19,18 @@ namespace learnathon_learning_phase.Controllers
     {
         private readonly IUserService userService;
         private readonly IRefreshTokenService refreshTokenService;
+        private readonly ICacheService cacheService;
         private readonly IConfiguration _configuration;
 
 
-        public UsersController(IUserService userService, IRefreshTokenService refreshTokenService, IConfiguration configuration)
+        public UsersController(IUserService userService, IRefreshTokenService refreshTokenService, IConfiguration configuration, ICacheService cacheService)
         {
             this.userService = userService;
             this.refreshTokenService = refreshTokenService;
             this._configuration = configuration;
+            this.cacheService = cacheService;
         }
+
 
 
         [HttpGet("all"), Authorize(Roles = "User")]
@@ -209,6 +214,35 @@ namespace learnathon_learning_phase.Controllers
             await userService.DeleteUser(id);
             return NoContent();
         }
+
+
+
+
+
+        
+        [HttpGet("online")]
+        public async Task<ActionResult<List<UserResponseDto>>> GetRedisCacheKey()
+        {
+            List<UserResponseDto> value = await cacheService.GetOnlineUsers();
+            return Ok(value);
+        }
+
+        [HttpPost("set-online"), Authorize]
+        public async Task<ActionResult<object>> SetLoggedUserOnline()
+        {
+            UserModel? user = await userService.GetAuthUser();
+            if (user == null)
+            {
+                return Unauthorized(new { field = "user", message = "User not found" });
+            }
+            UserResponseDto userDto = user.AsDto();
+            await cacheService.SetUserOnline(userDto);
+            return Ok(new { message = "User is online" });
+        }
+
+
+
+
 
         private string CreatePasswordHash(string password)
         {
