@@ -1,12 +1,23 @@
-<h1 class="inline-block p-4 text-lg mb-4 text-white bg-orange-500 shadow-4xl">
-  Online Users
-</h1>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-10">
+  <div>
+    <h1
+      class="px-4 py-2 text-lg mb-4 font-bold text-gray-800 border-green-500 border-2 shadow-4xl"
+    >
+      Online Users
+    </h1>
 
-<div class="max-w-[400px]">
-  <h1
-    class="truncate px-4 py-2 shadow-4xl-orange text-lg border-2 border-orange-500 mt-2"
-    *ngFor="let user of onlineUsers"
-  >
-    {{ user.username }}
-  </h1>
+    <div class="">
+      <h1
+        class="truncate cursor-pointer hover:bg-orange-50 px-4 py-2 text-lg border-2 border-orange-500 mt-2"
+        *ngFor="let user of onlineUsers"
+        [routerLink]="['/chat', user.username]"
+      >
+        {{ user.username }}
+      </h1>
+    </div>
+  </div>
+
+  <div class="col-span-1 md:col-span-2">
+    <router-outlet></router-outlet>
+  </div>
 </div>

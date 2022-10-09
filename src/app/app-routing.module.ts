@@ -1,3 +1,4 @@
+import { ChatBoxComponent } from './chat-box/chat-box.component';
 import { HomeComponent } from './home/home.component';
 import { ProfileComponent } from './profile/profile.component';
 import { AuthGuard } from './auth/auth.guard';
@@ -13,6 +14,12 @@ const routes: Routes = [
     path: '',
     component: HomeComponent,
     canActivate: [AuthGuard],
+    children: [
+      {
+        path: 'chat/:username',
+        component: ChatBoxComponent,
+      },
+    ],
   },
   {
     path: 'profile',
