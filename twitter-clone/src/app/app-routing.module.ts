@@ -1,3 +1,4 @@
+import { NotificationsComponent } from './notifications/notifications.component';
 import { HomeComponent } from './home/home.component';
 import { UserLayoutComponent } from './layout/user-layout/user-layout.component';
 import { NgModule } from '@angular/core';
@@ -13,10 +14,16 @@ const routes: Routes = [
         redirectTo: 'home',
         pathMatch: 'full',
       },
-
       {
         path: 'home',
         component: HomeComponent,
+      },
+      {
+        path: 'notifications',
+        loadChildren: () =>
+          import('./notifications/notifications.module').then(
+            (m) => m.NotificationsModule
+          ),
       },
     ],
   },
