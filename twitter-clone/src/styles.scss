@@ -1,3 +1,18 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+* {
+  ::selection {
+    @apply bg-indigo-600 text-white;
+  }
+}
+
+html {
+  padding-left: calc(100vw - 100%);
+}
+
+html,
+body {
+  font-family: "Poppins";
+}
