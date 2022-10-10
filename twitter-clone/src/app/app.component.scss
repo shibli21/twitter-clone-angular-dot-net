@@ -1,6 +1,6 @@
 :host ::ng-deep {
   .p-button {
-    @apply w-full px-4 py-3 font-medium text-[16px];
+    @apply px-4 py-1.5 shadow-none text-sm w-full;
   }
   .p-inputtext {
     @apply w-full;
