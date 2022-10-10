@@ -25,6 +25,11 @@ const routes: Routes = [
             (m) => m.NotificationsModule
           ),
       },
+      {
+        path: 'profile',
+        loadChildren: () =>
+          import('./profile/profile.module').then((m) => m.ProfileModule),
+      },
     ],
   },
   {
