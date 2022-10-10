@@ -1,0 +1,15 @@
+<div class="border-b sticky top-0 bg-white z-50">
+  <p-menubar [model]="items" [baseZIndex]="1000">
+    <ng-template pTemplate="end">
+      <span class="p-input-icon-left">
+        <i class="pi pi-search"></i>
+        <input
+          type="text"
+          pInputText
+          placeholder="Search"
+          class="p-inputtext-sm"
+        />
+      </span>
+    </ng-template>
+  </p-menubar>
+</div>
