@@ -1,0 +1,80 @@
+<div class="border p-4 md:p-8 rounded-md">
+  <h3 class="text-xl font-semibold mb-6 leading-none text-gray-900">
+    Edit your personal settings
+  </h3>
+  <div class="flex flex-col space-y-5">
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div class="space-y-1">
+        <label class="text-gray-600">Username</label>
+        <input
+          type="text"
+          pInputText
+          class="p-inputtext-sm"
+          disabled
+          value="shibli"
+        />
+      </div>
+      <div class="space-y-1">
+        <label class="text-gray-600">Email Address</label>
+        <input
+          type="text"
+          pInputText
+          class="p-inputtext-sm"
+          disabled
+          value="syedshiblimahmud@gmail.com"
+        />
+      </div>
+    </div>
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div class="space-y-1">
+        <label class="text-gray-600">First Name</label>
+        <input type="text" pInputText class="p-inputtext-sm" />
+      </div>
+      <div class="space-y-1">
+        <label class="text-gray-600">Last Name</label>
+        <input type="text" pInputText class="p-inputtext-sm" />
+      </div>
+    </div>
+    <div class="space-y-1">
+      <label class="text-gray-600">Bio</label>
+      <textarea placeholder="Bio" pInputTextarea [rows]="2"></textarea>
+    </div>
+    <div class="space-y-1">
+      <label class="text-gray-600">Address</label>
+      <input type="text" pInputText class="p-inputtext-sm" />
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div class="space-y-1">
+        <label class="text-gray-600">Date of birth</label>
+        <div>
+          <p-calendar
+            class="p-inputtext-sm"
+            placeholder="Date of Birth"
+            [showClear]="true"
+            [(ngModel)]="birthDate"
+          ></p-calendar>
+        </div>
+      </div>
+      <div class="space-y-1">
+        <label class="text-gray-600">Gender</label>
+        <div class="w-full">
+          <p-dropdown
+            [autoDisplayFirst]="false"
+            placeholder="Gender"
+            [options]="genders"
+            optionLabel="name"
+            class="p-inputtext-sm"
+            [showClear]="true"
+          ></p-dropdown>
+        </div>
+      </div>
+    </div>
+
+    <p-button
+      class="text-right"
+      label="Update"
+      styleClass="p-button"
+    ></p-button>
+  </div>
+</div>

@@ -13,6 +13,7 @@ import { CheckboxModule } from 'primeng/checkbox';
 import { CalendarModule } from 'primeng/calendar';
 import { DialogModule } from 'primeng/dialog';
 import { DropdownModule } from 'primeng/dropdown';
+import { InputTextareaModule } from 'primeng/inputtextarea';
 
 @NgModule({
   declarations: [],
@@ -30,6 +31,7 @@ import { DropdownModule } from 'primeng/dropdown';
     AvatarModule,
     TieredMenuModule,
     TabViewModule,
+    InputTextareaModule,
   ],
 })
 export class NgPrimeModule {}

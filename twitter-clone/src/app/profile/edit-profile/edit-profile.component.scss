@@ -1,0 +1,12 @@
+:host ::ng-deep {
+  .p-calendar {
+    @apply w-full;
+  }
+  .p-button {
+    @apply py-2.5 text-base  w-full;
+  }
+
+  .p-dropdown {
+    @apply w-full;
+  }
+}
