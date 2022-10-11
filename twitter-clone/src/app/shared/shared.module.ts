@@ -3,10 +3,11 @@ import { NgPrimeModule } from './ng-prime/ng-prime.module';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TweetCardComponent } from './tweet/tweet-card/tweet-card.component';
+import { NewTweetComponent } from './tweet/new-tweet/new-tweet.component';
 
 @NgModule({
-  declarations: [TweetCardComponent],
+  declarations: [TweetCardComponent, NewTweetComponent],
   imports: [CommonModule, NgPrimeModule, IconsModule],
-  exports: [NgPrimeModule, IconsModule, TweetCardComponent],
+  exports: [NgPrimeModule, IconsModule, TweetCardComponent, NewTweetComponent],
 })
 export class SharedModule {}
