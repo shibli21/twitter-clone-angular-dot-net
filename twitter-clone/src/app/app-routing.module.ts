@@ -29,6 +29,11 @@ const routes: Routes = [
         loadChildren: () =>
           import('./profile/profile.module').then((m) => m.ProfileModule),
       },
+      {
+        path: 'tweet',
+        loadChildren: () =>
+          import('./tweet/tweet.module').then((m) => m.TweetModule),
+      },
     ],
   },
   {
