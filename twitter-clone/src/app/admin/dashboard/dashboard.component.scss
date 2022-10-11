@@ -1,0 +1,8 @@
+:host ::ng-deep {
+  .p-button {
+    @apply w-auto;
+  }
+  .p-button-danger {
+    @apply enabled:focus:shadow-none;
+  }
+}
