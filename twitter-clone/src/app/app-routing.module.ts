@@ -1,5 +1,3 @@
-import { NotificationsComponent } from './notifications/notifications.component';
-import { HomeComponent } from './home/home.component';
 import { UserLayoutComponent } from './layout/user-layout/user-layout.component';
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
@@ -16,7 +14,8 @@ const routes: Routes = [
       },
       {
         path: 'home',
-        component: HomeComponent,
+        loadChildren: () =>
+          import('./home/home.module').then((m) => m.HomeModule),
       },
       {
         path: 'notifications',
