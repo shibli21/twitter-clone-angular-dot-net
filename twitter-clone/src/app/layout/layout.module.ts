@@ -5,6 +5,8 @@ import { FollowersCardComponent } from './followers-card/followers-card.componen
 import { NavComponent } from './nav/nav.component';
 import { ProfileCardComponent } from './profile-card/profile-card.component';
 import { UserLayoutComponent } from './user-layout/user-layout.component';
+import { AdminLayoutComponent } from './admin-layout/admin-layout.component';
+import { AdminNavComponent } from './admin-nav/admin-nav.component';
 
 @NgModule({
   declarations: [
@@ -12,6 +14,8 @@ import { UserLayoutComponent } from './user-layout/user-layout.component';
     NavComponent,
     ProfileCardComponent,
     FollowersCardComponent,
+    AdminLayoutComponent,
+    AdminNavComponent,
   ],
   imports: [CommonModule, SharedModule],
 })

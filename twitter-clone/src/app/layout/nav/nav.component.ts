@@ -14,7 +14,7 @@ export class NavComponent implements OnInit {
     this.items = [
       {
         label: 'Home',
-        icon: 'ti ti-home',
+        icon: 'pi pi-home',
         routerLink: ['/home'],
       },
       {
@@ -44,15 +44,11 @@ export class NavComponent implements OnInit {
           },
         ],
       },
-      // {
-      //   label: 'Search',
-      //   icon: 'pi pi-fw pi-search',
-      //   routerLink: ['/search'],
-      // },
-      // {
-      //   label: 'Logout',
-      //   icon: 'pi pi-fw pi-power-off',
-      // },
+      {
+        label: 'Admin',
+        icon: 'pi pi-key',
+        routerLink: ['/admin'],
+      },
     ];
   }
 }

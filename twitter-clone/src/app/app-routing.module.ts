@@ -1,3 +1,4 @@
+import { AdminLayoutComponent } from './layout/admin-layout/admin-layout.component';
 import { UserLayoutComponent } from './layout/user-layout/user-layout.component';
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
@@ -33,6 +34,22 @@ const routes: Routes = [
         path: 'tweet',
         loadChildren: () =>
           import('./tweet/tweet.module').then((m) => m.TweetModule),
+      },
+    ],
+  },
+  {
+    path: 'admin',
+    component: AdminLayoutComponent,
+    children: [
+      {
+        path: '',
+        redirectTo: 'dashboard',
+        pathMatch: 'full',
+      },
+      {
+        path: '',
+        loadChildren: () =>
+          import('./admin/admin.module').then((m) => m.AdminModule),
       },
     ],
   },

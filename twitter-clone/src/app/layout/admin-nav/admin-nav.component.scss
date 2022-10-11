@@ -1,0 +1,11 @@
+:host::ng-deep {
+  .p-menubar {
+    @apply container mx-auto bg-white border-none p-3;
+  }
+  .p-menubar-button {
+    @apply ml-[5px] focus:shadow-none hover:bg-transparent hover:text-gray-900;
+  }
+  .pi-bars {
+    font-size: 1.5rem;
+  }
+}

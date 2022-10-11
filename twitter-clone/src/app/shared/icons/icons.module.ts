@@ -7,10 +7,12 @@ import {
   IconBrandGithub,
   IconHome,
   IconMapPin,
+  IconLayoutDashboard,
 } from 'angular-tabler-icons/icons';
 
 const icons = {
   IconCamera,
+  IconLayoutDashboard,
   IconHeart,
   IconHome,
   IconBrandGithub,
