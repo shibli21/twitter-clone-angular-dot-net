@@ -1,4 +1,4 @@
-namespace learnathon_learning_phase.Models
+namespace learnathon_learning_phase.Dtos
 {
     public class PaginatedUserResponseDto
     {

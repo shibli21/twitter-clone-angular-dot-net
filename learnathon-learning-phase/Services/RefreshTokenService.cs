@@ -1,4 +1,5 @@
 ﻿using learnathon_learning_phase.Models;
+using learnathon_learning_phase.Dtos;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 
@@ -15,13 +16,9 @@ namespace learnathon_learning_phase.Services
              )
         {
 
-            var mongoDatabase = mongoClient.GetDatabase(
-               noobCloneDatabaseSettings.Value.DatabaseName
-           );
+            var mongoDatabase = mongoClient.GetDatabase(noobCloneDatabaseSettings.Value.DatabaseName);
 
-            _refreshTokenCollection = mongoDatabase.GetCollection<RefreshTokenModel>(
-                noobCloneDatabaseSettings.Value.RefreshTokenCollectionName
-            );
+            _refreshTokenCollection = mongoDatabase.GetCollection<RefreshTokenModel>(noobCloneDatabaseSettings.Value.RefreshTokenCollectionName);
         }
 
         public async Task<DeleteResult> DeleteToken(string id)

@@ -1,5 +1,6 @@
 ﻿using System.Security.Claims;
 using learnathon_learning_phase.Extentions;
+using learnathon_learning_phase.Dtos;
 using learnathon_learning_phase.Models;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
@@ -15,12 +16,8 @@ namespace learnathon_learning_phase.Services
                            IMongoClient mongoClient,
                            IHttpContextAccessor httpContextAccessor)
         {
-            var mongoDatabase = mongoClient.GetDatabase(
-              noobCloneDatabaseSettings.Value.DatabaseName
-          );
-            _user = mongoDatabase.GetCollection<UserModel>(
-                noobCloneDatabaseSettings.Value.UserCollectionName
-            );
+            var mongoDatabase = mongoClient.GetDatabase(noobCloneDatabaseSettings.Value.DatabaseName);
+            _user = mongoDatabase.GetCollection<UserModel>(noobCloneDatabaseSettings.Value.UserCollectionName);
             _httpContextAccessor = httpContextAccessor;
         }
         public async Task<List<UserModel>> GetUsers(int limit, int page)

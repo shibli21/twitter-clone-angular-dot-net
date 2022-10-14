@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using learnathon_learning_phase.Validators;
 
-namespace learnathon_learning_phase.Models
+namespace learnathon_learning_phase.Dtos
 {
     public class UserEditRequestDto
     {

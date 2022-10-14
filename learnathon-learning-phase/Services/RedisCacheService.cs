@@ -1,4 +1,4 @@
-﻿using learnathon_learning_phase.Models;
+﻿using learnathon_learning_phase.Dtos;
 using StackExchange.Redis;
 using Newtonsoft.Json;
 

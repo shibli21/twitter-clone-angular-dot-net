@@ -24,5 +24,23 @@ namespace learnathon_learning_phase.Models
         [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         public string DateOfBirth { get; set; } = String.Empty;
+
+
+        [BsonElement("role")]
+        public string Role { get; set; } = "user";
+
+        [BsonElement("created_at")]
+        public DateTime CreatedAt { get; set; } = DateTime.Now;
+
+        [BsonElement("updated_at")]
+        public DateTime? UpdatedAt { get; set; } = null;
+
+        [BsonElement("blocked_at")]
+        public DateTime? BlockedAt { get; set; } = null;
+
+        [BsonElement("deleted_at")]
+        public DateTime? DeletedAt { get; set; } = null;
+
+
     }
 }

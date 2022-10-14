@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace learnathon_learning_phase.Models
+namespace learnathon_learning_phase.Dtos
 {
     public class UserLoginDto
     {
@@ -10,6 +10,7 @@ namespace learnathon_learning_phase.Models
         public string Email { get; set; } = string.Empty;
 
         [Required]
+        [StringLength(100, MinimumLength = 8)]
         public string Password { get; set; } = string.Empty;
 
 

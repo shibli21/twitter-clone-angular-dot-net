@@ -2,7 +2,7 @@
 
 using MongoDB.Bson.Serialization.Attributes;
 
-namespace learnathon_learning_phase.Models
+namespace learnathon_learning_phase.Dtos
 {
     public class UserResponseDto
     {

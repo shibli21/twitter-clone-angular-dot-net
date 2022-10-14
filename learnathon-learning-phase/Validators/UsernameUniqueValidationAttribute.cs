@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using learnathon_learning_phase.Models;
 using learnathon_learning_phase.Services;
+using learnathon_learning_phase.Dtos;
 
 namespace learnathon_learning_phase.Validators
 {
