@@ -42,5 +42,10 @@ namespace learnathon_learning_phase.Services
             await _refreshTokenCollection.ReplaceOneAsync(u => u.Id == id, refreshTokenModel);
             return refreshTokenModel;
         }
+
+        public async Task<DeleteResult> DeleteTokenByUserId(string userId)
+        {
+            return await _refreshTokenCollection.DeleteManyAsync(refreshToken => refreshToken.UserId == userId);
+        }
     }
 }

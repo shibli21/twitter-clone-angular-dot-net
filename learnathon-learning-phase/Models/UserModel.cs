@@ -27,7 +27,7 @@ namespace learnathon_learning_phase.Models
 
 
         [BsonElement("role")]
-        public string Role { get; set; } = "user";
+        public string Role { get; set; } = "User";
 
         [BsonElement("created_at")]
         public DateTime CreatedAt { get; set; } = DateTime.Now;

@@ -44,7 +44,7 @@ namespace learnathon_learning_phase.Controllers
         }
 
 
-        [HttpGet("{id}")]
+        [HttpGet("{id}"), Authorize]
         public async Task<ActionResult<UserResponseDto>> GetUserById(string id)
         {
             UserModel user = await userService.GetUserById(id);
@@ -55,7 +55,7 @@ namespace learnathon_learning_phase.Controllers
             return Ok(user.AsDto());
         }
 
-        [HttpPatch("edit", Name = "EditUser")]
+        [HttpPatch("edit", Name = "EditUser"), Authorize]
         public async Task<ActionResult<UserResponseDto>> EditUser(UserEditRequestDto user)
         {
             UserModel userModel = await userService.GetUserById(user.Id);
@@ -96,9 +96,13 @@ namespace learnathon_learning_phase.Controllers
         {
             UserModel user = await userService.GetUserByEmail(request.Email);
             if (user == null)
-                return BadRequest(new { field = "email", message = "User not found" });
+                return BadRequest(new { field = "email", message = "User not found." });
+            // if user is blocked return 403
+            if (user.BlockedAt != null)
+                return BadRequest(new { message = "User is blocked." });
+
             if (!this.VerifyPasswordHash(request.Password, user.Password))
-                return BadRequest(new { field = "password", message = "Wrong password" });
+                return BadRequest(new { field = "password", message = "Wrong password." });
 
 
             var refreshTokenString = Request.Cookies["refreshToken"];
@@ -204,7 +208,7 @@ namespace learnathon_learning_phase.Controllers
         }
 
 
-        [HttpDelete("{id}")]
+        [HttpDelete("{id}"), Authorize]
         public async Task<ActionResult> DeleteUser(string id)
         {
             UserModel user = await userService.GetUserById(id);
@@ -218,10 +222,22 @@ namespace learnathon_learning_phase.Controllers
 
 
 
+        [HttpDelete("block-by-admin/{id}"), Authorize(Roles = "Admin")]
+        public async Task<ActionResult<object>> BlockByAdmin(string id)
+        {
+            UserModel user = await userService.GetUserById(id);
+            if (user == null)
+                return NotFound(new { message = "User not found" });
+            user.BlockedAt = DateTime.Now;
+            await userService.UpdateUser(user);
+            await refreshTokenService.DeleteTokenByUserId(user.Id);
+            return Ok(new { message = "User blocked" });
+        }
+
 
 
         
-        [HttpGet("online")]
+        [HttpGet("online"), Authorize]
         public async Task<ActionResult<List<UserResponseDto>>> GetRedisCacheKey()
         {
             List<UserResponseDto> value = await cacheService.GetOnlineUsers();
@@ -280,7 +296,7 @@ namespace learnathon_learning_phase.Controllers
             var claims = new[]
             {
                 new Claim(ClaimTypes.NameIdentifier, user.Id),
-                new Claim(ClaimTypes.Role, "User")
+                new Claim(ClaimTypes.Role, user.Role)
             };
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration.GetSection("AppSettings:Token").Value));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256Signature);

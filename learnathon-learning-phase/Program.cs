@@ -19,6 +19,7 @@ builder.Services.Configure<NoobMastersDatabaseSettings>(
 builder.Services.AddSingleton<IMongoClient>(sp => new MongoClient(builder.Configuration.GetValue<string>("NoobMastersDatabaseSettings:ConnectionString")));
 builder.Services.AddSingleton<IUserService, UserService>();
 builder.Services.AddSingleton<IRefreshTokenService, RefreshTokenService>();
+builder.Services.AddSingleton<IFollowerService, FollowService>();
 builder.Services.AddSingleton<IConnectionMultiplexer>(x => ConnectionMultiplexer.Connect(builder.Configuration.GetValue<string>("RedisConnection")));
 builder.Services.AddSingleton<ICacheService, RedisCacheService>();
 
