@@ -1,6 +1,15 @@
+using MongoDB.Driver;
+
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+builder.Services.Configure<TwitterCloneDatabaseSettings>(
+    builder.Configuration.GetSection("TwitterCloneDatabaseSettings")
+);
+
+builder.Services.AddSingleton<IMongoClient>(sp => new MongoClient(builder.Configuration.GetValue<string>("TwitterCloneDatabaseSettings:ConnectionString")));
+builder.Services.AddSingleton<IUsersService, UsersService>();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
