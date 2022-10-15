@@ -1,22 +1,29 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Core.Interfaces;
+using Core.Models;
+using Microsoft.AspNetCore.Mvc;
 
-namespace UserService.Controllers
+namespace UserService.Controllers;
+
+[ApiController]
+[Route("[controller]")]
+public class UsersController : ControllerBase
 {
-    [ApiController]
-    [Route("[controller]")]
-    public class UsersController : ControllerBase
+    private readonly IUsersService _usersService;
+
+    public UsersController(IUsersService usersService)
     {
-        private readonly IUsersService _usersService;
+        _usersService = usersService;
+    }
 
-        public UsersController(IUsersService usersService)
+    [HttpGet("{id}")]
+    public async Task<ActionResult<UserResponseDto?>> GetUserById(string id)
+    {
+        User? user = await _usersService.GetUserAsync(id);
+        if (user == null)
         {
-            _usersService = usersService;
+            return NotFound();
         }
 
-        [HttpGet]
-        public async Task<IEnumerable<User>> GetUsersAsync()
-        {
-            return await _usersService.GetUsersAsync();
-        }
+        return Ok(user.AsDto());
     }
 }

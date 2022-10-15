@@ -1,24 +1,36 @@
+using System.Reflection;
+using Core.Interfaces;
+using FluentValidation;
+using FluentValidation.AspNetCore;
+using Infrastructure.Config;
 using MongoDB.Driver;
-
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-builder.Services.Configure<TwitterCloneDatabaseSettings>(
+builder.Host.UseSerilog((ctx, lc) => lc.WriteTo.Console());
+
+builder.Services.Configure<TwitterCloneDbConfig>(
     builder.Configuration.GetSection("TwitterCloneDatabaseSettings")
 );
 
-builder.Services.AddSingleton<IMongoClient>(sp => new MongoClient(builder.Configuration.GetValue<string>("TwitterCloneDatabaseSettings:ConnectionString")));
+builder.Services.AddSingleton<IMongoClient>(sp =>
+    new MongoClient(builder.Configuration.GetValue<string>("TwitterCloneDatabaseSettings:ConnectionString")));
+
 builder.Services.AddSingleton<IUsersService, UsersService>();
 
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+
+builder.Services.AddFluentValidationAutoValidation().AddFluentValidationClientsideAdapters();
+
+builder.Services.AddValidatorsFromAssemblies(new[] { Assembly.GetExecutingAssembly() });
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
