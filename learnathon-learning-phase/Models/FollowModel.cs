@@ -13,11 +13,11 @@ namespace learnathon_learning_phase.Models
         [BsonElement("userId")]
         public string UserId { get; set; } = string.Empty;
         
-        [BsonElement("following")]
-        public string[] Following { get; set; } = new string[0];
+        [BsonElement("following_id")]
+        public string FollowingId { get; set; } = string.Empty;
 
-        [BsonElement("followed_by")]
-        public string[] FollowedBy { get; set; } = new string[0];
+        [BsonElement("created_at")]
+        public DateTime CreatedAt { get; set; } = DateTime.Now;
 
     }
 }
