@@ -1,4 +1,4 @@
-using learnathon_learning_phase.Models;
+using learnathon_learning_phase.Dtos;
 using MongoDB.Driver;
 
 namespace learnathon_learning_phase.Services
@@ -7,7 +7,7 @@ namespace learnathon_learning_phase.Services
     {
         Task FollowByUserId(string followingId);
         Task UnFollowByUserId(string followingId);
-        Task<List<FollowModel>> GetFollowers();
-        Task<List<FollowModel>> GetFollowing();
+        Task<List<UserResponseDto>> GetFollowers(int limit, int page);
+        Task<List<UserResponseDto>> GetFollowing( int limit, int page);
     }
 }

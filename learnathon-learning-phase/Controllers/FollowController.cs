@@ -1,4 +1,5 @@
 
+using learnathon_learning_phase.Dtos;
 using learnathon_learning_phase.Models;
 using learnathon_learning_phase.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -32,15 +33,18 @@ namespace learnathon_learning_phase.Controllers
         }
         
         [HttpGet("followers"), Authorize(Roles = "User")]
-        public async Task<List<FollowModel>> GetFollowersByUserId()
+        public async Task<ActionResult<List<UserResponseDto>>> GetFollowersByUserId( [FromQuery] int size = 5,[FromQuery] int page = 0)
         {
-            return await _followerService.GetFollowers();
+            List<UserResponseDto> followers =  await _followerService.GetFollowers(size, page);
+            return Ok(followers);
+
         }
         
         [HttpGet("following"), Authorize(Roles = "User")]
-        public async Task<List<FollowModel>> GetFollowingByUserId()
+        public async Task<ActionResult<List<UserResponseDto>>> GetFollowingByUserId([FromQuery] int size = 5, [FromQuery] int page = 0)
         {
-            return await _followerService.GetFollowing();
+            List<UserResponseDto> following = await _followerService.GetFollowing(size, page);
+            return Ok(following);
         }
     }
 }
