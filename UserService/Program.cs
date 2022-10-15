@@ -28,7 +28,8 @@ builder.Services.AddControllers();
 
 builder.Services.AddFluentValidationAutoValidation().AddFluentValidationClientsideAdapters();
 
-builder.Services.AddValidatorsFromAssemblies(new[] { Assembly.GetExecutingAssembly() });
+builder.Services.AddValidatorsFromAssemblies(Assembly.GetExecutingAssembly()
+    .GetReferencedAssemblies().Select(Assembly.Load).ToArray());
 
 builder.Services.AddSingleton<JwtTokenHandler>();
 builder.Services.AddCustomJwtAuthentication();
