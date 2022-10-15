@@ -15,7 +15,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Core", "Core\Core.csproj", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Infrastructure", "Infrastructure\Infrastructure.csproj", "{9E404AF9-5E94-4B77-B8A0-174CECB1DB57}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JWTAuthenticationManager", "JWTAuthenticationManager\JWTAuthenticationManager.csproj", "{05DFB571-8ECD-47CB-A636-040233F1EBD1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JWTAuthenticationManager", "JWTAuthenticationManager\JWTAuthenticationManager.csproj", "{05DFB571-8ECD-47CB-A636-040233F1EBD1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TweetService", "TweetService\TweetService.csproj", "{E217B3F5-4703-4A1A-A7FB-B9232AB58900}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -43,6 +45,10 @@ Global
 		{05DFB571-8ECD-47CB-A636-040233F1EBD1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{05DFB571-8ECD-47CB-A636-040233F1EBD1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{05DFB571-8ECD-47CB-A636-040233F1EBD1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E217B3F5-4703-4A1A-A7FB-B9232AB58900}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E217B3F5-4703-4A1A-A7FB-B9232AB58900}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E217B3F5-4703-4A1A-A7FB-B9232AB58900}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E217B3F5-4703-4A1A-A7FB-B9232AB58900}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -50,6 +56,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{F1263D21-D164-4BB7-A1A2-D0C20DE1E6A2} = {B27556CA-34FA-438D-86E4-B75673E83015}
 		{6E371E8D-6681-478D-9EC9-461D6BF75B9B} = {60E9D797-75EE-442A-8C12-84E47842D2A4}
+		{E217B3F5-4703-4A1A-A7FB-B9232AB58900} = {B27556CA-34FA-438D-86E4-B75673E83015}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {9D7B4051-6123-4936-B4B1-90FFC90AD120}
