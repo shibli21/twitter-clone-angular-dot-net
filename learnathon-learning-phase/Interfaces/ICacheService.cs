@@ -2,7 +2,7 @@
 using learnathon_learning_phase.Dtos;
 
 
-namespace learnathon_learning_phase.Services
+namespace learnathon_learning_phase.Interfaces
 {
     public interface ICacheService
     {

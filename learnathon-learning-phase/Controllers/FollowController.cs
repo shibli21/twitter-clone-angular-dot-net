@@ -1,7 +1,6 @@
 
 using learnathon_learning_phase.Dtos;
-using learnathon_learning_phase.Models;
-using learnathon_learning_phase.Services;
+using learnathon_learning_phase.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

@@ -4,6 +4,7 @@ using learnathon_learning_phase.Dtos;
 using learnathon_learning_phase.Models;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
+using learnathon_learning_phase.Interfaces;
 
 namespace learnathon_learning_phase.Services
 {

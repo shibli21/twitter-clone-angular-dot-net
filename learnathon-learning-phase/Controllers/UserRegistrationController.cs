@@ -4,12 +4,11 @@ using System.Security.Cryptography;
 using System.Text;
 using learnathon_learning_phase.Extentions;
 using learnathon_learning_phase.Models;
+using learnathon_learning_phase.Interfaces;
 using learnathon_learning_phase.Dtos;
-using learnathon_learning_phase.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
-using Newtonsoft.Json;
 
 
 namespace learnathon_learning_phase.Controllers

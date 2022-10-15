@@ -1,7 +1,7 @@
 ﻿using learnathon_learning_phase.Models;
 using MongoDB.Driver;
 
-namespace learnathon_learning_phase.Services
+namespace learnathon_learning_phase.Interfaces
 {
     public interface IUserService
     {
