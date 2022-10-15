@@ -8,4 +8,5 @@ public interface IUsersService
     Task<User?> GetUserByNameAsync(string name);
     Task<User?> GetUserByEmailAsync(string email);
     Task<User> CreateUserAsync(User user);
+    Task<User?> GetAuthUser();
 }

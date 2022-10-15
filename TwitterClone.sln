@@ -13,7 +13,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ApiGateway", "ApiGateway\Ap
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Core", "Core\Core.csproj", "{99E54609-7696-43AB-8F2A-750F981272B9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Infrastructure", "Infrastructure\Infrastructure.csproj", "{9E404AF9-5E94-4B77-B8A0-174CECB1DB57}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Infrastructure", "Infrastructure\Infrastructure.csproj", "{9E404AF9-5E94-4B77-B8A0-174CECB1DB57}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JWTAuthenticationManager", "JWTAuthenticationManager\JWTAuthenticationManager.csproj", "{05DFB571-8ECD-47CB-A636-040233F1EBD1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -37,6 +39,10 @@ Global
 		{9E404AF9-5E94-4B77-B8A0-174CECB1DB57}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9E404AF9-5E94-4B77-B8A0-174CECB1DB57}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9E404AF9-5E94-4B77-B8A0-174CECB1DB57}.Release|Any CPU.Build.0 = Release|Any CPU
+		{05DFB571-8ECD-47CB-A636-040233F1EBD1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{05DFB571-8ECD-47CB-A636-040233F1EBD1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{05DFB571-8ECD-47CB-A636-040233F1EBD1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{05DFB571-8ECD-47CB-A636-040233F1EBD1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
