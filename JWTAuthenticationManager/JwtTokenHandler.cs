@@ -19,7 +19,7 @@ namespace JWTAuthenticationManager
             var claimsIdentity = new ClaimsIdentity(
                 new List<Claim>
                 {
-                    new Claim(ClaimTypes.NameIdentifier,user.UserName),
+                    new Claim(ClaimTypes.NameIdentifier,user.Id),
                     new Claim(ClaimTypes.Role, user.Role)
                 }
             );
