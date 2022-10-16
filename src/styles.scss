@@ -1,3 +1,5 @@
+@import "~ngx-toastr/toastr";
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -15,4 +17,19 @@ html {
 html,
 body {
   font-family: "Poppins";
+}
+
+// toast global style
+
+.toast-container {
+  .ngx-toastr {
+    @apply shadow-lg;
+
+    &:hover {
+      @apply shadow-xl;
+    }
+  }
+  .toast-success {
+    @apply bg-green-500;
+  }
 }

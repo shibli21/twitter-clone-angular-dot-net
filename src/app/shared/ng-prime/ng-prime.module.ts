@@ -15,8 +15,6 @@ import { CalendarModule } from 'primeng/calendar';
 import { DialogModule } from 'primeng/dialog';
 import { DropdownModule } from 'primeng/dropdown';
 import { InputTextareaModule } from 'primeng/inputtextarea';
-
-import { ToastModule } from 'primeng/toast';
 import { ProgressBarModule } from 'primeng/progressbar';
 
 @NgModule({
@@ -37,7 +35,6 @@ import { ProgressBarModule } from 'primeng/progressbar';
     TabViewModule,
     InputTextareaModule,
     TableModule,
-    ToastModule,
     ProgressBarModule,
   ],
 })

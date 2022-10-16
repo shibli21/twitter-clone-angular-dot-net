@@ -23,7 +23,6 @@
         <p class="font-medium">© 2022 Geeeky Solution</p>
       </div>
 
-      <!-- Login -->
       <div
         class="flex flex-1 flex-col items-center justify-center px-4 relative"
       >
@@ -48,81 +47,220 @@
             <h2 class="text-3xl md:text-4xl font-bold">Register account</h2>
             <p class="text-md md:text-xl">Enter your details below</p>
           </div>
-          <div class="flex flex-col space-y-5">
-            <input
-              type="text"
-              pInputText
-              class="p-inputtext-sm"
-              placeholder="Username"
-            />
+          <form
+            [formGroup]="registerUserForm"
+            (ngSubmit)="onSubmit()"
+            class="flex flex-col space-y-5"
+          >
+            <div>
+              <input
+                type="text"
+                pInputText
+                class="p-inputtext-sm"
+                placeholder="Username"
+                formControlName="username"
+              />
+              <div *ngIf="isInvalidTouchedDirty('username')">
+                <div
+                  *ngIf="registerUserFormControl['username'].errors?.['required']"
+                  class="input-error"
+                >
+                  Username is required.
+                </div>
+                <div
+                  *ngIf="registerUserFormControl['username'].errors?.['username']"
+                  class="input-error"
+                >
+                  {{registerUserFormControl['username'].errors?.['username']}}
+                </div>
+                <div
+                  *ngIf="registerUserFormControl['username'].errors?.['minlength']"
+                  class="input-error"
+                >
+                  Must be at least 4 characters long.
+                </div>
+              </div>
+            </div>
 
             <div class="flex md:flex-row flex-col gap-4">
-              <input
-                type="text"
-                pInputText
-                class="p-inputtext-sm"
-                placeholder="First Name"
-              />
-              <input
-                type="text"
-                pInputText
-                class="p-inputtext-sm"
-                placeholder="Last Name"
-              />
+              <div class="w-full md:w-[50%]">
+                <input
+                  type="text"
+                  pInputText
+                  class="p-inputtext-sm"
+                  placeholder="First Name"
+                  formControlName="firstName"
+                />
+                <div *ngIf="isInvalidTouchedDirty('firstName')">
+                  <div
+                    *ngIf="registerUserFormControl['firstName'].errors?.['required']"
+                    class="input-error"
+                  >
+                    First Name is required.
+                  </div>
+                  <div
+                    *ngIf="registerUserFormControl['firstName'].errors?.['serverErrorFirstName']"
+                    class="input-error"
+                  >
+                    {{registerUserFormControl['firstName'].errors?.['serverErrorFirstName']}}
+                  </div>
+                </div>
+              </div>
+              <div class="w-full md:w-[50%]">
+                <input
+                  type="text"
+                  pInputText
+                  class="p-inputtext-sm"
+                  placeholder="Last Name"
+                  formControlName="lastName"
+                />
+                <div *ngIf="isInvalidTouchedDirty('lastName')">
+                  <div
+                    *ngIf="registerUserFormControl['lastName'].errors?.['required']"
+                    class="input-error"
+                  >
+                    Last name is required.
+                  </div>
+                </div>
+              </div>
             </div>
-            <input
-              type="text"
-              pInputText
-              class="p-inputtext-sm"
-              placeholder="Email Address"
-            />
+
+            <div>
+              <input
+                type="email"
+                pInputText
+                class="p-inputtext-sm"
+                placeholder="Email Address"
+                formControlName="email"
+              />
+              <div *ngIf="isInvalidTouchedDirty('email')">
+                <div
+                  *ngIf="registerUserFormControl['email'].errors?.['required']"
+                  class="input-error"
+                >
+                  Email is required.
+                </div>
+                <div
+                  *ngIf="registerUserFormControl['email'].errors?.['email']"
+                  class="input-error"
+                >
+                  Email is not valid.
+                </div>
+                <div
+                  *ngIf="registerUserFormControl['email'].errors?.['serverErrorEmail']"
+                  class="input-error"
+                >
+                  {{registerUserFormControl['email'].errors?.['serverErrorEmail']}}
+                </div>
+              </div>
+            </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 flex-col gap-4">
-              <p-calendar
-                class="p-inputtext-sm"
-                placeholder="Date of Birth"
-                [showClear]="true"
-                [(ngModel)]="birthDate"
-              ></p-calendar>
-              <p-dropdown
-                placeholder="Gender"
-                [autoDisplayFirst]="false"
-                [options]="genders"
-                optionLabel="name"
-                class="p-inputtext-sm"
-                [showClear]="true"
-              ></p-dropdown>
+              <div>
+                <p-calendar
+                  class="p-inputtext-sm"
+                  placeholder="Date of Birth"
+                  formControlName="dateOfBirth"
+                ></p-calendar>
+                <div *ngIf="isInvalidTouchedDirty('dateOfBirth')">
+                  <div
+                    *ngIf="registerUserFormControl['dateOfBirth'].errors?.['required']"
+                    class="input-error"
+                  >
+                    Birthday is required.
+                  </div>
+                </div>
+              </div>
+              <div>
+                <p-dropdown
+                  placeholder="Gender"
+                  [autoDisplayFirst]="false"
+                  [options]="genders"
+                  formControlName="gender"
+                  optionLabel="name"
+                  optionValue="value"
+                  class="p-inputtext-sm"
+                ></p-dropdown>
+                <div *ngIf="isInvalidTouchedDirty('gender')">
+                  <div
+                    *ngIf="registerUserFormControl['gender'].errors?.['required']"
+                    class="input-error"
+                  >
+                    Gender is required.
+                  </div>
+                </div>
+              </div>
             </div>
-            <p-password
-              [toggleMask]="true"
-              [(ngModel)]="value"
-              placeholder="Password"
-              class="p-inputtext-sm"
-            >
-              <ng-template pTemplate="header">
-                <h6>Pick a password</h6>
-              </ng-template>
-              <ng-template pTemplate="footer">
-                <p-divider></p-divider>
-                <p class="mt-2 font-semibold">Suggestions</p>
-                <ul class="pl-2 ml-2 mt-0 list-disc">
-                  <li>At least one lowercase</li>
-                  <li>At least one uppercase</li>
-                  <li>At least one numeric</li>
-                  <li>Minimum 8 characters</li>
-                </ul>
-              </ng-template>
-            </p-password>
+            <div>
+              <p-password
+                placeholder="Password"
+                class="p-inputtext-sm"
+                formControlName="password"
+                (onBlur)="onBlur($event, 'password')"
+              >
+                <ng-template pTemplate="header">
+                  <h6>Pick a password</h6>
+                </ng-template>
+                <ng-template pTemplate="footer">
+                  <p-divider></p-divider>
+                  <p class="mt-2 font-semibold">Suggestions</p>
+                  <ul class="pl-2 ml-2 mt-0 list-disc">
+                    <li>At least one lowercase</li>
+                    <li>At least one uppercase</li>
+                    <li>At least one numeric</li>
+                    <li>Minimum 8 characters</li>
+                  </ul>
+                </ng-template>
+              </p-password>
+              <div *ngIf="isInvalidTouchedDirty('password')">
+                <div
+                  *ngIf="registerUserFormControl['password'].errors?.['required']"
+                  class="input-error"
+                >
+                  Password is required.
+                </div>
+                <div
+                  *ngIf="registerUserFormControl['password'].errors?.['pattern']"
+                  class="input-error"
+                >
+                  Password must be strong
+                </div>
+              </div>
+            </div>
 
-            <p-password
-              [toggleMask]="true"
-              [(ngModel)]="value"
-              placeholder="Confirm Password"
-              class="p-inputtext-sm"
-              [feedback]="false"
-            ></p-password>
+            <div>
+              <p-password
+                (onBlur)="onBlur($event, 'confirmPassword')"
+                placeholder="Confirm Password"
+                class="p-inputtext-sm"
+                [feedback]="false"
+                formControlName="confirmPassword"
+                [toggleMask]="true"
+              ></p-password>
+              <div *ngIf="isInvalidTouchedDirty('confirmPassword')">
+                <div
+                  *ngIf="registerUserFormControl['confirmPassword'].errors?.['required']"
+                  class="input-error"
+                >
+                  Confirm password is required.
+                </div>
+                <div
+                  *ngIf="registerUserFormControl['confirmPassword'].touched && registerUserFormControl['confirmPassword'].errors?.['matching']"
+                  class="input-error"
+                >
+                  Passwords doesn't match
+                </div>
+              </div>
+            </div>
 
-            <p-button label="Sign Up" styleClass="p-button"></p-button>
+            <button
+              type="submit"
+              label="Sign Up"
+              styleClass="p-button"
+              pButton
+              [loading]="isLoading"
+            ></button>
+
             <div class="flex flex-row justify-between items-center">
               <div class="flex items-center space-x-2">
                 <p>Already have an account?</p>
@@ -134,7 +272,7 @@
                 Sign in now
               </a>
             </div>
-          </div>
+          </form>
         </div>
       </div>
     </div>
