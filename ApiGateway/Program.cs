@@ -8,13 +8,24 @@ builder.Configuration
         .AddJsonFile("ocelot.json", optional: false, reloadOnChange: true)
         .AddEnvironmentVariables();
 
+builder.Services.AddCors(p => p.AddPolicy("TwitterCloneCorsPolicy", builder =>
+   {
+       builder.AllowAnyMethod()
+              .AllowAnyHeader()
+              .AllowCredentials()
+              .WithOrigins("http://localhost:4200");
+   }));
+
+
 builder.Services.AddOcelot(builder.Configuration);
 
 var app = builder.Build();
 
+app.UseCors("TwitterCloneCorsPolicy");
 
 app.MapGet("/", () => "Hello World!");
 
 await app.UseOcelot();
+
 
 app.Run();
