@@ -15,7 +15,7 @@ namespace learnathon_learning_phase.Services
         private readonly IMongoCollection<Tweets> _tweetCollection;
         private readonly IMongoCollection<HashTags> _hashTagCollection;
         private readonly IHttpContextAccessor _httpContextAccessor;
-        public TweetService(IOptions<TwitterCloneDbConfig> twitterCloneDbConfig, IMongoClient mongoClient,  IHttpContextAccessor httpContextAccessor)
+        public TweetService(IOptions<TwitterCloneDbConfig> twitterCloneDbConfig, IMongoClient mongoClient, IHttpContextAccessor httpContextAccessor)
         {
             var mongoDatabase = mongoClient.GetDatabase(twitterCloneDbConfig.Value.DatabaseName);
 
@@ -23,14 +23,15 @@ namespace learnathon_learning_phase.Services
             _hashTagCollection = mongoDatabase.GetCollection<HashTags>(twitterCloneDbConfig.Value.HashTagCollectionName);
             _httpContextAccessor = httpContextAccessor;
         }
-        public async Task CreateTweet(TweetRequestDto tweet)
+        public async Task<Tweets?> CreateTweet(TweetRequestDto tweet)
         {
+            Tweets? tweetModel = null;
             if (_httpContextAccessor.HttpContext != null)
             {
                 string? userId = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-                if(userId != null)
+                if (userId != null)
                 {
-                    var tweetModel = new Tweets
+                    tweetModel = new Tweets
                     {
                         UserId = userId,
                         Tweet = tweet.Tweet,
@@ -49,10 +50,8 @@ namespace learnathon_learning_phase.Services
                     }
 
                 }
-
-
-
             }
+            return tweetModel;
         }
 
         public async Task<Tweets?> GetTweetById(string id)
@@ -61,18 +60,18 @@ namespace learnathon_learning_phase.Services
             if (_httpContextAccessor.HttpContext != null)
             {
                 string? userId = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-                if(userId != null)
+                if (userId != null)
                 {
-                    tweet = await _tweetCollection.Find(tweet => tweet.Id == id).FirstOrDefaultAsync();
+                    tweet = await _tweetCollection.Find(tweet => tweet.Id == id && tweet.DeletedAt == null).FirstOrDefaultAsync();
                 }
             }
             return tweet;
 
         }
 
-        public async Task<Tweets> UpdateTweet(Tweets tweet,TweetRequestDto tweetRequest)
+        public async Task<Tweets> UpdateTweet(Tweets tweet, TweetRequestDto tweetRequest)
         {
-            if(tweet.History.Length == 0)
+            if (tweet.History.Length == 0)
             {
                 tweet.History = new string[1];
                 tweet.History[0] = tweet.Tweet;
@@ -82,7 +81,7 @@ namespace learnathon_learning_phase.Services
                 tweet.History = tweet.History.Append(tweet.Tweet).ToArray();
             }
             tweet.Tweet = tweetRequest.Tweet;
-            tweet.UpdatedAt =  DateTime.Now;
+            tweet.UpdatedAt = DateTime.Now;
             await _tweetCollection.ReplaceOneAsync(t => t.Id == tweet.Id, tweet);
             await _hashTagCollection.DeleteManyAsync(hashTag => hashTag.TweetId == tweet.Id);
             foreach (var hashTag in tweetRequest.HashTags)
@@ -97,12 +96,13 @@ namespace learnathon_learning_phase.Services
             return tweet;
         }
 
-        public async Task DeleteTweet(string id)
+        public async Task DeleteTweet(Tweets tweet)
         {
-            await _tweetCollection.DeleteOneAsync(tweet => tweet.Id == id);
-            await _hashTagCollection.DeleteManyAsync(hashTag => hashTag.TweetId == id);
+            tweet.DeletedAt = DateTime.Now;
+            await _tweetCollection.ReplaceOneAsync(t => t.Id == tweet.Id, tweet);
+            await _hashTagCollection.DeleteManyAsync(hashTag => hashTag.TweetId == tweet.Id);
         }
     }
 
-    
+
 }

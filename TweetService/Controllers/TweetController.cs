@@ -2,6 +2,7 @@
 
 using Core.Dtos;
 using Core.Interfaces;
+using Core.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -19,13 +20,14 @@ namespace Core.Controllers
         }
 
         [HttpPost("create"), Authorize(Roles = "user")]
-        public async Task<ActionResult<object>> CreateTweet(TweetRequestDto tweetRequest)
+        public async Task<ActionResult<TweetResponseDto>> CreateTweet(TweetRequestDto tweetRequest)
         {
-            await _tweetService.CreateTweet(tweetRequest);
-            return Ok(new
+            Tweets? tweet = await _tweetService.CreateTweet(tweetRequest);
+            if (tweet != null)
             {
-                Message = "Tweet Created Successfully",
-            });
+                return Ok(tweet.AsDto());
+            }
+            return BadRequest(new { message = "Tweet could not be created" });
         }
 
         [HttpGet("{id}"), Authorize(Roles = "user")]
@@ -68,7 +70,7 @@ namespace Core.Controllers
                     Message = "Tweet Not Found",
                 });
             }
-            await _tweetService.DeleteTweet(id);
+            await _tweetService.DeleteTweet(tweet);
             return Ok(new
             {
                 Message = "Tweet Deleted Successfully",
