@@ -15,9 +15,6 @@ public static class Extensions
             DateOfBirth = user.DateOfBirth,
             Gender = user.Gender,
             CreatedAt = user.CreatedAt,
-            UpdatedAt = user.UpdatedAt,
-            DeletedAt = user.DeletedAt,
-            BlockedAt = user.BlockedAt,
         };
     }
 }
