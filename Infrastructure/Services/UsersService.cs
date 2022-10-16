@@ -52,11 +52,11 @@ public class UsersService : IUsersService
 
         if (_httpContextAccessor.HttpContext != null)
         {
-            string? name = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            Console.WriteLine("name", name);
-            if (name != null)
+            string? id = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            Console.WriteLine("name", id);
+            if (id != null)
             {
-                user = await GetUserByNameAsync(name);
+                user = await GetUserAsync(id);
             }
             else
             {
