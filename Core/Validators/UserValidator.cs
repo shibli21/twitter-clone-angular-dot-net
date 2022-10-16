@@ -12,37 +12,33 @@ public class UserValidator : AbstractValidator<UserRequestDto>
     {
         _userService = userService;
 
-        RuleFor(u => u.UserName).NotNull()
+        RuleFor(u => u.UserName).NotEmpty()
             .MinimumLength(4)
             .WithMessage("Username must be at least 4 characters long")
             .Must(UniqueName)
             .WithMessage("Username is already taken");
 
-        RuleFor(u => u.Email).NotNull()
+        RuleFor(u => u.Email).NotEmpty()
             .EmailAddress()
             .WithMessage("Email is not valid")
             .Must(UniqueEmail)
             .WithMessage("Email is already taken");
 
-        RuleFor(u => u.FirstName).NotNull()
-            .MinimumLength(2)
-            .WithMessage("First name must be at least 2 characters long");
+        RuleFor(u => u.FirstName).NotEmpty();
 
-        RuleFor(u => u.LastName).NotNull()
-            .MinimumLength(2)
-            .WithMessage("Last name must be at least 2 characters long");
+        RuleFor(u => u.LastName).NotEmpty();
 
-        RuleFor(u => u.Password).NotNull()
-            .MinimumLength(6)
-            .WithMessage("Password must be at least 6 characters long")
+        RuleFor(u => u.Password).NotEmpty()
+            .MinimumLength(8)
+            .WithMessage("Password must be at least 8 characters long")
             .Must(BeStrongPassword)
             .WithMessage("Password must contain at least one number, one uppercase and one lowercase letter");
 
-        RuleFor(u => u.ConfirmPassword).NotNull()
-            .Matches(u => u.Password)
+        RuleFor(u => u.ConfirmPassword).NotEmpty()
+            .Must((user, confirmPassword) => user.Password == confirmPassword)
             .WithMessage("Passwords do not match");
 
-        RuleFor(u => u.Gender).NotNull();
+        RuleFor(u => u.Gender).NotNull().NotEmpty();
     }
     private bool UniqueName(string name)
     {
