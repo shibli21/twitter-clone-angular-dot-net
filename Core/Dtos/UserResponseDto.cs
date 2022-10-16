@@ -1,4 +1,7 @@
-namespace Core.Models;
+using Core.Models;
+
+namespace Core.Dtos;
+
 
 public class UserResponseDto
 {

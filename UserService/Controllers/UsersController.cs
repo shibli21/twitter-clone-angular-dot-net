@@ -1,4 +1,5 @@
-﻿using Core.Interfaces;
+﻿using Core.Dtos;
+using Core.Interfaces;
 using Core.Models;
 using Microsoft.AspNetCore.Mvc;
 

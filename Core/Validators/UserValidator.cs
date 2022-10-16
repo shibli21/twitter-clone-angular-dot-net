@@ -1,3 +1,4 @@
+using Core.Dtos;
 using Core.Interfaces;
 using Core.Models;
 using FluentValidation;

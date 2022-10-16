@@ -2,6 +2,7 @@ using System.Security.Cryptography;
 using System.Text;
 using Core.Interfaces;
 using Core.Models;
+using Core.Dtos;
 using JWTAuthenticationManager;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
