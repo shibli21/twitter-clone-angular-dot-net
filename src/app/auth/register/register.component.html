@@ -197,6 +197,8 @@
                 class="p-inputtext-sm"
                 formControlName="password"
                 (onBlur)="onBlur($event, 'password')"
+                styleClass="p-password p-component p-inputwrapper p-input-icon-right"
+                [toggleMask]="true"
               >
                 <ng-template pTemplate="header">
                   <h6>Pick a password</h6>
@@ -233,6 +235,7 @@
                 (onBlur)="onBlur($event, 'confirmPassword')"
                 placeholder="Confirm Password"
                 class="p-inputtext-sm"
+                styleClass="p-password p-component p-inputwrapper p-input-icon-right"
                 [feedback]="false"
                 formControlName="confirmPassword"
                 [toggleMask]="true"
