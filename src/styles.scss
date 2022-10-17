@@ -38,3 +38,19 @@ body {
 input.ng-touched.ng-invalid {
   @apply shadow-4xl-red  border-red-500;
 }
+
+.scrollbar::-webkit-scrollbar {
+  @apply w-2 h-2;
+}
+
+.scrollbar::-webkit-scrollbar-track {
+  @apply bg-orange-50;
+}
+
+.scrollbar::-webkit-scrollbar-thumb {
+  @apply bg-orange-300;
+}
+
+.scrollbar::-webkit-scrollbar-thumb:hover {
+  @apply bg-orange-500;
+}

@@ -49,17 +49,23 @@ export class UsersService {
   }
 
   public setUserOnline() {
-    return this.http.post(`${this.baseUrl}set-online`, {}).pipe(
-      timeout(1000),
-      catchError((error) => {
-        console.log(error);
-
-        return throwError(error);
-      }),
-      retry(),
-      delay(1000 * 60),
-      repeat()
-    );
+    return this.http
+      .post(
+        `${this.baseUrl}set-online`,
+        {},
+        {
+          observe: 'response',
+        }
+      )
+      .pipe(
+        // timeout(1000),
+        catchError((error) => {
+          return throwError(error);
+        }),
+        // retry(),
+        delay(1000 * 59),
+        repeat()
+      );
   }
 
   public getOnlineUsers() {

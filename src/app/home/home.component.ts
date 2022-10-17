@@ -9,16 +9,13 @@ import { Component, OnInit } from '@angular/core';
 })
 export class HomeComponent implements OnInit {
   onlineUsers?: User[];
+  tempUsers = ['Alicon', 'Demon', 'Renerya'];
 
   constructor(private usersService: UsersService) {}
 
   ngOnInit() {
     this.usersService.getOnlineUsers().subscribe((users) => {
       this.onlineUsers = users;
-    });
-    console.log(this.onlineUsers);
-    this.usersService.setUserOnline().subscribe((data) => {
-      console.log(data);
     });
   }
 }

@@ -19,9 +19,10 @@ import { LoadingSpinnerComponent } from './shared/loading-spinner/loading-spinne
 import { UserEditComponent } from './users/user-edit/user-edit.component';
 import { UsersComponent } from './users/users.component';
 import { HomeComponent } from './home/home.component';
+import { ChatBoxComponent } from './chat-box/chat-box.component';
 
 @NgModule({
-  declarations: [	
+  declarations: [
     AppComponent,
     NavComponent,
     RegisterComponent,
@@ -30,8 +31,9 @@ import { HomeComponent } from './home/home.component';
     UsersComponent,
     UserEditComponent,
     ProfileComponent,
-      HomeComponent
-   ],
+    HomeComponent,
+    ChatBoxComponent,
+  ],
   imports: [
     BrowserModule,
     AppRoutingModule,
