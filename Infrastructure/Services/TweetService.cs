@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 
-namespace learnathon_learning_phase.Services
+namespace Infrastructure.Services
 {
     public class TweetService : ITweetService
     {

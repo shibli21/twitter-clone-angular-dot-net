@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 
-namespace Core.Services
+namespace Infrastructure.Services
 {
     public class FollowService : IFollowerService
     {

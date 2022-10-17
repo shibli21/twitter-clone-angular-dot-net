@@ -22,6 +22,7 @@ builder.Services.AddSingleton<IMongoClient>(sp =>
 
 builder.Services.AddSingleton<IUsersService, UsersService>();
 builder.Services.AddSingleton<IRefreshTokenService, RefreshTokenService>();
+builder.Services.AddSingleton<IFollowerService, FollowService>();
 
 builder.Services.AddControllers();
 

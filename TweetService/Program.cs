@@ -1,8 +1,8 @@
 using Core.Extensions;
 using Core.Interfaces;
 using Infrastructure.Config;
+using Infrastructure.Services;
 using JWTAuthenticationManager;
-using learnathon_learning_phase.Services;
 using MongoDB.Driver;
 using Serilog;
 
