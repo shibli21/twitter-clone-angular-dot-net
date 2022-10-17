@@ -1,5 +1,5 @@
 
-namespace Core.Models;
+namespace Core.Dtos;
 
 public class JWTResponse
 {

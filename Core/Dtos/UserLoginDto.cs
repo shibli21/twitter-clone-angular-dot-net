@@ -1,4 +1,4 @@
-namespace Core.Models;
+namespace Core.Dtos;
 public class UserLoginDto
 {
     public string Email { get; set; } = string.Empty;

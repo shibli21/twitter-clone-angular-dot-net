@@ -1,4 +1,7 @@
-namespace Core.Models;
+using Core.Models;
+
+namespace Core.Dtos;
+
 
 public class UserResponseDto
 {
@@ -9,10 +12,6 @@ public class UserResponseDto
     public string Email { get; set; } = string.Empty;
     public DateTime DateOfBirth { get; set; } = DateTime.Now;
     public string Gender { get; set; } = string.Empty;
-    public string Password { get; set; } = string.Empty;
     public string Role { get; set; } = Roles.User;
     public DateTime CreatedAt { get; set; } = DateTime.Now;
-    public DateTime UpdatedAt { get; set; } = DateTime.Now;
-    public DateTime? DeletedAt { get; set; }
-    public DateTime? BlockedAt { get; set; }
 }

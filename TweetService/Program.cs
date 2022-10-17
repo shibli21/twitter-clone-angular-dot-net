@@ -1,6 +1,8 @@
 using Core.Extensions;
+using Core.Interfaces;
 using Infrastructure.Config;
 using JWTAuthenticationManager;
+using learnathon_learning_phase.Services;
 using MongoDB.Driver;
 using Serilog;
 
@@ -15,6 +17,8 @@ builder.Services.Configure<TwitterCloneDbConfig>(
 
 builder.Services.AddSingleton<IMongoClient>(sp =>
     new MongoClient(builder.Configuration.GetValue<string>("TwitterCloneDatabaseSettings:ConnectionString")));
+
+builder.Services.AddSingleton<ITweetService, TweetService>();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

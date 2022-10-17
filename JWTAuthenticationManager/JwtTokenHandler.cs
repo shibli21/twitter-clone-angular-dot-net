@@ -1,6 +1,7 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using Core.Dtos;
 using Core.Models;
 using Microsoft.IdentityModel.Tokens;
 
@@ -18,7 +19,7 @@ namespace JWTAuthenticationManager
             var claimsIdentity = new ClaimsIdentity(
                 new List<Claim>
                 {
-                    new Claim(ClaimTypes.NameIdentifier,user.UserName),
+                    new Claim(ClaimTypes.NameIdentifier,user.Id),
                     new Claim(ClaimTypes.Role, user.Role)
                 }
             );
