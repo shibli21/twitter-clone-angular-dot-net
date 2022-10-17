@@ -6,17 +6,25 @@
           src="https://cdn.pixabay.com/photo/2016/11/18/23/38/child-1837375_960_720.png"
         />
       </div>
-      <div class="w-full">
+      <form class="w-full" [formGroup]="newTweetForm" (ngSubmit)="onSubmit()">
         <textarea
+          formControlName="tweet"
           placeholder="What's happening?"
           pInputTextarea
-          class="border-none"
+          class=""
           [rows]="2"
+          (blur)="onBlur('tweet')"
         ></textarea>
+
         <div class="text-right">
-          <p-button label="Tweet"></p-button>
+          <button
+            pButton
+            [disabled]="newTweetForm.invalid"
+            label="Tweet"
+            type="submit"
+          ></button>
         </div>
-      </div>
+      </form>
     </div>
   </div>
 </div>
