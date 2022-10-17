@@ -94,7 +94,7 @@ namespace Core.Controllers
             }
         }
 
-        [HttpPost("liked-users/{tweetId}"), Authorize(Roles = "user")]
+        [HttpGet("liked-users/{tweetId}"), Authorize(Roles = "user")]
         public async Task<ActionResult<List<UserResponseDto>>> GetLikedUsers( string tweetId , [FromQuery] int size = 5, [FromQuery] int page = 0)
         {
             List<UserResponseDto> likedUsers = await _iLikeCommentService.GetLikedUsers(size, page, tweetId);
