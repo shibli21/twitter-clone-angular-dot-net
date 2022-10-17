@@ -83,7 +83,7 @@ export class AuthService {
   autoLogout(expirationDuration: number) {
     this.tokenExpirationTimer = setTimeout(() => {
       this.getRefreshToken().subscribe();
-    }, expirationDuration * 1000);
+    }, expirationDuration * 1000 - 10000);
   }
 
   getRefreshToken() {
