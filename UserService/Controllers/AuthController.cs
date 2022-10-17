@@ -90,7 +90,7 @@ public class AuthController : ControllerBase
     [Authorize]
     public async Task<ActionResult<object>> logout()
     {
-        User? user = await _usersService.GetAuthUser();
+        UserResponseDto? user = await _usersService.GetAuthUser();
         if (user == null)
             return Unauthorized(new { field = "user", message = "User not found" });
 

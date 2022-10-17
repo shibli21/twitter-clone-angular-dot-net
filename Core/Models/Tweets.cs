@@ -26,6 +26,9 @@ namespace Core.Models
         [BsonElement("like_count")]
         public long LikeCount { get; set; } = 0;
 
+        [BsonElement("retweet_count")]
+        public long RetweetCount { get; set; } = 0;
+
         [BsonElement("retweet_ref")]
         public string RetweetRef { get; set; } = String.Empty;
 

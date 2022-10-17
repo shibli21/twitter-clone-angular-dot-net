@@ -14,6 +14,7 @@ public static class TweetResponseExtensions
             Type = tweet.Type,
             CommentCount = tweet.CommentCount,
             LikeCount = tweet.LikeCount,
+            RetweetCount = tweet.RetweetCount,
             History = tweet.History,
             CreatedAt = tweet.CreatedAt
         };
