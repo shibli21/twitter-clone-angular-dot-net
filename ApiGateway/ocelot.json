@@ -69,6 +69,20 @@
           "Port": 5211
         }
       ]
+    },
+    {
+      "UpstreamPathTemplate": "/users/current-user",
+      "UpstreamHttpMethod": [
+        "Post"
+      ],
+      "DownstreamPathTemplate": "/users/current-user",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5211
+        }
+      ]
     }
   ],
   "GlobalConfiguration": {
