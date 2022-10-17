@@ -59,6 +59,7 @@ namespace Infrastructure.Services
                     if (comment != null)
                     {
                         commentRes.Comment = comment;
+                        commentRes.UpdatedAt = DateTime.Now;
                         await _commentCollection.ReplaceOneAsync(x => x.Id == commentId, commentRes);
                         return commentRes.AsDto();
                     }
