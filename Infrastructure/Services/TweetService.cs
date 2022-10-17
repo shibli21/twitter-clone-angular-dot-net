@@ -102,6 +102,17 @@ namespace Infrastructure.Services
             await _tweetCollection.ReplaceOneAsync(t => t.Id == tweet.Id, tweet);
             await _hashTagCollection.DeleteManyAsync(hashTag => hashTag.TweetId == tweet.Id);
         }
+
+        public Task<List<TweetResponseDto>> GetTweetsByUserId(string userId, int limit, int page)
+        {
+            return _tweetCollection.Find(tweet => tweet.UserId == userId && tweet.DeletedAt == null)
+                .SortByDescending(tweet => tweet.CreatedAt)
+                .Skip((page ) * limit)
+                .Limit(limit)
+                .Project(tweet => tweet.AsDto())
+                .ToListAsync();
+        
+        }
     }
 
 

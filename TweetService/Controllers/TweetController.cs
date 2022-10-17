@@ -141,6 +141,12 @@ namespace Core.Controllers
             return Ok(comments);
         }
 
+        [HttpGet("user-tweets/{userId}"), Authorize(Roles = "user")]
+        public async Task<ActionResult<List<TweetResponseDto>>> GetUserTweets(string userId, [FromQuery] int size = 5, [FromQuery] int page = 0)
+        {
+            List<TweetResponseDto> tweets = await _tweetService.GetTweetsByUserId(userId, size, page);
+            return Ok(tweets);
+        }
 
 
     }
