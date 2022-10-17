@@ -15,6 +15,7 @@ namespace Infrastructure.Services
         private readonly IMongoCollection<LikeRetweets> _likeRetweetCollection;
         private readonly IMongoCollection<Comments> _commentCollection;
         private readonly IMongoCollection<User> _user;
+        private readonly IMongoCollection<Tweets> _tweetCollection;
         private readonly IHttpContextAccessor _httpContextAccessor;
         public LikeCommentService(IOptions<TwitterCloneDbConfig> twitterCloneDbConfig, IMongoClient mongoClient, IHttpContextAccessor httpContextAccessor)
         {
@@ -22,6 +23,7 @@ namespace Infrastructure.Services
             _likeRetweetCollection = mongoDatabase.GetCollection<LikeRetweets>(twitterCloneDbConfig.Value.LikeRetweetCollectionName);
             _commentCollection = mongoDatabase.GetCollection<Comments>(twitterCloneDbConfig.Value.CommentCollectionName);
             _user = mongoDatabase.GetCollection<User>(twitterCloneDbConfig.Value.UserCollectionName);
+            _tweetCollection = mongoDatabase.GetCollection<Tweets>(twitterCloneDbConfig.Value.TweetCollectionName);
             _httpContextAccessor = httpContextAccessor;
         }
 
@@ -31,7 +33,8 @@ namespace Infrastructure.Services
             if (_httpContextAccessor.HttpContext != null)
             {
                 string? userId = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-                if (userId != null)
+                Tweets? tweet = await _tweetCollection.Find(x => x.Id == id).FirstOrDefaultAsync();
+                if (userId != null && tweet != null)
                 {
                     Comments commentObj = new Comments
                     {
@@ -41,6 +44,8 @@ namespace Infrastructure.Services
                         CreatedAt = DateTime.Now
                     };
                     await _commentCollection.InsertOneAsync(commentObj);
+                    tweet.CommentCount += 1;
+                    await _tweetCollection.ReplaceOneAsync(x => x.Id == id, tweet);
                     return commentObj.AsDto();
                 }
             }
@@ -77,8 +82,15 @@ namespace Infrastructure.Services
                     Comments commentRes = await _commentCollection.Find(x => x.Id == commentId && x.UserId == userId).FirstOrDefaultAsync();
                     if (commentRes != null)
                     {
-                        await _commentCollection.DeleteOneAsync(x => x.Id == commentId);
-                        return true;
+                        Tweets? tweet = await _tweetCollection.Find(x => x.Id == commentRes.TweetId).FirstOrDefaultAsync();
+                        if (tweet != null)
+                        {
+                            tweet.CommentCount -= 1;
+                            await _tweetCollection.ReplaceOneAsync(x => x.Id == commentRes.TweetId, tweet);
+
+                            await _commentCollection.DeleteOneAsync(x => x.Id == commentId);
+                            return true;
+                        }
                     }
                 }
             }
@@ -103,7 +115,8 @@ namespace Infrastructure.Services
             if (_httpContextAccessor.HttpContext != null)
             {
                 string? userId = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-                if (userId != null)
+                Tweets? tweet = await _tweetCollection.Find(x => x.Id == id).FirstOrDefaultAsync();
+                if (userId != null && tweet != null)
                 {
                     var likeRetweet = await _likeRetweetCollection.Find(x => x.UserId == userId && x.TweetId == id).FirstOrDefaultAsync();
                     if (likeRetweet == null)
@@ -116,20 +129,26 @@ namespace Infrastructure.Services
                             IsRetweeted = false,
                         };
                         await _likeRetweetCollection.InsertOneAsync(likeRetweet);
-                        msg =  "Tweet liked";
+                        tweet.LikeCount += 1;
+                        await _tweetCollection.ReplaceOneAsync(x => x.Id == id, tweet);
+                        msg = "Tweet liked";
                     }
                     else
                     {
                         if (likeRetweet.IsLiked)
                         {
                             await _likeRetweetCollection.DeleteOneAsync(x => x.Id == likeRetweet.Id);
+                            tweet.LikeCount -= 1;
+                            await _tweetCollection.ReplaceOneAsync(x => x.Id == id, tweet);
                             msg = "Tweet unliked";
                         }
                         else
                         {
                             likeRetweet.IsLiked = true;
                             await _likeRetweetCollection.ReplaceOneAsync(x => x.Id == likeRetweet.Id, likeRetweet);
-                            msg =  "Tweet liked" ;
+                            tweet.LikeCount +=1;
+                            await _tweetCollection.ReplaceOneAsync(x => x.Id == id, tweet);
+                            msg = "Tweet liked";
                         }
                     }
 
