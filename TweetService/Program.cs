@@ -19,6 +19,7 @@ builder.Services.AddSingleton<IMongoClient>(sp =>
     new MongoClient(builder.Configuration.GetValue<string>("TwitterCloneDatabaseSettings:ConnectionString")));
 
 builder.Services.AddSingleton<ITweetService, TweetService>();
+builder.Services.AddSingleton<ILikeCommentService, LikeCommentService>();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

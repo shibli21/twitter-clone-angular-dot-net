@@ -14,6 +14,7 @@ public static class Extensions
             Email = user.Email,
             DateOfBirth = user.DateOfBirth,
             Gender = user.Gender,
+            Role = user.Role,
             CreatedAt = user.CreatedAt,
         };
     }

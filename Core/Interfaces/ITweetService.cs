@@ -9,4 +9,7 @@ public interface ITweetService
     Task<Tweets> UpdateTweet(Tweets tweet,TweetRequestDto tweetRequest);
     Task<Tweets?> GetTweetById(string id);
     Task DeleteTweet(Tweets tweet);
+
+
+
 }
