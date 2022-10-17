@@ -53,6 +53,7 @@ export class NavComponent implements OnInit {
         label: 'Admin',
         icon: 'pi pi-key',
         routerLink: ['/admin'],
+        visible: this.authService.isAdmin(),
       },
     ];
   }

@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { environment } from 'src/environments/environment';
 
-import { catchError, throwError, tap, BehaviorSubject, map } from 'rxjs';
+import { BehaviorSubject, catchError, map, tap, throwError } from 'rxjs';
 
 import {
   ILoginUser,
@@ -46,6 +46,14 @@ export class AuthService {
       );
   }
 
+  isAuthenticated() {
+    return this.user.value !== null;
+  }
+
+  isAdmin() {
+    return this.user.value?.role === 'admin';
+  }
+
   handleAuthentication(loginResponse: LoginResponse) {
     this.autoLogout(loginResponse.jwtExpiresIn);
 
@@ -53,6 +61,11 @@ export class AuthService {
 
     this.currentUser().subscribe((user) => {
       this.user.next(user);
+      if (user.role === 'admin') {
+        this.router.navigate(['/admin']);
+      } else {
+        this.router.navigate(['/']);
+      }
     });
   }
 

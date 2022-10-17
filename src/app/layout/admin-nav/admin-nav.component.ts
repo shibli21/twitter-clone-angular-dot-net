@@ -1,3 +1,4 @@
+import { AuthService } from './../../auth/auth.service';
 import { MenuItem } from 'primeng/api';
 import { Component, OnInit } from '@angular/core';
 
@@ -9,12 +10,20 @@ import { Component, OnInit } from '@angular/core';
 export class AdminNavComponent implements OnInit {
   items!: MenuItem[];
 
-  constructor() {
+  constructor(private authService: AuthService) {
     this.items = [
       {
         label: 'Dashboard',
         icon: 'pi pi-th-large',
         routerLink: ['/admin/dashboard'],
+      },
+      {
+        label: 'Logout',
+        icon: 'pi pi-fw pi-power-off',
+        routerLink: ['/login'],
+        command: () => {
+          this.authService.logout();
+        },
       },
     ];
   }

@@ -18,8 +18,6 @@ import { AuthInterceptor } from './auth/auth.interceptor.service';
     HttpClientModule,
     ToastrModule.forRoot({
       progressBar: true,
-      autoDismiss: false,
-      disableTimeOut: true,
       preventDuplicates: true,
       newestOnTop: true,
       titleClass: 'toast-title',

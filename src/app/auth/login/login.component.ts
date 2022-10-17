@@ -1,9 +1,8 @@
-import { ToastrService } from 'ngx-toastr';
-import { Router } from '@angular/router';
-import { AuthService } from './../auth.service';
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { ToastrService } from 'ngx-toastr';
 import { ILoginUser } from '../Models/user.model';
+import { AuthService } from './../auth.service';
 
 @Component({
   selector: 'app-login',
@@ -19,7 +18,6 @@ export class LoginComponent implements OnInit {
 
   constructor(
     private authService: AuthService,
-    private router: Router,
     private toastr: ToastrService
   ) {}
 
@@ -39,8 +37,6 @@ export class LoginComponent implements OnInit {
     this.authService.loginUser({ email, password }).subscribe({
       next: (loginResponse) => {
         this.isLoading = false;
-
-        this.router.navigate(['/']);
       },
       error: (error) => {
         this.isLoading = false;
@@ -64,7 +60,6 @@ export class LoginComponent implements OnInit {
 
   onBlur(event: Event, key: string) {
     let form = this.loginForm as any;
-    //make the field touched
     form.controls[key].markAsTouched();
   }
 
