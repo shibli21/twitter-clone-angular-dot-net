@@ -27,8 +27,9 @@ namespace Infrastructure.Services
             _httpContextAccessor = httpContextAccessor;
         }
         
-        public async Task FollowByUserId( string followingId)
+        public async Task<string> FollowByUserId( string followingId)
         {
+            string msg = "Something went wrong";
             if (_httpContextAccessor.HttpContext != null)
             {
                 string? userId = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -44,9 +45,16 @@ namespace Infrastructure.Services
 
                         };
                         await _followCollection.InsertOneAsync(follow);
+                        msg = "Followed";
+                    }
+                    else
+                    {
+                        await _followCollection.DeleteOneAsync(f => f.UserId == userId && f.FollowingId == followingId);
+                        msg = "Unfollowed";
                     }
                 }
             }
+            return msg;
             
 
         }
@@ -74,24 +82,5 @@ namespace Infrastructure.Services
             return new List<UserResponseDto>();
         }
 
-        public async Task UnFollowByUserId(string followingId)
-        {
-
-
-            if (_httpContextAccessor.HttpContext != null)
-            {
-                string? userId = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-                
-                if(userId != null)
-                {
-                    var follow = await _followCollection.Find(f => f.UserId == userId && f.FollowingId == followingId).FirstOrDefaultAsync();
-                    if (follow != null)
-                    {
-                        await _followCollection.DeleteOneAsync(f => f.Id == follow.Id);
-                    }
-                    
-                }
-            }
-        }
     }
 }

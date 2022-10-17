@@ -18,19 +18,24 @@ public class FollowController : ControllerBase
         _followerService = followerService;
     }
 
-    [HttpPost("follow/{followingId}"), Authorize(Roles = "user")]
+    [HttpPost("{followingId}"), Authorize(Roles = "user")]
     public async Task<ActionResult<object>> FollowByUserId(string followingId)
     {
-        await _followerService.FollowByUserId(followingId);
-        return Ok(new { message = "Followed successfully" });
+        var msg = await _followerService.FollowByUserId(followingId);
+        if(msg == "Followed")
+        {
+            return Ok(new { message = "Followed successfully" });
+        }
+        else if(msg == "Unfollowed")
+        {
+            return Ok(new { message = "Unfollowed successfully" });
+        }
+        else
+        {
+            return BadRequest(new { message = "Something went wrong" });
+        }
     }
 
-    [HttpDelete("unfollow/{followingId}"), Authorize(Roles = "user")]
-    public async Task<ActionResult<object>> UnfollowByUserId(string followingId)
-    {
-        await _followerService.UnFollowByUserId(followingId);
-        return Ok(new { message = "Unfollowed successfully" });
-    }
 
     [HttpGet("followers"), Authorize(Roles = "user")]
     public async Task<ActionResult<List<UserResponseDto>>> GetFollowersByUserId([FromQuery] int size = 5, [FromQuery] int page = 0)
