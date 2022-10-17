@@ -1,53 +1,129 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { catchError, throwError } from 'rxjs';
 import { environment } from 'src/environments/environment';
 
-export interface IRegisterUser {
-  username: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  password: string;
-  confirmPassword: string;
-  dateOfBirth: Date;
-  gender: string;
-}
+import { catchError, throwError, tap, BehaviorSubject, map } from 'rxjs';
+
+import {
+  ILoginUser,
+  IRegisterUser,
+  LoginResponse,
+  User,
+} from './Models/user.model';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
-  baseUrl = environment.baseUrl + 'auth/';
+  user = new BehaviorSubject<User | null>(null);
+  private tokenExpirationTimer: string | number | NodeJS.Timeout | undefined;
+
+  baseUrl = environment.baseUrl;
 
   constructor(private http: HttpClient, private router: Router) {}
 
-  registerUser({
-    confirmPassword,
-    dateOfBirth,
-    email,
-    firstName,
-    gender,
-    lastName,
-    password,
-    username,
-  }: IRegisterUser) {
+  registerUser(registerUser: IRegisterUser) {
+    return this.http.post(this.baseUrl + 'auth/register', registerUser).pipe(
+      catchError((err) => {
+        return throwError(err);
+      })
+    );
+  }
+
+  loginUser(loginUser: ILoginUser) {
     return this.http
-      .post(this.baseUrl + 'register', {
-        username: username,
-        email: email,
-        password: password,
-        confirmPassword: confirmPassword,
-        dateOfBirth: dateOfBirth,
-        firstName: firstName,
-        lastName: lastName,
-        gender: gender,
+      .post<LoginResponse>(this.baseUrl + 'auth/login', loginUser, {
+        withCredentials: true,
       })
       .pipe(
+        tap((loginResponse) => {
+          this.handleAuthentication(loginResponse);
+        }),
         catchError((err) => {
           return throwError(err);
         })
       );
+  }
+
+  handleAuthentication(loginResponse: LoginResponse) {
+    this.autoLogout(loginResponse.jwtExpiresIn);
+
+    localStorage.setItem('userData', JSON.stringify(loginResponse));
+
+    this.currentUser().subscribe((user) => {
+      this.user.next(user);
+    });
+  }
+
+  currentUser() {
+    return this.http.get<User>(this.baseUrl + 'users/current-user').pipe(
+      tap((user) => {
+        this.user.next(user);
+      }),
+      catchError((error) => {
+        return throwError(error);
+      })
+    );
+  }
+
+  autoLogout(expirationDuration: number) {
+    this.tokenExpirationTimer = setTimeout(() => {
+      this.getRefreshToken().subscribe();
+    }, expirationDuration * 1000);
+  }
+
+  getRefreshToken() {
+    return this.http
+      .post<LoginResponse>(
+        this.baseUrl + 'auth/refresh-token',
+        {},
+        {
+          withCredentials: true,
+        }
+      )
+      .pipe(
+        tap((loginResponse) => {
+          this.handleAuthentication(loginResponse);
+        }),
+        catchError((error) => {
+          this.logout();
+          return throwError(error);
+        })
+      );
+  }
+
+  logout() {
+    this.http
+      .delete(this.baseUrl + 'auth/logout', { withCredentials: true })
+      .subscribe();
+
+    this.user.next(null);
+
+    this.router.navigate(['/login']);
+    localStorage.removeItem('userData');
+    if (this.tokenExpirationTimer) {
+      clearTimeout(this.tokenExpirationTimer);
+    }
+    this.user.next(null);
+  }
+
+  autoLogin() {
+    const userAuthData = localStorage.getItem('userData');
+
+    if (!userAuthData) {
+      return;
+    }
+
+    const { jwtToken, jwtExpiresIn } = JSON.parse(
+      userAuthData
+    ) as LoginResponse;
+
+    if (jwtToken && jwtExpiresIn) {
+      this.autoLogout(jwtExpiresIn);
+      this.currentUser().subscribe((user) => {
+        this.user.next(user);
+      });
+    }
   }
 }

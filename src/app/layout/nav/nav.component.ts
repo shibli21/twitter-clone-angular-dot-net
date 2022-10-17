@@ -1,3 +1,4 @@
+import { AuthService } from './../../auth/auth.service';
 import { Component, OnInit } from '@angular/core';
 import { MenuItem } from 'primeng/api';
 
@@ -9,7 +10,8 @@ import { MenuItem } from 'primeng/api';
 export class NavComponent implements OnInit {
   items!: MenuItem[];
 
-  constructor() {}
+  constructor(private authService: AuthService) {}
+
   ngOnInit() {
     this.items = [
       {
@@ -41,6 +43,9 @@ export class NavComponent implements OnInit {
             label: 'Logout',
             icon: 'pi pi-fw pi-power-off',
             routerLink: ['/login'],
+            command: () => {
+              this.authService.logout();
+            },
           },
         ],
       },

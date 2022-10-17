@@ -51,21 +51,48 @@
             <h2 class="text-3xl md:text-4xl font-bold">Sign in to account</h2>
             <p class="text-md md:text-xl">Enter your details below</p>
           </div>
-          <div class="flex flex-col space-y-5">
-            <input
-              type="text"
-              pInputText
-              class="p-inputtext-sm"
-              placeholder="Email Address"
-            />
-            <p-password
-              [toggleMask]="true"
-              [(ngModel)]="value"
-              placeholder="Password"
-              class="p-inputtext-sm"
-              [feedback]="false"
-            >
-            </p-password>
+          <form
+            [formGroup]="loginForm"
+            (ngSubmit)="onSubmit()"
+            class="flex flex-col space-y-5"
+          >
+            <div>
+              <input
+                type="email"
+                pInputText
+                class="p-inputtext-sm"
+                placeholder="Email Address"
+                formControlName="email"
+              />
+              <div *ngIf="isInvalidTouchedDirty('email')">
+                <div
+                  *ngIf="loginFormControl['email'].errors?.['required']"
+                  class="input-error"
+                >
+                  Email is required.
+                </div>
+              </div>
+            </div>
+            <div>
+              <p-password
+                [toggleMask]="true"
+                formControlName="password"
+                placeholder="Password"
+                class="p-inputtext-sm"
+                [feedback]="false"
+                (onBlur)="onBlur($event, 'password')"
+                styleClass="p-password p-component p-inputwrapper p-input-icon-right"
+              >
+              </p-password>
+              <div *ngIf="isInvalidTouchedDirty('password')">
+                <div
+                  *ngIf="loginFormControl['password'].errors?.['required']"
+                  class="input-error"
+                >
+                  Password is required.
+                </div>
+              </div>
+            </div>
 
             <div class="flex flex-row justify-between items-center">
               <div class="flex items-center space-x-2">
@@ -79,7 +106,13 @@
               </a>
             </div>
 
-            <p-button label="Sign In" styleClass="p-button"></p-button>
+            <p-button
+              type="submit"
+              label="Sign In"
+              styleClass="p-button"
+              [loading]="isLoading"
+              [disabled]="loginForm.invalid"
+            ></p-button>
             <div class="flex flex-row justify-between items-center">
               <div class="flex items-center space-x-2">
                 <p>Not a member?</p>
@@ -91,7 +124,7 @@
                 Sign up now
               </a>
             </div>
-          </div>
+          </form>
         </div>
       </div>
     </div>

@@ -1,3 +1,4 @@
+import { IRegisterUser } from './../Models/user.model';
 import { Router } from '@angular/router';
 import { Component, OnInit } from '@angular/core';
 import {
@@ -7,7 +8,7 @@ import {
   ValidatorFn,
   Validators,
 } from '@angular/forms';
-import { AuthService, IRegisterUser } from '../auth.service';
+import { AuthService } from '../auth.service';
 import { ToastrService } from 'ngx-toastr';
 
 @Component({
@@ -57,7 +58,6 @@ export class RegisterComponent implements OnInit {
   ngOnInit(): void {}
 
   onSubmit() {
-    console.log(this.registerUserForm);
     this.registerUserForm.markAllAsTouched();
     if (!this.registerUserForm.valid) {
       return;
