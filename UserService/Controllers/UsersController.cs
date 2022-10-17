@@ -32,12 +32,12 @@ public class UsersController : ControllerBase
     [HttpGet("current-user"), Authorize]
     public async Task<ActionResult<UserResponseDto?>> GetCurrentUser()
     {
-        User? user = await _usersService.GetAuthUser();
+        UserResponseDto? user = await _usersService.GetAuthUser();
         if (user == null)
         {
             return NotFound();
         }
 
-        return Ok(user.AsDto());
+        return Ok(user);
     }
 }

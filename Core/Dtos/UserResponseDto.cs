@@ -12,6 +12,8 @@ public class UserResponseDto
     public string Email { get; set; } = string.Empty;
     public DateTime DateOfBirth { get; set; } = DateTime.Now;
     public string Gender { get; set; } = string.Empty;
+    public long Followers { get; set; } = 0;
+    public long Following { get; set; } = 0;
     public string Role { get; set; } = Roles.User;
     public DateTime CreatedAt { get; set; } = DateTime.Now;
 }

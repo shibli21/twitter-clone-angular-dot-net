@@ -1,4 +1,5 @@
 ﻿using System.Security.Claims;
+using Core.Dtos;
 using Core.Interfaces;
 using Core.Models;
 using Infrastructure.Config;
@@ -10,6 +11,7 @@ namespace Infrastructure.Services;
 public class UsersService : IUsersService
 {
     private readonly IMongoCollection<User> _usersCollection;
+    private readonly IMongoCollection<Follows> _followCollection;
     private readonly IHttpContextAccessor _httpContextAccessor;
 
 
@@ -20,6 +22,7 @@ public class UsersService : IUsersService
     {
         var mongoDatabase = mongoClient.GetDatabase(twitterCloneDatabaseSettings.Value.DatabaseName);
         _usersCollection = mongoDatabase.GetCollection<User>(twitterCloneDatabaseSettings.Value.UserCollectionName);
+        _followCollection = mongoDatabase.GetCollection<Follows>(twitterCloneDatabaseSettings.Value.FollowerCollectionName);
         _httpContextAccessor = httpContextAccessor;
     }
 
@@ -46,24 +49,23 @@ public class UsersService : IUsersService
     }
 
 
-    public async Task<User?> GetAuthUser()
+    public async Task<UserResponseDto?> GetAuthUser()
     {
-        User? user;
+        UserResponseDto? user = null;
 
         if (_httpContextAccessor.HttpContext != null)
         {
             string? id = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            Console.WriteLine("name", id);
             if (id != null)
             {
-                user = await GetUserAsync(id);
+                user = (await GetUserAsync(id))?.AsDto();
+                if (user != null)
+                {
+                    user.Followers = await _followCollection.CountDocumentsAsync(f => f.FollowingId == id);
+                    user.Following = await _followCollection.CountDocumentsAsync(f => f.UserId == id);
+                }
             }
-            else
-            {
-                user = null;
-            }
-            return user;
         }
-        return null;
+        return user;
     }
 }
