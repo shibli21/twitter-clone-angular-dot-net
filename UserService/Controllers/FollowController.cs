@@ -22,11 +22,11 @@ public class FollowController : ControllerBase
     public async Task<ActionResult<object>> FollowByUserId(string followingId)
     {
         var msg = await _followerService.FollowByUserId(followingId);
-        if(msg == "Followed")
+        if (msg == "Followed")
         {
             return Ok(new { message = "Followed successfully" });
         }
-        else if(msg == "Unfollowed")
+        else if (msg == "Unfollowed")
         {
             return Ok(new { message = "Unfollowed successfully" });
         }
@@ -38,17 +38,17 @@ public class FollowController : ControllerBase
 
 
     [HttpGet("followers"), Authorize(Roles = "user")]
-    public async Task<ActionResult<List<UserResponseDto>>> GetFollowersByUserId([FromQuery] int size = 5, [FromQuery] int page = 0)
+    public async Task<ActionResult<PaginatedUserResponseDto>> GetFollowersByUserId([FromQuery] int size = 5, [FromQuery] int page = 0)
     {
-        List<UserResponseDto> followers = await _followerService.GetFollowers(size, page);
+        PaginatedUserResponseDto followers = await _followerService.GetFollowers(size, page);
         return Ok(followers);
 
     }
 
     [HttpGet("following"), Authorize(Roles = "user")]
-    public async Task<ActionResult<List<UserResponseDto>>> GetFollowingByUserId([FromQuery] int size = 5, [FromQuery] int page = 0)
+    public async Task<ActionResult<PaginatedUserResponseDto>> GetFollowingByUserId([FromQuery] int size = 5, [FromQuery] int page = 0)
     {
-        List<UserResponseDto> following = await _followerService.GetFollowing(size, page);
+        PaginatedUserResponseDto following = await _followerService.GetFollowing(size, page);
         return Ok(following);
     }
 }

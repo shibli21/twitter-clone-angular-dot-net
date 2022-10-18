@@ -59,27 +59,52 @@ namespace Infrastructure.Services
 
         }
 
-        public async Task<List<UserResponseDto>> GetFollowers( int limit, int page)
+        public async Task<PaginatedUserResponseDto> GetFollowers( int limit, int page)
         {
             if (_httpContextAccessor.HttpContext != null){
                 string? userId = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-                string[] followersIds = (await _followCollection.Find(f => f.FollowingId == userId).Skip((page ) * limit).Limit(limit).ToListAsync()).Select(f => f.UserId).ToArray();
-                return (await _user.Find(u => followersIds.Contains(u.Id)).ToListAsync()).Select(u => u.AsDto()).ToList();
+                var filter =  _followCollection.Find(f => f.FollowingId == userId);
+                int LastPage = (int)Math.Ceiling((double)await filter.CountDocumentsAsync() / limit) - 1;
+                LastPage = LastPage < 0 ? 0 : LastPage;
+                string[] followersIds = (await filter.Skip((page ) * limit).Limit(limit).ToListAsync()).Select(f => f.UserId).ToArray();
+                var users = await _user.Find(u => followersIds.Contains(u.Id)).ToListAsync();
+                return new PaginatedUserResponseDto
+                {
+                    TotalElements = await filter.CountDocumentsAsync(),
+                    Users = users.Select(u => u.AsDto()).ToList(),
+                    Page = page,
+                    LastPage = LastPage,
+                    Size = limit,
+                    TotalPages = (int)Math.Ceiling((double)await filter.CountDocumentsAsync() / limit)
+                };
+                
 
                 
             }
-            return new List<UserResponseDto>();
+            return new PaginatedUserResponseDto();
         }
 
-        public async Task<List<UserResponseDto>> GetFollowing(int limit , int page)
+        public async Task<PaginatedUserResponseDto> GetFollowing(int limit , int page)
         {
             if (_httpContextAccessor.HttpContext != null)
             {
                 string? userId = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-                string[] followingIds = (await _followCollection.Find(f => f.UserId == userId).Skip((page) * limit).Limit(limit).ToListAsync()).Select(f => f.FollowingId).ToArray();
-                return (await _user.Find(u => followingIds.Contains(u.Id)).ToListAsync()).Select(u => u.AsDto()).ToList();
+                var filter = _followCollection.Find(f => f.UserId == userId);
+                int LastPage = (int)Math.Ceiling((double)await filter.CountDocumentsAsync() / limit) - 1;
+                LastPage = LastPage < 0 ? 0 : LastPage;
+                string[] followingIds = (await filter.Skip((page) * limit).Limit(limit).ToListAsync()).Select(f => f.FollowingId).ToArray();
+                var users = await _user.Find(u => followingIds.Contains(u.Id)).ToListAsync();
+                return new PaginatedUserResponseDto
+                {
+                    TotalElements = await filter.CountDocumentsAsync(),
+                    Users = users.Select(u => u.AsDto()).ToList(),
+                    Page = page,
+                    LastPage = LastPage,
+                    Size = limit,
+                    TotalPages = (int)Math.Ceiling((double)await filter.CountDocumentsAsync() / limit)
+                };
             }
-            return new List<UserResponseDto>();
+            return new PaginatedUserResponseDto();
         }
 
     }
