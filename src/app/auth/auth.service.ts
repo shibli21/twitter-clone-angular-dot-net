@@ -54,6 +54,10 @@ export class AuthService {
     return this.user.value?.role === 'admin';
   }
 
+  userId() {
+    return this.user.value?.id;
+  }
+
   handleAuthentication(loginResponse: LoginResponse) {
     this.autoLogout(loginResponse.jwtExpiresIn);
 
@@ -83,7 +87,7 @@ export class AuthService {
   autoLogout(expirationDuration: number) {
     this.tokenExpirationTimer = setTimeout(() => {
       this.getRefreshToken().subscribe();
-    }, expirationDuration * 1000 - 10000);
+    }, expirationDuration * 1000 - 60 * 1000);
   }
 
   getRefreshToken() {

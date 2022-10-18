@@ -1,5 +1,5 @@
 <div class="my-2 cursor-pointer border bg-white w-full transition rounded-md">
-  <div class="flex gap-2 p-4">
+  <div class="flex gap-2 p-2 md:p-4">
     <div class="w-[40px]">
       <div class="overflow-hidden h-[30px] w-[30px] rounded-full">
         <img
@@ -7,13 +7,29 @@
         />
       </div>
     </div>
-    <div class="">
-      <div class="flex gap-1 items-center">
-        <h1 class="text-sm font-bold">John Doe</h1>
-        <p class="text-gray-600 text-sm">@john · Mar 16</p>
+    <div class="w-full">
+      <div class="flex justify-between">
+        <div class="flex flex-col md:flex-row gap-0 md:gap-1">
+          <h1 class="text-sm font-bold">
+            {{ comment.user?.firstName }} {{ comment.user?.lastName }}
+          </h1>
+          <p class="text-gray-600 text-sm">
+            @{{ comment.user?.userName }} ·
+            {{ comment.createdAt | date: "shortTime" }}
+          </p>
+        </div>
+        <div>
+          <button
+            (click)="deleteComment()"
+            class="p-button-sm p-button-text p-button-danger"
+            pButton
+            type="button"
+            icon="pi pi-trash"
+          ></button>
+        </div>
       </div>
-      <p class="text-sm">
-        Lorem, ipsum dolor sit amet consectetur adipisicing elit. Doloremque
+      <p class="text-sm mt-1 md:mt-0">
+        {{ comment.comment }}
       </p>
     </div>
   </div>

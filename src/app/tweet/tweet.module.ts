@@ -5,9 +5,10 @@ import { TweetComponent } from './tweet.component';
 import { SharedModule } from '../shared/shared.module';
 import { TweetCommentComponent } from './tweet-comment/tweet-comment.component';
 import { NewCommentComponent } from './new-comment/new-comment.component';
+import { FormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [TweetComponent, TweetCommentComponent, NewCommentComponent],
-  imports: [CommonModule, TweetRoutingModule, SharedModule],
+  imports: [CommonModule, TweetRoutingModule, SharedModule, FormsModule],
 })
 export class TweetModule {}

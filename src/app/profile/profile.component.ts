@@ -1,3 +1,6 @@
+import { TweetService } from './../tweet/tweet.service';
+import { Tweet } from './../tweet/models/tweet.model';
+import { AuthService } from './../auth/auth.service';
 import { MenuItem } from 'primeng/api';
 import { Component, OnInit } from '@angular/core';
 
@@ -8,8 +11,12 @@ import { Component, OnInit } from '@angular/core';
 })
 export class ProfileComponent implements OnInit {
   items!: MenuItem[];
+  usersTweets: Tweet[] = [];
 
-  constructor() {}
+  constructor(
+    private authService: AuthService,
+    private tweetService: TweetService
+  ) {}
 
   ngOnInit(): void {
     this.items = [
@@ -26,5 +33,13 @@ export class ProfileComponent implements OnInit {
         icon: 'pi pi-fw pi-power-off',
       },
     ];
+
+    if (this.authService.userId) {
+      this.tweetService
+        .getUsersTweets(this.authService.userId()!)
+        .subscribe((res) => {
+          this.usersTweets = res;
+        });
+    }
   }
 }

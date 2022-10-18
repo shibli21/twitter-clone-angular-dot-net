@@ -1,9 +1,132 @@
-<app-tweet-card></app-tweet-card>
+<div
+  class="hover:bg-gray-50 cursor-pointer border w-full transition rounded-md"
+>
+  <div
+    class="border-b border-gray-300 px-2 md:px-4 py-2 items-center justify-between flex"
+  >
+    <div class="flex gap-2 items-start">
+      <div class="overflow-hidden h-[40px] w-[40px] rounded-full">
+        <img
+          src="https://cdn.pixabay.com/photo/2016/11/18/23/38/child-1837375_960_720.png"
+        />
+      </div>
+      <div class="flex-row">
+        <h1 class="text-base font-bold">
+          {{ tweet.user?.firstName }} {{ tweet.user?.lastName }}
+        </h1>
+        <p class="text-gray-600 text-sm">
+          @{{ tweet.user?.userName }} · {{ tweet.createdAt | date }}
+        </p>
+      </div>
+    </div>
+    <div class="flex items-center gap-2 text-gray-600">
+      <button
+        pButton
+        type="button"
+        icon="pi pi-ellipsis-h"
+        class="p-button-rounded p-button-text p-button-sm"
+        (click)="menu.toggle($event)"
+      ></button>
 
-<app-new-comment></app-new-comment>
+      <p-tieredMenu #menu [model]="items" [popup]="true"></p-tieredMenu>
+    </div>
+  </div>
+  <div class="p-4">{{ tweet.tweet }}</div>
 
-<app-tweet-comment></app-tweet-comment>
-<app-tweet-comment></app-tweet-comment>
-<app-tweet-comment></app-tweet-comment>
-<app-tweet-comment></app-tweet-comment>
-<app-tweet-comment></app-tweet-comment>
+  <div
+    class="flex py-2 md:py-3 px-2 md:px-6 border-t border-gray-300 text-gray-600"
+  >
+    <button
+      pButton
+      type="button"
+      icon="pi pi-heart"
+      [label]="tweet.likeCount.toString()!"
+      class="p-button-danger p-button-text"
+      (click)="likeUnlike()"
+    ></button>
+    <button
+      [label]="tweet.commentCount.toString()!"
+      pButton
+      type="button"
+      icon="pi pi-comment"
+      class="p-button-success p-button-text"
+    ></button>
+    <button
+      pButton
+      [label]="tweet?.retweetCount?.toString()!"
+      type="button"
+      icon="pi pi-share-alt"
+      class="p-button-help p-button-text"
+    ></button>
+  </div>
+</div>
+
+<div class="my-2">
+  <textarea
+    [(ngModel)]="comment"
+    placeholder="Tweet your reply"
+    pInputTextarea
+    [rows]="2"
+  ></textarea>
+</div>
+
+<div class="flex justify-between items-center mb-4">
+  <h1 class="text-xl font-bold leading-none text-gray-900">Replies</h1>
+  <p-button
+    [disabled]="!comment"
+    (onClick)="commentOnTweet()"
+    icon="pi pi-send"
+    label="Reply"
+    class="p-button-text"
+  ></p-button>
+</div>
+
+<div *ngFor="let comment of comments">
+  <app-tweet-comment [comment]="comment"></app-tweet-comment>
+</div>
+
+<p-dialog
+  [(visible)]="display"
+  [modal]="true"
+  [breakpoints]="{ '960px': '600px' }"
+  [style]="{ width: '600px' }"
+  [baseZIndex]="10000"
+  [draggable]="false"
+  [resizable]="false"
+  [dismissableMask]="true"
+>
+  <ng-template pTemplate="header">
+    <div class="flex gap-2 items-start">
+      <div class="overflow-hidden h-[40px] w-[40px] rounded-full">
+        <img
+          src="https://cdn.pixabay.com/photo/2016/11/18/23/38/child-1837375_960_720.png"
+        />
+      </div>
+      <div class="flex-row">
+        <h1 class="text-base font-bold">
+          {{ tweet.user?.firstName }} {{ tweet.user?.lastName }}
+        </h1>
+        <p class="text-gray-600 text-sm">
+          @{{ tweet.user?.userName }} · {{ tweet.createdAt | date }}
+        </p>
+      </div>
+    </div>
+  </ng-template>
+
+  <textarea
+    [(ngModel)]="editTweet"
+    placeholder="Tweet your reply"
+    pInputTextarea
+    [rows]="3"
+  ></textarea>
+
+  <ng-template pTemplate="footer">
+    <p-button
+      icon="pi pi-save"
+      (click)="onEditTweet()"
+      label="Save"
+      [loading]="isEditing"
+      class="p-button-text -mr-2"
+    ></p-button>
+  </ng-template>
+</p-dialog>
