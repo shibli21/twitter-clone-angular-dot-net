@@ -48,6 +48,16 @@ public class UsersService : IUsersService
         return user;
     }
 
+    public async Task<long> GetFollowingCount(string id)
+    {
+        return await _followCollection.CountDocumentsAsync(follow => follow.UserId == id);
+    }
+
+    public async Task<long> GetFollowerCount(string id)
+    {
+        return await _followCollection.CountDocumentsAsync(follow => follow.FollowingId == id);
+    }
+
 
     public async Task<UserResponseDto?> GetAuthUser()
     {
@@ -61,8 +71,8 @@ public class UsersService : IUsersService
                 user = (await GetUserAsync(id))?.AsDto();
                 if (user != null)
                 {
-                    user.Followers = await _followCollection.CountDocumentsAsync(f => f.FollowingId == id);
-                    user.Following = await _followCollection.CountDocumentsAsync(f => f.UserId == id);
+                    user.Followers = await GetFollowerCount(id);
+                    user.Following = await GetFollowingCount(id);
                 }
             }
         }

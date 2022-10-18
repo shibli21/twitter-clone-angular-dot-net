@@ -25,8 +25,10 @@ public class UsersController : ControllerBase
         {
             return NotFound();
         }
-
-        return Ok(user.AsDto());
+        UserResponseDto userResponseDto = user.AsDto();
+        userResponseDto.Followers = await _usersService.GetFollowerCount(id);
+        userResponseDto.Following = await _usersService.GetFollowingCount(id);
+        return Ok(userResponseDto);
     }
 
     [HttpPut("edit"), Authorize]
