@@ -1,5 +1,5 @@
-using Core.Models;
 using Core.Dtos;
+using Core.Models;
 
 public static class Extensions
 {
@@ -18,6 +18,8 @@ public static class Extensions
             Gender = user.Gender,
             Role = user.Role,
             CreatedAt = user.CreatedAt,
+            Address = user.Address,
+            Bio = user.Bio
         };
     }
 

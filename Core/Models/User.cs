@@ -38,6 +38,12 @@ public class User
     [BsonElement("password")]
     public string Password { get; set; } = string.Empty;
 
+    [BsonElement("address")]
+    public string Address { get; set; } = string.Empty;
+
+    [BsonElement("bio")]
+    public string Bio { get; set; } = string.Empty;
+
     [BsonElement("role")]
     public string Role { get; set; } = Roles.User;
 

@@ -29,8 +29,8 @@ public class UsersController : ControllerBase
         return Ok(user.AsDto());
     }
 
-    [HttpPut(), Authorize]
-    public async Task<ActionResult<UserResponseDto?>> UpdateUser( UserEditDto userEditDto)
+    [HttpPut("edit"), Authorize]
+    public async Task<ActionResult<UserResponseDto?>> UpdateUser(UserEditDto userEditDto)
     {
         User? user = await _usersService.GetUserAsync(userEditDto.Id);
         if (user == null)
@@ -46,6 +46,8 @@ public class UsersController : ControllerBase
         user.Gender = userEditDto.Gender;
         user.DateOfBirth = userEditDto.DateOfBirth;
         user.UpdatedAt = DateTime.Now;
+        user.Bio = userEditDto.Bio;
+        user.Address = userEditDto.Address;
 
         await _usersService.UpdateGetUserAsync(user.Id, user);
         return Ok(user.AsDto());
