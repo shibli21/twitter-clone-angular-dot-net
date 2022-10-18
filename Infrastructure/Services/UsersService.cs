@@ -105,27 +105,23 @@ public class UsersService : IUsersService
     }
 
 
-        public async Task<PaginatedUserResponseDto> GetPaginatedUsers(int? size, int? page)
+        public async Task<PaginatedUserResponseDto> GetPaginatedUsers(int size, int page)
         {
-            var filter = Builders<User>.Filter.Empty;
-            var find = _usersCollection.Find(filter);
-            int perPage = size.GetValueOrDefault();
-            var total_elements = await find.CountDocumentsAsync();
-
+            
+            var filter = _usersCollection.Find(user => user.Role == "user" && user.BlockedAt == null && user.DeletedAt == null);
             return new PaginatedUserResponseDto()
             {
-                TotalElements = total_elements,
-                Page = page.GetValueOrDefault(0),
-                Size = perPage,
-                LastPage = (int)Math.Ceiling((double)total_elements / perPage) - 1,
-                TotalPages = (int)Math.Ceiling((double)total_elements / perPage),
-                Users = find.Skip(page * perPage)
-                            .Limit(perPage)
-                            .ToList()
-                            .AsEnumerable()
-                            .Select(user => user.AsDto())
-                            .ToList()
+                TotalElements = await filter.CountDocumentsAsync(),
+                Page = page,
+                Size = size,
+                LastPage = (int)Math.Ceiling((double)await filter.CountDocumentsAsync() / size) - 1,
+                TotalPages = (int)Math.Ceiling((double)await filter.CountDocumentsAsync() / size),
+                Users = await filter.Skip(page * size)
+                                    .Limit(size)
+                                    .ToListAsync()
+                                    .ContinueWith(task => task.Result.Select(user => user.AsDto()).ToList())
             };
+
 
 
         }
