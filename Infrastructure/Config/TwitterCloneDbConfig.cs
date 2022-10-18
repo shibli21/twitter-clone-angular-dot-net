@@ -10,4 +10,5 @@ public class TwitterCloneDbConfig
     public string HashTagCollectionName { get; set; } = String.Empty;
     public string LikeRetweetCollectionName { get; set; } = String.Empty;
     public string CommentCollectionName { get; set; } = String.Empty;
+    public string BlockCollectionName { get; set; } = String.Empty;
 }

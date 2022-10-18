@@ -12,6 +12,7 @@ public class UsersService : IUsersService
 {
     private readonly IMongoCollection<User> _usersCollection;
     private readonly IMongoCollection<Follows> _followCollection;
+    private readonly IMongoCollection<Blocks> _blockCollection;
     private readonly IHttpContextAccessor _httpContextAccessor;
 
 
@@ -23,6 +24,7 @@ public class UsersService : IUsersService
         var mongoDatabase = mongoClient.GetDatabase(twitterCloneDatabaseSettings.Value.DatabaseName);
         _usersCollection = mongoDatabase.GetCollection<User>(twitterCloneDatabaseSettings.Value.UserCollectionName);
         _followCollection = mongoDatabase.GetCollection<Follows>(twitterCloneDatabaseSettings.Value.FollowerCollectionName);
+        _blockCollection = mongoDatabase.GetCollection<Blocks>(twitterCloneDatabaseSettings.Value.BlockCollectionName);
         _httpContextAccessor = httpContextAccessor;
     }
 
@@ -89,7 +91,11 @@ public class UsersService : IUsersService
             {
                 var following = await _followCollection.Find(follow => follow.UserId == id).ToListAsync();
                 var followingIds = following.Select(follow => follow.FollowingId).ToList();
-                users = (await _usersCollection.Find(user => !followingIds.Contains(user.Id) && user.Id != id)
+                var blocked = await _blockCollection.Find(block => block.UserId == id).ToListAsync();
+                var blockedIds = blocked.Select(block => block.BlockedUserId).ToList();
+                var mergeIds = followingIds.Union(blockedIds).ToArray();
+                Console.WriteLine("mergeIds");
+                users = (await _usersCollection.Find(user => !mergeIds.Contains(user.Id) && user.Id != id)
                     .Limit(size)
                     .ToListAsync()).Select(user => user.AsDto()).ToList();
             }
@@ -105,26 +111,25 @@ public class UsersService : IUsersService
     }
 
 
-        public async Task<PaginatedUserResponseDto> GetPaginatedUsers(int size, int page)
+    public async Task<PaginatedUserResponseDto> GetPaginatedUsers(int size, int page)
+    {
+
+        var filter = _usersCollection.Find(user => user.Role == "user" && user.BlockedAt == null && user.DeletedAt == null);
+        int LastPage = (int)Math.Ceiling((double)await filter.CountDocumentsAsync() / size) - 1;
+        LastPage = LastPage < 0 ? 0 : LastPage;
+        return new PaginatedUserResponseDto()
         {
-            
-            var filter = _usersCollection.Find(user => user.Role == "user" && user.BlockedAt == null && user.DeletedAt == null);
-            return new PaginatedUserResponseDto()
-            {
-                TotalElements = await filter.CountDocumentsAsync(),
-                Page = page,
-                Size = size,
-                LastPage = (int)Math.Ceiling((double)await filter.CountDocumentsAsync() / size) - 1,
-                TotalPages = (int)Math.Ceiling((double)await filter.CountDocumentsAsync() / size),
-                Users = await filter.Skip(page * size)
-                                    .Limit(size)
-                                    .ToListAsync()
-                                    .ContinueWith(task => task.Result.Select(user => user.AsDto()).ToList())
-            };
-
-
-
-        }
+            TotalElements = await filter.CountDocumentsAsync(),
+            Page = page,
+            Size = size,
+            LastPage = LastPage,
+            TotalPages = (int)Math.Ceiling((double)await filter.CountDocumentsAsync() / size),
+            Users = await filter.Skip(page * size)
+                                .Limit(size)
+                                .ToListAsync()
+                                .ContinueWith(task => task.Result.Select(user => user.AsDto()).ToList())
+        };
+    }
 
 
 }
