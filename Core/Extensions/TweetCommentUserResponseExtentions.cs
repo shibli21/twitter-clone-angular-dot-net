@@ -1,23 +1,18 @@
 using Core.Models;
 using Core.Dtos;
 
-public static class Extensions
+public static class TweetCommentUserResponseExtensions
 {
-    public static UserResponseDto AsDto(this User user)
+    public static TweetCommentUserResponseDto AsDtoTweetComment(this User user)
     {
-        return new UserResponseDto
+        return new TweetCommentUserResponseDto
         {
             Id = user.Id,
             UserName = user.UserName,
             FirstName = user.FirstName,
             LastName = user.LastName,
-            Email = user.Email,
             ProfilePictureUrl = user.ProfilePictureUrl,
             CoverPictureUrl = user.CoverPictureUrl,
-            DateOfBirth = user.DateOfBirth,
-            Gender = user.Gender,
-            Role = user.Role,
-            CreatedAt = user.CreatedAt,
         };
     }
 

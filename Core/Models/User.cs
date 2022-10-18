@@ -22,6 +22,12 @@ public class User
     [BsonElement("email")]
     public string Email { get; set; } = string.Empty;
 
+    [BsonElement("profilePictureUrl")]
+    public string ProfilePictureUrl { get; set; } = string.Empty;
+
+    [BsonElement("coverPictureUrl")]
+    public string CoverPictureUrl { get; set; } = string.Empty;
+
     [BsonElement("dateOfBirth")]
     [DataType(DataType.Date)]
     public DateTime DateOfBirth { get; set; } = DateTime.Now;

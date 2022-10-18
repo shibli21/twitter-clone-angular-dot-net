@@ -6,7 +6,7 @@ namespace Core.Interfaces
     {
 
         Task<string> LikeTweet(string id);
-        Task<List<UserResponseDto>> GetLikedUsers(int max, int page, string tweetId);
+        Task<List<TweetCommentUserResponseDto>> GetLikedUsers(int max, int page, string tweetId);
         Task<CommentResponseDto?> Comment(string id, string comment);
         Task<bool> DeleteComment(string commentId);
         Task<CommentResponseDto?> UpdateComment(string commentId, string comment);
