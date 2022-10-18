@@ -104,7 +104,7 @@ namespace Infrastructure.Services
             foreach (CommentResponseDto comment in comments)
             {
                 User user = await _user.Find(x => x.Id == comment.UserId).FirstOrDefaultAsync();
-                comment.User = user.AsDto();
+                comment.User = user.AsDtoTweetComment();
             }
             return comments;
         }
@@ -159,10 +159,10 @@ namespace Infrastructure.Services
 
 
 
-        public async Task<List<UserResponseDto>> GetLikedUsers(int max, int page, string tweetId)
+        public async Task<List<TweetCommentUserResponseDto>> GetLikedUsers(int max, int page, string tweetId)
         {
             string[] likedUsersId = (await _likeRetweetCollection.Find(x => x.TweetId == tweetId && x.IsLiked).Skip((page) * max).Limit(max).ToListAsync()).Select(f => f.UserId).ToArray();
-            return (await _user.Find(u => likedUsersId.Contains(u.Id)).ToListAsync()).Select(u => u.AsDto()).ToList();
+            return (await _user.Find(u => likedUsersId.Contains(u.Id)).ToListAsync()).Select(u => u.AsDtoTweetComment()).ToList();
         }
 
     }

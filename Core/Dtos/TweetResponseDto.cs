@@ -12,7 +12,7 @@ namespace Core.Dtos
         public long LikeCount { get; set; } = 0;
         public long RetweetCount { get; set; } = 0;
         public string[] History { get; set; } = new string[0];
-        public UserResponseDto? User { get; set; } = null;
+        public TweetCommentUserResponseDto? User { get; set; } = null;
         public DateTime CreatedAt { get; set; } = DateTime.Now;
 
 

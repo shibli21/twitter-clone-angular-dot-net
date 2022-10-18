@@ -10,6 +10,6 @@ public class CommentResponseDto
     public string TweetId { get; set; } = string.Empty;
     public string Comment { get; set; } = string.Empty;
     public DateTime CreatedAt { get; set; } = DateTime.Now;
-    public UserResponseDto? User { get; set; } = null;
+    public TweetCommentUserResponseDto? User { get; set; } = null;
 
 }
