@@ -1,4 +1,5 @@
-﻿using Core.Dtos;
+﻿using System.Security.Claims;
+using Core.Dtos;
 using Core.Interfaces;
 using Core.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -11,10 +12,12 @@ namespace UserService.Controllers;
 public class UsersController : ControllerBase
 {
     private readonly IUsersService _usersService;
+    private readonly IHttpContextAccessor _httpContextAccessor;
 
-    public UsersController(IUsersService usersService)
+    public UsersController(IUsersService usersService, IHttpContextAccessor httpContextAccessor)
     {
         _usersService = usersService;
+        _httpContextAccessor = httpContextAccessor;
     }
 
     [HttpGet("{id}")]
@@ -34,25 +37,38 @@ public class UsersController : ControllerBase
     [HttpPut("edit"), Authorize]
     public async Task<ActionResult<UserResponseDto?>> UpdateUser(UserEditDto userEditDto)
     {
-        User? user = await _usersService.GetUserAsync(userEditDto.Id);
-        if (user == null)
+        if (_httpContextAccessor.HttpContext != null)
         {
-            return NotFound();
-        }
-        user.UserName = userEditDto.UserName;
-        user.Email = userEditDto.Email;
-        user.FirstName = userEditDto.FirstName;
-        user.LastName = userEditDto.LastName;
-        user.ProfilePictureUrl = userEditDto.ProfilePictureUrl;
-        user.CoverPictureUrl = userEditDto.CoverPictureUrl;
-        user.Gender = userEditDto.Gender;
-        user.DateOfBirth = userEditDto.DateOfBirth;
-        user.UpdatedAt = DateTime.Now;
-        user.Bio = userEditDto.Bio;
-        user.Address = userEditDto.Address;
+            User? user = await _usersService.GetUserAsync(userEditDto.Id);
+            if (user == null)
+            {
+                return NotFound();
+            }
+            string? id = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            string role = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.Role)?.Value ?? "";
+            if (id != user.Id && role != "admin")
+            {
+                return Unauthorized();
+            }
+            user.UserName = userEditDto.UserName;
+            user.Email = userEditDto.Email;
+            user.FirstName = userEditDto.FirstName;
+            user.LastName = userEditDto.LastName;
+            user.ProfilePictureUrl = userEditDto.ProfilePictureUrl;
+            user.CoverPictureUrl = userEditDto.CoverPictureUrl;
+            user.Gender = userEditDto.Gender;
+            user.DateOfBirth = userEditDto.DateOfBirth;
+            user.UpdatedAt = DateTime.Now;
+            user.Bio = userEditDto.Bio;
+            user.Address = userEditDto.Address;
 
-        await _usersService.UpdateGetUserAsync(user.Id, user);
-        return Ok(user.AsDto());
+            await _usersService.UpdateGetUserAsync(user.Id, user);
+            return Ok(user.AsDto());
+        }
+        else
+        {
+            return Unauthorized();
+        }
     }
 
 
