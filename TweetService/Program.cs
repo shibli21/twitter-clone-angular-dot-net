@@ -20,6 +20,7 @@ builder.Services.AddSingleton<IMongoClient>(sp =>
 
 builder.Services.AddSingleton<ITweetService, TweetService>();
 builder.Services.AddSingleton<ILikeCommentService, LikeCommentService>();
+builder.Services.AddSingleton<IUsersService, UsersService>();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
