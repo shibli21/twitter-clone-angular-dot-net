@@ -58,6 +58,10 @@ public class AuthController : ControllerBase
             return BadRequest(new { field = "email", message = "User not found" });
         if (!this.VerifyPasswordHash(userLogin.Password, user.Password))
             return BadRequest(new { field = "password", message = "Wrong password" });
+        if (user.DeletedAt != null)
+            return BadRequest(new { field = "email", message = "User is deleted" });
+        if (user.BlockedAt != null)
+            return BadRequest(new { field = "email", message = "User is blocked" });
 
         var refreshTokenString = Request.Cookies["refreshToken"];
         RefreshToken refreshToken = this.CreateRefreshToken(user);

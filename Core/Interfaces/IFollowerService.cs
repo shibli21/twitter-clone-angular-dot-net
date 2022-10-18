@@ -4,6 +4,6 @@ namespace Core.Interfaces;
 public interface IFollowerService
 {
     Task<string> FollowByUserId(string followingId);
-    Task<List<UserResponseDto>> GetFollowers(int limit, int page);
-    Task<List<UserResponseDto>> GetFollowing(int limit, int page);
+    Task<PaginatedUserResponseDto> GetFollowers(string userId,int limit, int page);
+    Task<PaginatedUserResponseDto> GetFollowing(string userId,int limit, int page);
 }

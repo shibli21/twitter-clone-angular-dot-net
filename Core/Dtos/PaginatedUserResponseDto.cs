@@ -2,11 +2,11 @@ namespace Core.Dtos
 {
     public class PaginatedUserResponseDto
     {
-        public int Page { get; set; }
-        public int Size { get; set; }
+        public int Page { get; set; } = 0;
+        public int Size { get; set; } = 20;
         public long TotalElements { get; set; }
-        public int LastPage { get; set; }
-        public int TotalPages { get; set; }
+        public int LastPage { get; set; } = 0;
+        public int TotalPages { get; set; } = 0;
         public List<UserResponseDto>? Users { get; set; }
     }
 

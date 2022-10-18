@@ -34,7 +34,7 @@ public class UsersController : ControllerBase
         return Ok(userResponseDto);
     }
 
-    [HttpGet, Authorize]
+    [HttpGet, Authorize(Roles = "admin")]
     public async Task<ActionResult<PaginatedUserResponseDto>> GetPaginatedUsers([FromQuery] int size = 20, [FromQuery] int page =0)
     {
         return Ok(await _usersService.GetPaginatedUsers(size, page));
