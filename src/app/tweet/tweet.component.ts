@@ -14,7 +14,7 @@ import { MenuItem } from 'primeng/api';
 export class TweetComponent implements OnInit {
   items!: MenuItem[];
   display = false;
-  tweet!: Tweet;
+  tweet!: Tweet | null;
   editTweet: string = '';
   comment = '';
   tweetId = '';
@@ -33,9 +33,14 @@ export class TweetComponent implements OnInit {
   ngOnInit() {
     this.route.params.subscribe((params) => {
       this.tweetId = params['id'];
-      this.tweetService.getTweet(this.tweetId).subscribe((res) => {
-        this.tweet = res;
-        this.editTweet = this.tweet.tweet;
+      this.tweetService.getTweet(this.tweetId).subscribe({
+        next: (res) => {
+          this.tweet = res;
+          this.editTweet = this.tweet.tweet;
+        },
+        error: (err) => {
+          // this.router.navigate(['/']);
+        },
       });
       this.tweetService.getComments(this.tweetId).subscribe((res) => {
         this.comments = res;
@@ -62,37 +67,41 @@ export class TweetComponent implements OnInit {
 
   commentOnTweet() {
     this.isCommenting = true;
-    this.tweetService
-      .commentOnTweet(this.tweet.id, this.comment)
-      .subscribe((comment) => {
-        console.log(comment);
+    if (this.tweet) {
+      this.tweetService
+        .commentOnTweet(this.tweet.id, this.comment)
+        .subscribe((comment) => {
+          console.log(comment);
 
-        this.authService.currentUser().subscribe((user) => {
-          let newComment: Comment = {
-            id: comment.id,
-            userId: user.id,
-            tweetId: this.tweet.id,
-            comment: this.comment,
-            createdAt: comment.createdAt,
-            user: user,
-          };
+          this.authService.currentUser().subscribe((user) => {
+            let newComment: Comment = {
+              id: comment.id,
+              userId: user.id,
+              tweetId: this.tweet!.id,
+              comment: this.comment,
+              createdAt: comment.createdAt,
+              user: user,
+            };
 
-          this.comments.push(newComment);
-          this.isCommenting = false;
-          this.display = false;
-          this.comment = '';
+            this.comments.push(newComment);
+            this.isCommenting = false;
+            this.display = false;
+            this.comment = '';
+          });
         });
-      });
+    }
   }
 
   likeUnlike() {
-    this.tweetService.likeTweet(this.tweet.id).subscribe({
-      next: (res) => {
-        this.tweetService.getTweet(this.tweetId).subscribe((res) => {
-          this.tweet = res;
-        });
-      },
-    });
+    if (this.tweet) {
+      this.tweetService.likeTweet(this.tweet.id).subscribe({
+        next: (res) => {
+          this.tweetService.getTweet(this.tweetId).subscribe((res) => {
+            this.tweet = res;
+          });
+        },
+      });
+    }
   }
 
   onEditTweet() {
