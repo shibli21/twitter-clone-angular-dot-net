@@ -28,4 +28,12 @@ export class UserService {
       })
     );
   }
+
+  getYouMayFollow() {
+    return this.http.get<User[]>(this.baseUrl + 'users/may-follow').pipe(
+      catchError((err) => {
+        return throwError(err);
+      })
+    );
+  }
 }

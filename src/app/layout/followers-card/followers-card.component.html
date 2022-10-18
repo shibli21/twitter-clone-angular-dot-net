@@ -11,93 +11,31 @@
       </a>
     </div>
     <div class="w-full">
-      <ul role="list" class="divide-y divide-gray-200">
-        <li class="py-3 sm:py-4">
+      <ul
+        *ngFor="let user of users"
+        role="list"
+        class="divide-y divide-gray-200"
+      >
+        <li class="py-3 sm:py-4" [routerLink]="['/profile', user.id]">
           <div class="flex items-center space-x-4">
             <div class="flex-shrink-0">
               <img
-                class="w-8 h-8 rounded-full"
-                src="https://flowbite.com/docs/images/people/profile-picture-1.jpg"
+                class="w-10 h-10 rounded-full"
+                [src]="
+                  user.profilePictureUrl
+                    ? user.profilePictureUrl
+                    : 'https://avatars.dicebear.com/api/open-peeps/' +
+                      user.userName +
+                      '.svg'
+                "
                 alt="Neil image"
               />
             </div>
             <div class="flex-1 min-w-0">
               <p class="text-sm font-medium text-gray-900 truncate">
-                Neil Sims
+                {{ user.firstName }} {{ user.lastName }}
               </p>
-              <p class="text-sm text-gray-500 truncate">email@windster.com</p>
-            </div>
-            <p-button label="Follow" styleClass="p-button"></p-button>
-          </div>
-        </li>
-        <li class="py-3 sm:py-4">
-          <div class="flex items-center space-x-4">
-            <div class="flex-shrink-0">
-              <img
-                class="w-8 h-8 rounded-full"
-                src="https://flowbite.com/docs/images/people/profile-picture-3.jpg"
-                alt="Bonnie image"
-              />
-            </div>
-            <div class="flex-1 min-w-0">
-              <p class="text-sm font-medium text-gray-900 truncate">
-                Bonnie Green
-              </p>
-              <p class="text-sm text-gray-500 truncate">email@windster.com</p>
-            </div>
-            <p-button label="Follow" styleClass="p-button"></p-button>
-          </div>
-        </li>
-        <li class="py-3 sm:py-4">
-          <div class="flex items-center space-x-4">
-            <div class="flex-shrink-0">
-              <img
-                class="w-8 h-8 rounded-full"
-                src="https://flowbite.com/docs/images/people/profile-picture-2.jpg"
-                alt="Michael image"
-              />
-            </div>
-            <div class="flex-1 min-w-0">
-              <p class="text-sm font-medium text-gray-900 truncate">
-                Michael Gough
-              </p>
-              <p class="text-sm text-gray-500 truncate">email@windster.com</p>
-            </div>
-            <p-button label="Follow" styleClass="p-button"></p-button>
-          </div>
-        </li>
-        <li class="py-3 sm:py-4">
-          <div class="flex items-center space-x-4">
-            <div class="flex-shrink-0">
-              <img
-                class="w-8 h-8 rounded-full"
-                src="https://flowbite.com/docs/images/people/profile-picture-4.jpg"
-                alt="Lana image"
-              />
-            </div>
-            <div class="flex-1 min-w-0">
-              <p class="text-sm font-medium text-gray-900 truncate">
-                Lana Byrd
-              </p>
-              <p class="text-sm text-gray-500 truncate">email@windster.com</p>
-            </div>
-            <p-button label="Follow" styleClass="p-button"></p-button>
-          </div>
-        </li>
-        <li class="pt-3 pb-0 sm:pt-4">
-          <div class="flex items-center space-x-4">
-            <div class="flex-shrink-0">
-              <img
-                class="w-8 h-8 rounded-full"
-                src="https://flowbite.com/docs/images/people/profile-picture-5.jpg"
-                alt="Thomas image"
-              />
-            </div>
-            <div class="flex-1 min-w-0">
-              <p class="text-sm font-medium text-gray-900 truncate">
-                Thomes Lean
-              </p>
-              <p class="text-sm text-gray-500 truncate">email@windster.com</p>
+              <p class="text-sm text-gray-500 truncate">{{ user.email }}</p>
             </div>
             <p-button label="Follow" styleClass="p-button"></p-button>
           </div>

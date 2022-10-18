@@ -6,8 +6,14 @@
       <img class="object-cover h-full" [src]="currentUser.coverPictureUrl" />
     </div>
     <img
-      class="w-32 h-32 object-cover mx-auto rounded-full -mt-20 border-8"
-      [src]="currentUser.profilePictureUrl"
+      class="w-32 bg-whtie h-32 object-cover mx-auto rounded-full -mt-20 border-8"
+      [src]="
+        currentUser.profilePictureUrl
+          ? currentUser.profilePictureUrl
+          : 'https://avatars.dicebear.com/api/open-peeps/' +
+            currentUser.userName +
+            '.svg'
+      "
       alt=""
     />
 

@@ -8,8 +8,14 @@
       </div>
       <div class="flex justify-between p-4">
         <img
-          class="w-32 h-32 object-cover rounded-full -mt-20 border-8"
-          [src]="profileUser.profilePictureUrl"
+          class="bg-white w-32 h-32 object-cover rounded-full -mt-20 border-8"
+          [src]="
+            profileUser.profilePictureUrl
+              ? profileUser.profilePictureUrl
+              : 'https://avatars.dicebear.com/api/open-peeps/' +
+                profileUser.userName +
+                '.svg'
+          "
           alt=""
         />
         <div class="flex items-center gap-1">
