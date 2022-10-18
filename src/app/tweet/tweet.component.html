@@ -62,25 +62,7 @@
     </div>
   </div>
 
-  <div class="my-2">
-    <textarea
-      [(ngModel)]="comment"
-      placeholder="Tweet your reply"
-      pInputTextarea
-      [rows]="2"
-    ></textarea>
-  </div>
-
-  <div class="flex justify-between items-center mb-4">
-    <h1 class="text-xl font-bold leading-none text-gray-900">Replies</h1>
-    <p-button
-      [disabled]="!comment"
-      (onClick)="commentOnTweet()"
-      icon="pi pi-send"
-      label="Reply"
-      class="p-button-text"
-    ></p-button>
-  </div>
+  <app-new-comment [tweetId]="tweet.id"></app-new-comment>
 
   <div *ngFor="let comment of comments">
     <app-tweet-comment [comment]="comment"></app-tweet-comment>

@@ -1,4 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
+import { CommentService } from './../comment.service';
 
 @Component({
   selector: 'app-new-comment',
@@ -6,14 +7,26 @@ import { Component, Input, OnInit } from '@angular/core';
   styleUrls: ['./new-comment.component.scss'],
 })
 export class NewCommentComponent implements OnInit {
-  @Input() addNewComment() {}
+  @Input() tweetId = '';
   comment = '';
+  isCommenting = false;
 
-  constructor() {}
+  constructor(private commentService: CommentService) {}
 
   ngOnInit(): void {}
 
   addComment() {
-    this.addNewComment();
+    this.isCommenting = true;
+    if (this.tweetId) {
+      this.commentService.commentOnTweet(this.tweetId, this.comment).subscribe({
+        next: (comment) => {
+          this.isCommenting = false;
+          this.comment = '';
+        },
+        error: (err) => {
+          this.isCommenting = false;
+        },
+      });
+    }
   }
 }

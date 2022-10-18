@@ -1,6 +1,7 @@
-import { ToastrService } from 'ngx-toastr';
 import { Component, Input, OnInit } from '@angular/core';
+import { ToastrService } from 'ngx-toastr';
 import { MenuItem } from 'primeng/api';
+import { CommentService } from './../../../tweet/comment.service';
 import { Tweet } from './../../../tweet/models/tweet.model';
 import { TweetService } from './../../../tweet/tweet.service';
 
@@ -21,6 +22,7 @@ export class TweetCardComponent implements OnInit {
 
   constructor(
     private tweetService: TweetService,
+    private commentService: CommentService,
     private toastr: ToastrService
   ) {}
 
@@ -53,7 +55,7 @@ export class TweetCardComponent implements OnInit {
 
   commentOnTweet() {
     this.isCommenting = true;
-    this.tweetService.commentOnTweet(this.tweet.id, this.comment).subscribe({
+    this.commentService.commentOnTweet(this.tweet.id, this.comment).subscribe({
       next: () => {
         this.tweetService.getTweet(this.tweet.id).subscribe((res) => {
           this.tweet = res;

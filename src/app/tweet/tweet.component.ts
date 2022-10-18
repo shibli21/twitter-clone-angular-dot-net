@@ -1,10 +1,10 @@
-import { ToastrService } from 'ngx-toastr';
+import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { ToastrService } from 'ngx-toastr';
+import { MenuItem } from 'primeng/api';
+import { CommentService } from './comment.service';
 import { Comment, Tweet } from './models/tweet.model';
 import { TweetService } from './tweet.service';
-import { AuthService } from './../auth/auth.service';
-import { Component, OnInit } from '@angular/core';
-import { MenuItem } from 'primeng/api';
 
 @Component({
   selector: 'app-tweet',
@@ -26,7 +26,7 @@ export class TweetComponent implements OnInit {
     private tweetService: TweetService,
     private router: Router,
     private route: ActivatedRoute,
-    private authService: AuthService,
+    private commentService: CommentService,
     private toastr: ToastrService
   ) {}
 
@@ -38,12 +38,13 @@ export class TweetComponent implements OnInit {
           this.tweet = res;
           this.editTweet = this.tweet.tweet;
         },
-        error: (err) => {
-          // this.router.navigate(['/']);
-        },
+        error: (err) => {},
       });
-      this.tweetService.getComments(this.tweetId).subscribe((res) => {
-        this.comments = res;
+      this.commentService.comments.subscribe((comments) => {
+        this.commentService.getComments(this.tweetId).subscribe((res) => {
+          this.comments = res;
+        });
+        this.comments = comments || [];
       });
     });
 
@@ -63,33 +64,6 @@ export class TweetComponent implements OnInit {
         },
       },
     ];
-  }
-
-  commentOnTweet() {
-    this.isCommenting = true;
-    if (this.tweet) {
-      this.tweetService
-        .commentOnTweet(this.tweet.id, this.comment)
-        .subscribe((comment) => {
-          console.log(comment);
-
-          this.authService.currentUser().subscribe((user) => {
-            let newComment: Comment = {
-              id: comment.id,
-              userId: user.id,
-              tweetId: this.tweet!.id,
-              comment: this.comment,
-              createdAt: comment.createdAt,
-              user: user,
-            };
-
-            this.comments.push(newComment);
-            this.isCommenting = false;
-            this.display = false;
-            this.comment = '';
-          });
-        });
-    }
   }
 
   likeUnlike() {
