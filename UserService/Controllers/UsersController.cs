@@ -34,6 +34,19 @@ public class UsersController : ControllerBase
         return Ok(userResponseDto);
     }
 
+    [HttpGet, Authorize]
+    public async Task<ActionResult<PaginatedUserResponseDto>> GetPaginatedUsers([FromQuery] int size = 20, [FromQuery] int page =0)
+    {
+        return Ok(await _usersService.GetPaginatedUsers(size, page));
+    }
+
+    [HttpGet("might-follow"), Authorize(Roles = "user")]
+    public async Task<ActionResult<List<UserResponseDto>>> MightFollowUser([FromQuery] int size = 20)
+    {
+        return Ok(await _usersService.MightFollowUser(size));
+    }
+
+
     [HttpPut("edit"), Authorize]
     public async Task<ActionResult<UserResponseDto?>> UpdateUser(UserEditDto userEditDto)
     {

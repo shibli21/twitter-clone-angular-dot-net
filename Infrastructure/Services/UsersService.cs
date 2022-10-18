@@ -79,9 +79,56 @@ public class UsersService : IUsersService
         return user;
     }
 
+    public async Task<List<UserResponseDto>> MightFollowUser(int size)
+    {
+        List<UserResponseDto> users = new();
+        if (_httpContextAccessor.HttpContext != null)
+        {
+            string? id = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (id != null)
+            {
+                var following = await _followCollection.Find(follow => follow.UserId == id).ToListAsync();
+                var followingIds = following.Select(follow => follow.FollowingId).ToList();
+                users = (await _usersCollection.Find(user => !followingIds.Contains(user.Id) && user.Id != id)
+                    .Limit(size)
+                    .ToListAsync()).Select(user => user.AsDto()).ToList();
+            }
+        }
+        return users;
+    }
+
+
     public async Task<User> UpdateGetUserAsync(string id, User user)
     {
         await _usersCollection.ReplaceOneAsync(u => u.Id == id, user);
         return user;
     }
+
+
+        public async Task<PaginatedUserResponseDto> GetPaginatedUsers(int? size, int? page)
+        {
+            var filter = Builders<User>.Filter.Empty;
+            var find = _usersCollection.Find(filter);
+            int perPage = size.GetValueOrDefault();
+            var total_elements = await find.CountDocumentsAsync();
+
+            return new PaginatedUserResponseDto()
+            {
+                TotalElements = total_elements,
+                Page = page.GetValueOrDefault(0),
+                Size = perPage,
+                LastPage = (int)Math.Ceiling((double)total_elements / perPage) - 1,
+                TotalPages = (int)Math.Ceiling((double)total_elements / perPage),
+                Users = find.Skip(page * perPage)
+                            .Limit(perPage)
+                            .ToList()
+                            .AsEnumerable()
+                            .Select(user => user.AsDto())
+                            .ToList()
+            };
+
+
+        }
+
+
 }
