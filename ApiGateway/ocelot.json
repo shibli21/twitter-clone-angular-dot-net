@@ -15,6 +15,20 @@
       ]
     },
     {
+      "UpstreamPathTemplate": "/users/edit",
+      "UpstreamHttpMethod": [
+        "Put"
+      ],
+      "DownstreamPathTemplate": "/users/Edit",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5211
+        }
+      ]
+    },
+    {
       "UpstreamPathTemplate": "/auth/register",
       "UpstreamHttpMethod": [
         "Post"
