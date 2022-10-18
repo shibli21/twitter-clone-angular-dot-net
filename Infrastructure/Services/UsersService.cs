@@ -68,4 +68,10 @@ public class UsersService : IUsersService
         }
         return user;
     }
+
+    public async Task<User> UpdateGetUserAsync(string id, User user)
+    {
+        await _usersCollection.ReplaceOneAsync(u => u.Id == id, user);
+        return user;
+    }
 }
