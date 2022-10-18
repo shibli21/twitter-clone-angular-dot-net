@@ -83,6 +83,108 @@
           "Port": 5211
         }
       ]
+    },
+    {
+      "UpstreamPathTemplate": "/tweet/create",
+      "UpstreamHttpMethod": [
+        "Post"
+      ],
+      "DownstreamPathTemplate": "/tweet/create",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5212
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tweet/{id}",
+      "UpstreamHttpMethod": [
+        "Get",
+        "Put",
+        "Delete"
+      ],
+      "DownstreamPathTemplate": "/tweet/{id}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5212
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tweet/like/{tweetId}",
+      "UpstreamHttpMethod": [
+        "Post"
+      ],
+      "DownstreamPathTemplate": "/tweet/like/{tweetId}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5212
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tweet/liked-users/{tweetId}",
+      "UpstreamHttpMethod": [
+        "Post"
+      ],
+      "DownstreamPathTemplate": "/tweet/liked-users/{tweetId}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5212
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tweet/comment/{tweetId}",
+      "UpstreamHttpMethod": [
+        "Post",
+        "Delete",
+        "Put"
+      ],
+      "DownstreamPathTemplate": "/tweet/comment/{tweetId}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5212
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tweet/comments/{tweetId}",
+      "UpstreamHttpMethod": [
+        "Get"
+      ],
+      "DownstreamPathTemplate": "/tweet/comments/{tweetId}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5212
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/tweet/user-tweets/{tweetId}",
+      "UpstreamHttpMethod": [
+        "Get"
+      ],
+      "DownstreamPathTemplate": "/tweet/user-tweets/{tweetId}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5212
+        }
+      ]
     }
   ],
   "GlobalConfiguration": {
