@@ -79,7 +79,7 @@ public class UsersService : IUsersService
         return user;
     }
 
-    public async Task<List<UserResponseDto>> MightFollowUser(int size)
+    public async Task<List<UserResponseDto>> MayFollowUser(int size)
     {
         List<UserResponseDto> users = new();
         if (_httpContextAccessor.HttpContext != null)

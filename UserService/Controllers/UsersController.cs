@@ -40,10 +40,10 @@ public class UsersController : ControllerBase
         return Ok(await _usersService.GetPaginatedUsers(size, page));
     }
 
-    [HttpGet("might-follow"), Authorize(Roles = "user")]
-    public async Task<ActionResult<List<UserResponseDto>>> MightFollowUser([FromQuery] int size = 20)
+    [HttpGet("may-follow"), Authorize(Roles = "user")]
+    public async Task<ActionResult<List<UserResponseDto>>> MayFollowUser([FromQuery] int size = 20)
     {
-        return Ok(await _usersService.MightFollowUser(size));
+        return Ok(await _usersService.MayFollowUser(size));
     }
 
 
