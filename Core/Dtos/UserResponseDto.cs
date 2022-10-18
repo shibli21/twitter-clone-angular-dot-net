@@ -16,6 +16,8 @@ public class UserResponseDto
     public string Gender { get; set; } = string.Empty;
     public long Followers { get; set; } = 0;
     public long Following { get; set; } = 0;
+    public string Address { get; set; } = string.Empty;
+    public string Bio { get; set; } = string.Empty;
     public string Role { get; set; } = Roles.User;
     public DateTime CreatedAt { get; set; } = DateTime.Now;
 }

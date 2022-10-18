@@ -15,14 +15,16 @@ public class UserEditDto
     public string ProfilePictureUrl { get; set; } = string.Empty;
     public string CoverPictureUrl { get; set; } = string.Empty;
     public string Gender { get; set; } = string.Empty;
+    public string Bio { get; set; } = string.Empty;
+    public string Address { get; set; } = string.Empty;
 
     [DataType(DataType.Date)]
     public DateTime DateOfBirth { get; set; } = DateTime.Now;
 }
 
-public class UserEditValidator: AbstractValidator<UserEditDto>
+public class UserEditValidator : AbstractValidator<UserEditDto>
 {
-     private readonly IUsersService _userService;
+    private readonly IUsersService _userService;
     public UserEditValidator(IUsersService userService)
     {
         _userService = userService;
@@ -50,7 +52,7 @@ public class UserEditValidator: AbstractValidator<UserEditDto>
         return false;
     }
 
-    private bool UniqueEmail(UserEditDto userEditDto,string email)
+    private bool UniqueEmail(UserEditDto userEditDto, string email)
     {
         Task<User?> user = _userService.GetUserByEmailAsync(email);
         if (user.Result == null || user.Result.Id == userEditDto.Id) return true;
