@@ -15,9 +15,11 @@
     />
 
     <div class="text-center mt-6 text-3xl font-medium leading-3">
-      syed shibli mahmud
+      {{ currentUser?.firstName }} {{ currentUser?.lastName }}
     </div>
-    <div class="text-center mt-2 font-light text-sm">@shibli21</div>
+    <div class="text-center mt-2 font-light text-sm">
+      @{{ currentUser?.userName }}
+    </div>
     <div class="flex items-center justify-center font-normal text-lg gap-1">
       <i-tabler name="map-pin" class="w-[30px]"></i-tabler>
       <span class="">Sylhet , Bangladesh</span>
