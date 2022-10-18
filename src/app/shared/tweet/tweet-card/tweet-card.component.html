@@ -12,10 +12,10 @@
       </div>
       <div class="flex-row">
         <h1 class="text-base font-bold">
-          {{ tweet.user?.firstName }} {{ tweet.user?.lastName }}
+          {{ tweet.user.firstName }} {{ tweet.user.lastName }}
         </h1>
         <p class="text-gray-600 text-sm">
-          @{{ tweet.user?.userName }} · {{ tweet.createdAt | date }}
+          @{{ tweet.user.userName }} · {{ tweet.createdAt | date }}
         </p>
       </div>
     </div>
@@ -43,12 +43,12 @@
       type="button"
       icon="pi pi-heart"
       (click)="likeUnlike()"
-      [label]="tweet.likeCount?.toString()!"
+      [label]="tweet.likeCount.toString()"
       class="p-button-danger p-button-text"
     ></button>
     <button
       pButton
-      [label]="tweet.commentCount?.toString()!"
+      [label]="tweet.commentCount.toString()"
       type="button"
       icon="pi pi-comment"
       class="p-button-success p-button-text"
@@ -56,7 +56,7 @@
     ></button>
     <button
       pButton
-      [label]="tweet.retweetCount?.toString()!"
+      [label]="tweet.retweetCount.toString()"
       type="button"
       icon="pi pi-share-alt"
       class="p-button-help p-button-text"
@@ -75,17 +75,19 @@
   [dismissableMask]="true"
 >
   <ng-template pTemplate="header">
-    <div class="items-center justify-between flex">
-      <div class="flex gap-2 items-center">
-        <div class="overflow-hidden h-[40px] w-[40px] rounded-full">
-          <img
-            src="https://cdn.pixabay.com/photo/2016/11/18/23/38/child-1837375_960_720.png"
-          />
-        </div>
-        <div class="flex gap-1 items-center">
-          <h1 class="text-xl font-bold">John Doe</h1>
-          <p class="text-gray-600 text-sm">@john . Mar 16</p>
-        </div>
+    <div class="flex gap-2 items-start">
+      <div class="overflow-hidden h-[40px] w-[40px] rounded-full">
+        <img
+          src="https://cdn.pixabay.com/photo/2016/11/18/23/38/child-1837375_960_720.png"
+        />
+      </div>
+      <div class="flex-row">
+        <h1 class="text-base font-bold">
+          {{ tweet.user.firstName }} {{ tweet.user.lastName }}
+        </h1>
+        <p class="text-gray-600 text-sm">
+          @{{ tweet.user.userName }} · {{ tweet.createdAt | date }}
+        </p>
       </div>
     </div>
   </ng-template>
@@ -132,10 +134,10 @@
       </div>
       <div class="flex-row">
         <h1 class="text-base font-bold">
-          {{ tweet.user?.firstName }} {{ tweet.user?.lastName }}
+          {{ tweet.user.firstName }} {{ tweet.user.lastName }}
         </h1>
         <p class="text-gray-600 text-sm">
-          @{{ tweet.user?.userName }} · {{ tweet.createdAt | date }}
+          @{{ tweet.user.userName }} · {{ tweet.createdAt | date }}
         </p>
       </div>
     </div>

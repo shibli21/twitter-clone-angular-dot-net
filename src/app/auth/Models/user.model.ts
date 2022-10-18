@@ -28,12 +28,14 @@ export interface User {
   firstName: string;
   lastName: string;
   email: string;
+  profilePictureUrl: string;
+  coverPictureUrl: string;
   dateOfBirth: Date;
   gender: string;
-  password: string;
+  followers: number;
+  following: number;
+  bio: string;
+  address: string;
   role: string;
   createdAt: Date;
-  updatedAt: Date;
-  deletedAt: null;
-  blockedAt: null;
 }

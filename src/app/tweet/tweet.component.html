@@ -12,10 +12,10 @@
       </div>
       <div class="flex-row">
         <h1 class="text-base font-bold">
-          {{ tweet.user?.firstName }} {{ tweet.user?.lastName }}
+          {{ tweet.user.firstName }} {{ tweet.user.lastName }}
         </h1>
         <p class="text-gray-600 text-sm">
-          @{{ tweet.user?.userName }} · {{ tweet.createdAt | date }}
+          @{{ tweet.user.userName }} · {{ tweet.createdAt | date }}
         </p>
       </div>
     </div>
@@ -40,12 +40,12 @@
       pButton
       type="button"
       icon="pi pi-heart"
-      [label]="tweet.likeCount.toString()!"
+      [label]="tweet.likeCount.toString()"
       class="p-button-danger p-button-text"
       (click)="likeUnlike()"
     ></button>
     <button
-      [label]="tweet.commentCount.toString()!"
+      [label]="tweet.commentCount.toString()"
       pButton
       type="button"
       icon="pi pi-comment"
@@ -53,7 +53,7 @@
     ></button>
     <button
       pButton
-      [label]="tweet?.retweetCount?.toString()!"
+      [label]="tweet.retweetCount.toString()"
       type="button"
       icon="pi pi-share-alt"
       class="p-button-help p-button-text"
@@ -104,10 +104,10 @@
       </div>
       <div class="flex-row">
         <h1 class="text-base font-bold">
-          {{ tweet.user?.firstName }} {{ tweet.user?.lastName }}
+          {{ tweet.user.firstName }} {{ tweet.user.lastName }}
         </h1>
         <p class="text-gray-600 text-sm">
-          @{{ tweet.user?.userName }} · {{ tweet.createdAt | date }}
+          @{{ tweet.user.userName }} · {{ tweet.createdAt | date }}
         </p>
       </div>
     </div>

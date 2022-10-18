@@ -5,11 +5,11 @@ import { Routes, RouterModule } from '@angular/router';
 
 const routes: Routes = [
   {
-    path: '',
+    path: ':userId',
     component: ProfileComponent,
   },
   {
-    path: 'edit',
+    path: 'edit/:userId',
     component: EditProfileComponent,
   },
 ];

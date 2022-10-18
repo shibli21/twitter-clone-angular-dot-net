@@ -26,6 +26,7 @@ export class TweetComponent implements OnInit {
     private tweetService: TweetService,
     private router: Router,
     private route: ActivatedRoute,
+    private authService: AuthService,
     private toastr: ToastrService
   ) {}
 
@@ -66,10 +67,21 @@ export class TweetComponent implements OnInit {
       .subscribe((comment) => {
         console.log(comment);
 
-        this.isCommenting = false;
-        this.comments.push(comment);
-        this.display = false;
-        this.comment = '';
+        this.authService.currentUser().subscribe((user) => {
+          let newComment: Comment = {
+            id: comment.id,
+            userId: user.id,
+            tweetId: this.tweet.id,
+            comment: this.comment,
+            createdAt: comment.createdAt,
+            user: user,
+          };
+
+          this.comments.push(newComment);
+          this.isCommenting = false;
+          this.display = false;
+          this.comment = '';
+        });
       });
   }
 

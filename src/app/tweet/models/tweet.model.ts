@@ -1,4 +1,3 @@
-import { User } from './../../auth/Models/user.model';
 export interface Tweet {
   id: string;
   type: string;
@@ -19,4 +18,13 @@ export interface Comment {
   comment: string;
   createdAt: Date;
   user: User;
+}
+
+interface User {
+  id: string;
+  userName: string;
+  firstName: string;
+  lastName: string;
+  profilePictureUrl: string;
+  coverPictureUrl: string;
 }

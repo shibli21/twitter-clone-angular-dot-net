@@ -32,12 +32,12 @@ export class NavComponent implements OnInit {
           {
             label: 'My Profile',
             icon: 'pi pi-fw pi-user-edit',
-            routerLink: ['/profile'],
+            routerLink: ['/profile', this.authService.userId()],
           },
           {
             label: 'Edit',
             icon: 'pi pi-pencil',
-            routerLink: ['/profile/edit'],
+            routerLink: ['/profile/edit', this.authService.userId()],
           },
           {
             label: 'Logout',

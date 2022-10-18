@@ -58,6 +58,10 @@ export class AuthService {
     return this.user.value?.id;
   }
 
+  currentUserValue() {
+    return this.user.value;
+  }
+
   handleAuthentication(loginResponse: LoginResponse) {
     this.autoLogout(loginResponse.jwtExpiresIn);
 

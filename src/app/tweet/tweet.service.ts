@@ -36,7 +36,7 @@ export class TweetService {
     );
   }
 
-  getUsersTweets(userId: string) {
+  getUserTweets(userId: string) {
     return this.http
       .get<Tweet[]>(this.baseUrl + 'tweet/user-tweets/' + userId)
       .pipe(
