@@ -1,3 +1,4 @@
+import { ToastrService } from 'ngx-toastr';
 import { UserService } from './user.service';
 import { ActivatedRoute } from '@angular/router';
 import { TweetService } from './../tweet/tweet.service';
@@ -23,7 +24,8 @@ export class ProfileComponent implements OnInit {
     private authService: AuthService,
     private tweetService: TweetService,
     private userService: UserService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private toastr: ToastrService
   ) {}
 
   ngOnInit(): void {
@@ -38,6 +40,7 @@ export class ProfileComponent implements OnInit {
       } else {
         this.userService.getUserById(this.userId).subscribe((user) => {
           this.profileUser = user;
+          this.isCurrentUser = false;
         });
       }
     });
@@ -56,5 +59,11 @@ export class ProfileComponent implements OnInit {
         icon: 'pi pi-fw pi-power-off',
       },
     ];
+  }
+
+  followUnfollowUser() {
+    this.userService.followUnfollowUser(this.userId).subscribe((res: any) => {
+      this.toastr.success(res.message);
+    });
   }
 }
