@@ -40,6 +40,7 @@ public class UserValidator : AbstractValidator<UserRequestDto>
             .WithMessage("Passwords do not match");
 
         RuleFor(u => u.Gender).NotNull().NotEmpty();
+        RuleFor(u => u.DateOfBirth).NotNull().NotEmpty();
     }
     private bool UniqueName(string name)
     {
