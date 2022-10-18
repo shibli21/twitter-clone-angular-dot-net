@@ -13,12 +13,14 @@ namespace Core.Controllers
     public class TweetController : ControllerBase
     {
         private readonly ITweetService _tweetService;
+        private readonly IUsersService _usersService;
         private readonly ILikeCommentService _iLikeCommentService;
 
-        public TweetController(ITweetService tweetService, ILikeCommentService iLikeCommentService)
+        public TweetController(ITweetService tweetService, ILikeCommentService iLikeCommentService,IUsersService usersService)
         {
             _tweetService = tweetService;
             _iLikeCommentService = iLikeCommentService;
+            _usersService = usersService;
         }
 
         [HttpPost("create"), Authorize(Roles = "user")]
@@ -35,7 +37,7 @@ namespace Core.Controllers
         [HttpGet("{id}"), Authorize(Roles = "user")]
         public async Task<ActionResult<TweetResponseDto>> GetTweetById(string id)
         {
-            var tweet = await _tweetService.GetTweetById(id);
+            Tweets? tweet = await _tweetService.GetTweetById(id);
             if (tweet == null)
             {
                 return NotFound(new
@@ -43,7 +45,10 @@ namespace Core.Controllers
                     Message = "Tweet Not Found",
                 });
             }
-            return Ok(tweet.AsDto());
+            TweetResponseDto tweetResponse = tweet.AsDto();
+            UserResponseDto? user = (await _usersService.GetUserAsync(tweet.UserId))?.AsDto();
+            tweetResponse.User = user;
+            return Ok(tweetResponse);
         }
 
         [HttpPut("{id}"), Authorize(Roles = "user")]
