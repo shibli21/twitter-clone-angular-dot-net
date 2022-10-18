@@ -147,9 +147,18 @@ namespace Core.Controllers
         }
 
         [HttpGet("user-tweets/{userId}"), Authorize(Roles = "user")]
-        public async Task<ActionResult<List<TweetResponseDto>>> GetUserTweets(string userId, [FromQuery] int size = 5, [FromQuery] int page = 0)
+        public async Task<ActionResult<List<TweetResponseDto>>> GetUserTweets(string userId, [FromQuery] int size = 20, [FromQuery] int page = 0)
         {
+            UserResponseDto? user = (await _usersService.GetUserAsync(userId))?.AsDto();
+            if (user == null)
+            {
+                return NotFound(new { Message = "User Not Found" });
+            }
             List<TweetResponseDto> tweets = await _tweetService.GetTweetsByUserId(userId, size, page);
+            foreach (TweetResponseDto tweet in tweets)
+            {
+                tweet.User = user;
+            }
             return Ok(tweets);
         }
 
