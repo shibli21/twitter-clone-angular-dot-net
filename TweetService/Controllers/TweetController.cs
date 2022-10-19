@@ -34,6 +34,27 @@ namespace Core.Controllers
             return BadRequest(new { message = "Tweet could not be created" });
         }
 
+        [HttpPost("retweet/{id}"), Authorize]
+        public async Task<ActionResult<TweetResponseDto>> CreateRetweet(string id,RetweetRequestDto tweetRequest)
+        {
+            Tweets? refTweet = await _tweetService.GetTweetById(id);
+            if(refTweet == null)
+            {
+                return BadRequest(new { message = "Tweet could not be found" });
+            }
+            Tweets? tweet = await _tweetService.CreateRetweet(id,tweetRequest);
+            if (tweet != null)
+            {
+                refTweet.RetweetCount += 1;
+                await _tweetService.UpdateTweetAsync(id,refTweet);
+                TweetResponseDto tweetResponse = tweet.AsDto();
+                tweetResponse.RefTweet = refTweet.AsDto();
+                tweetResponse.RefTweet.User = (await _usersService.GetUserAsync(refTweet.UserId))?.AsDtoTweetComment();
+                return Ok(tweetResponse);
+            }
+            return BadRequest(new { message = "Tweet could not be created" });
+        }
+
         [HttpGet("{id}"), Authorize]
         public async Task<ActionResult<TweetResponseDto>> GetTweetById(string id)
         {
@@ -51,6 +72,15 @@ namespace Core.Controllers
             LikedOrRetweetedDto likedOrRetweet = await _iLikeCommentService.IsLikedOrRetweeted(id);
             tweetResponse.IsLiked = likedOrRetweet.IsLiked;
             tweetResponse.IsRetweeted = likedOrRetweet.IsRetweeted;
+            if(tweet.Type == "Retweet")
+            {
+                Tweets? refTweet = await _tweetService.GetTweetById(tweet.RetweetRef);
+                if(refTweet != null)
+                {
+                    tweetResponse.RefTweet = refTweet.AsDto();
+                    tweetResponse.RefTweet.User = (await _usersService.GetUserAsync(refTweet.UserId))?.AsDtoTweetComment();
+                }
+            }
             return Ok(tweetResponse);
         }
 
@@ -65,11 +95,51 @@ namespace Core.Controllers
                     Message = "Tweet Not Found",
                 });
             }
+            if (tweet.Type == "Retweet")
+            {
+                return BadRequest(new
+                {
+                    Message = "Retweet cannot be updated here",
+                });
+            }
             await _tweetService.UpdateTweet(tweet, tweetRequest);
             TweetResponseDto tweetResponse = tweet.AsDto();
             LikedOrRetweetedDto likedOrRetweet = await _iLikeCommentService.IsLikedOrRetweeted(id);
             tweetResponse.IsLiked = likedOrRetweet.IsLiked;
             tweetResponse.IsRetweeted = likedOrRetweet.IsRetweeted;
+            return Ok(tweetResponse);
+        }
+
+        [HttpPut("retweet/{id}"), Authorize]
+        public async Task<ActionResult<TweetResponseDto>> UpdateRetweet(string id, RetweetRequestDto tweetRequest)
+        {
+            var tweet = await _tweetService.GetTweetById(id);
+            if (tweet == null)
+            {
+                return NotFound(new
+                {
+                    Message = "Tweet Not Found",
+                });
+            }
+            if(tweet.Type != "Retweet")
+            {
+                return BadRequest(new
+                {
+                    Message = "Tweet is not a retweet",
+                });
+            }
+            await _tweetService.UpdateRetweet(tweet, tweetRequest);
+            TweetResponseDto tweetResponse = tweet.AsDto();
+            LikedOrRetweetedDto likedOrRetweet = await _iLikeCommentService.IsLikedOrRetweeted(id);
+            tweetResponse.IsLiked = likedOrRetweet.IsLiked;
+            tweetResponse.IsRetweeted = likedOrRetweet.IsRetweeted;
+
+            Tweets? refTweet = await _tweetService.GetTweetById(tweet.RetweetRef);
+            if(refTweet != null)
+            {
+                tweetResponse.RefTweet = refTweet.AsDto();
+                tweetResponse.RefTweet.User = (await _usersService.GetUserAsync(refTweet.UserId))?.AsDtoTweetComment();
+            }
             return Ok(tweetResponse);
         }
 

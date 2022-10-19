@@ -5,7 +5,7 @@ namespace Core.Models
 {
     public class Tweets
     {
-        
+
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]
         public string Id { get; set; } = String.Empty;
@@ -43,6 +43,6 @@ namespace Core.Models
 
         [BsonElement("deleted_at")]
         public DateTime? DeletedAt { get; set; } = null;
-   
+
     }
 }

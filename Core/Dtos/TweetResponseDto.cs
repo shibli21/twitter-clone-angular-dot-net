@@ -15,6 +15,7 @@ namespace Core.Dtos
         public bool IsLiked { get; set; } = false;
         public bool IsRetweeted { get; set; } = false;
         public TweetCommentUserResponseDto? User { get; set; } = null;
+        public TweetResponseDto? RefTweet { get; set; } = null;
         public DateTime CreatedAt { get; set; } = DateTime.Now;
     }
 }
