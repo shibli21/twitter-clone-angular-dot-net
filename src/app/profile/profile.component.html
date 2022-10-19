@@ -55,10 +55,17 @@
         </p>
         <div class="flex mt-3 gap-2">
           <div class="">
-            <span class="font-bold">{{ profileUser.followers }}</span> Followers
+            <app-followers-list
+              [followersCount]="profileUser.followers"
+              [user]="profileUser"
+            ></app-followers-list>
           </div>
           <div class="">
-            <span class="font-bold">{{ profileUser.following }}</span> Following
+            <app-following-list
+              [followingCount]="profileUser.following"
+              [user]="profileUser"
+            ></app-following-list>
+            <!-- <span class="font-bold">{{ profileUser.following }}</span> Following -->
           </div>
         </div>
       </div>

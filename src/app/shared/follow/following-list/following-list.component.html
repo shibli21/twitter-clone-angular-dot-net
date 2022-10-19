@@ -1,0 +1,94 @@
+<div
+  (click)="showDialog()"
+  class="cursor-pointer"
+  pTooltip="view followings"
+  tooltipPosition="bottom"
+>
+  <span class="font-bold">{{ followingCount }}</span>
+  Following
+</div>
+
+<div class="z-50">
+  <p-dialog
+    [(visible)]="display"
+    [modal]="true"
+    [breakpoints]="{ '960px': '500px' }"
+    [style]="{ width: '500px' }"
+    [draggable]="false"
+    [resizable]="false"
+    appendTo="body"
+    [dismissableMask]="true"
+  >
+    <ng-template pTemplate="header">
+      <div class="flex gap-2 items-start">
+        <div class="overflow-hidden h-[40px] w-[40px] rounded-full">
+          <img
+            src="https://cdn.pixabay.com/photo/2016/11/18/23/38/child-1837375_960_720.png"
+          />
+        </div>
+        <div class="flex-row">
+          <h1 class="text-base font-bold">
+            {{ user.firstName }} {{ user.lastName }}
+          </h1>
+          <p class="text-gray-600 text-sm">@{{ user.userName }}</p>
+        </div>
+      </div>
+    </ng-template>
+
+    <p
+      class="text-red-500 font-bold text-center"
+      *ngIf="followings.users.length === 0"
+    >
+      NO FOLLOWINGS
+    </p>
+    <div *ngIf="followings.users.length > 0">
+      <h1 class="font-bold">Followings</h1>
+
+      <ul
+        *ngFor="let user of followings.users"
+        role="list"
+        class="divide-y divide-gray-200"
+      >
+        <li class="py-3 sm:py-4" [routerLink]="['/profile', user.id]">
+          <div class="flex items-center space-x-4">
+            <div class="flex-shrink-0">
+              <img
+                class="w-10 h-10 rounded-full"
+                [src]="
+                  user.profilePictureUrl
+                    ? user.profilePictureUrl
+                    : 'https://avatars.dicebear.com/api/open-peeps/' +
+                      user.userName +
+                      '.svg'
+                "
+                alt="Neil image"
+              />
+            </div>
+            <div class="flex-1 min-w-0">
+              <p class="text-sm font-medium text-gray-900 truncate">
+                {{ user.firstName }} {{ user.lastName }}
+              </p>
+              <p class="text-sm text-gray-500 truncate">{{ user.email }}</p>
+            </div>
+            <p-button label="Follow" styleClass="p-button"></p-button>
+          </div>
+        </li>
+      </ul>
+
+      <button
+        *ngIf="this.followings.page !== this.followings.lastPage"
+        pButton
+        [disabled]="this.followings.page === this.followings.lastPage"
+        class="w-full p-button-sm"
+        [loading]="isLoading"
+        [label]="
+          this.followings.page < this.followings.lastPage
+            ? 'load more..'
+            : 'no more data'
+        "
+        (click)="onScrollDown()"
+      ></button>
+    </div>
+    <ng-template pTemplate="footer"> </ng-template>
+  </p-dialog>
+</div>

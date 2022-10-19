@@ -1,0 +1,5 @@
+:host ::ng-deep {
+  .p-button {
+    @apply w-auto px-4 py-1.5 text-sm;
+  }
+}

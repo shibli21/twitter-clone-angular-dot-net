@@ -9,7 +9,7 @@ import { User } from '../../auth/Models/user.model';
 })
 export class ProfileCardComponent implements OnInit {
   currentUser!: User;
-
+  display = false;
   constructor(private authService: AuthService) {}
 
   ngOnInit(): void {

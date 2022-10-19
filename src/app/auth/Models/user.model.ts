@@ -39,3 +39,12 @@ export interface User {
   role: string;
   createdAt: Date;
 }
+
+export interface PaginatedUsers {
+  page: number;
+  size: number;
+  totalElements: number;
+  lastPage: number;
+  totalPages: number;
+  users: User[];
+}

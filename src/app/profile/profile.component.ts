@@ -1,3 +1,4 @@
+import { FollowService } from './../shared/follow/follow.service';
 import { ToastrService } from 'ngx-toastr';
 import { UserService } from './user.service';
 import { ActivatedRoute } from '@angular/router';
@@ -25,7 +26,8 @@ export class ProfileComponent implements OnInit {
     private tweetService: TweetService,
     private userService: UserService,
     private route: ActivatedRoute,
-    private toastr: ToastrService
+    private toastr: ToastrService,
+    private followService: FollowService
   ) {}
 
   ngOnInit(): void {
@@ -62,7 +64,7 @@ export class ProfileComponent implements OnInit {
   }
 
   followUnfollowUser() {
-    this.userService.followUnfollowUser(this.userId).subscribe((res: any) => {
+    this.followService.followUnfollowUser(this.userId).subscribe((res: any) => {
       this.toastr.success(res.message);
     });
   }

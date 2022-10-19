@@ -36,12 +36,4 @@ export class UserService {
       })
     );
   }
-
-  followUnfollowUser(id: string) {
-    return this.http.post(this.baseUrl + 'follow/' + id, {}).pipe(
-      catchError((err) => {
-        return throwError(err);
-      })
-    );
-  }
 }
