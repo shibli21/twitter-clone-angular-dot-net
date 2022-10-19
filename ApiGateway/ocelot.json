@@ -85,6 +85,62 @@
       ]
     },
     {
+      "UpstreamPathTemplate": "/block/by-user",
+      "UpstreamHttpMethod": [
+        "Get"
+      ],
+      "DownstreamPathTemplate": "/block/by-user",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5211
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/block/by-user/{id}",
+      "UpstreamHttpMethod": [
+        "Post"
+      ],
+      "DownstreamPathTemplate": "/block/by-user/{id}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5211
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/block/by-admin",
+      "UpstreamHttpMethod": [
+        "Get"
+      ],
+      "DownstreamPathTemplate": "/block/by-admin",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5211
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/block/by-admin/{id}",
+      "UpstreamHttpMethod": [
+        "Post"
+      ],
+      "DownstreamPathTemplate": "/block/by-admin/{id}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5211
+        }
+      ]
+    },
+    {
       "UpstreamPathTemplate": "/auth/register",
       "UpstreamHttpMethod": [
         "Post"
