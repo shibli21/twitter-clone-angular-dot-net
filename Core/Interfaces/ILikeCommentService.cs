@@ -11,5 +11,6 @@ namespace Core.Interfaces
         Task<bool> DeleteComment(string commentId);
         Task<CommentResponseDto?> UpdateComment(string commentId, string comment);
         Task<List<CommentResponseDto>> GetComments(int max, int page, string tweetId);
+        Task<LikedOrRetweetedDto> IsLikedOrRetweeted(string tweetId);
     }
 }
