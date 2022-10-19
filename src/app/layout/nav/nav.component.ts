@@ -40,6 +40,11 @@ export class NavComponent implements OnInit {
             routerLink: ['/profile/edit', this.authService.userId()],
           },
           {
+            label: 'Block list',
+            icon: 'pi pi-circle-fill',
+            routerLink: [`/profile/block/users`],
+          },
+          {
             label: 'Logout',
             icon: 'pi pi-fw pi-power-off',
             routerLink: ['/login'],

@@ -1,3 +1,4 @@
+import { Router } from '@angular/router';
 import { FollowService } from './../follow.service';
 import { PaginatedUsers } from './../../../auth/Models/user.model';
 import { Component, Input, OnInit } from '@angular/core';
@@ -21,10 +22,9 @@ export class FollowersListComponent implements OnInit {
   };
 
   isLoading = false;
-
   display = false;
 
-  constructor(private followService: FollowService) {}
+  constructor(private followService: FollowService, private router: Router) {}
 
   ngOnInit(): void {
     this.followService
@@ -50,5 +50,9 @@ export class FollowersListComponent implements OnInit {
         });
     } else {
     }
+  }
+  routeToProfile(userId: string) {
+    this.router.navigate(['/profile', userId]);
+    this.display = false;
   }
 }

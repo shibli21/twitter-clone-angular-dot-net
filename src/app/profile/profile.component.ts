@@ -1,7 +1,8 @@
+import { BlockService } from './../core/services/block.service';
 import { FollowService } from './../shared/follow/follow.service';
 import { ToastrService } from 'ngx-toastr';
 import { UserService } from './user.service';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { TweetService } from './../tweet/tweet.service';
 import { Tweet } from './../tweet/models/tweet.model';
 import { AuthService } from './../auth/auth.service';
@@ -27,7 +28,9 @@ export class ProfileComponent implements OnInit {
     private userService: UserService,
     private route: ActivatedRoute,
     private toastr: ToastrService,
-    private followService: FollowService
+    private followService: FollowService,
+    private blockService: BlockService,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -66,6 +69,13 @@ export class ProfileComponent implements OnInit {
   followUnfollowUser() {
     this.followService.followUnfollowUser(this.userId).subscribe((res: any) => {
       this.toastr.success(res.message);
+    });
+  }
+
+  blockUserByUser() {
+    this.blockService.blockUserByUser(this.userId).subscribe((res: any) => {
+      this.router.navigate(['/']);
+      this.toastr.success('User blocked successfully');
     });
   }
 }

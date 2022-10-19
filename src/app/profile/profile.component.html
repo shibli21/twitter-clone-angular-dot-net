@@ -30,7 +30,7 @@
           ></button>
 
           <div *ngIf="!isCurrentUser" class="flex gap-2">
-            <p-button label="Block" class="p-button-danger"></p-button>
+            <p-button (onClick)="blockUserByUser()" label="Block"></p-button>
             <p-button
               label="Follow"
               (onClick)="followUnfollowUser()"
