@@ -57,11 +57,11 @@
       ]
     },
     {
-      "UpstreamPathTemplate": "/follow/followers",
+      "UpstreamPathTemplate": "/follow/followers/{id}",
       "UpstreamHttpMethod": [
         "Get"
       ],
-      "DownstreamPathTemplate": "/follow/followers",
+      "DownstreamPathTemplate": "/follow/followers/{id}",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
@@ -71,11 +71,11 @@
       ]
     },
     {
-      "UpstreamPathTemplate": "/follow/following",
+      "UpstreamPathTemplate": "/follow/following/{id}",
       "UpstreamHttpMethod": [
         "Get"
       ],
-      "DownstreamPathTemplate": "/follow/following",
+      "DownstreamPathTemplate": "/follow/following/{id}",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
