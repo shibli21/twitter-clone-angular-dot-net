@@ -6,6 +6,7 @@ using Core.Dtos;
 using JWTAuthenticationManager;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace UserService.Controllers;
 
@@ -19,12 +20,14 @@ public class AuthController : ControllerBase
     private readonly IUsersService _usersService;
     private readonly IRefreshTokenService _refreshTokenService;
     private readonly JwtTokenHandler _jwtTokenHandler;
+    private readonly IHttpContextAccessor _httpContextAccessor;
 
-    public AuthController(IUsersService usersService, JwtTokenHandler jwtTokenHandler, IRefreshTokenService refreshTokenService)
+    public AuthController(IUsersService usersService, JwtTokenHandler jwtTokenHandler, IRefreshTokenService refreshTokenService, IHttpContextAccessor httpContextAccessor)
     {
         _usersService = usersService;
         _refreshTokenService = refreshTokenService;
         _jwtTokenHandler = jwtTokenHandler;
+        _httpContextAccessor = httpContextAccessor;
     }
 
     [HttpPost]
@@ -117,6 +120,27 @@ public class AuthController : ControllerBase
             Secure = true
         });
         return Ok(new { message = "Logout success" });
+    }
+
+    [HttpPost("change-password")]
+    [Authorize]
+    public async Task<ActionResult<object>> ChangePassword(PasswordChangeDto passwordChangeDto)
+    {
+        if (_httpContextAccessor.HttpContext != null)
+        {
+            string? id = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (id == null)
+                return Unauthorized(new { field = "user", message = "User not found" });
+            User? user = await _usersService.GetUserAsync(id);
+            if (user == null)
+                return Unauthorized(new { field = "user", message = "User not found" });
+            if (!this.VerifyPasswordHash(passwordChangeDto.OldPassword, user.Password))
+                return BadRequest(new { field = "oldPassword", message = "Wrong password" });
+            user.Password = this.CreatePasswordHash(passwordChangeDto.NewPassword);
+            await _usersService.UpdateGetUserAsync(id, user);
+            return Ok(new { message = "Password changed" });
+        }
+        return Unauthorized(new { field = "user", message = "User not found" });
     }
 
 
