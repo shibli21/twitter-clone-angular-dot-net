@@ -64,8 +64,17 @@
 
   <app-new-comment [tweetId]="tweet.id"></app-new-comment>
 
-  <div *ngFor="let comment of comments">
-    <app-tweet-comment [comment]="comment"></app-tweet-comment>
+  <div
+    class="search-results"
+    infinite-scroll
+    (scrolled)="onScrollDown()"
+    (scrolledUp)="onScrollUp()"
+    [fromRoot]="true"
+    [immediateCheck]="true"
+  >
+    <div *ngFor="let comment of comments">
+      <app-tweet-comment [comment]="comment"></app-tweet-comment>
+    </div>
   </div>
 
   <p-dialog

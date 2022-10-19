@@ -15,9 +15,11 @@ export class CommentService {
 
   constructor(private http: HttpClient, private authService: AuthService) {}
 
-  getComments(tweetId: string) {
+  getComments(tweetId: string, page = 1, size = 10) {
     return this.http
-      .get<Comment[]>(this.baseUrl + 'tweet/comments/' + tweetId + '?size=220')
+      .get<Comment[]>(
+        this.baseUrl + `tweet/comments/${tweetId}?size=${size}&page=${page}`
+      )
       .pipe(
         catchError((err) => {
           return throwError(err);

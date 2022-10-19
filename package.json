@@ -19,6 +19,7 @@
     "@angular/platform-browser-dynamic": "^14.1.0",
     "@angular/router": "^14.1.0",
     "angular-tabler-icons": "^1.101.0",
+    "ngx-infinite-scroll": "^14.0.0",
     "ngx-toastr": "^15.2.0",
     "primeicons": "^6.0.1",
     "primeng": "^14.1.2",

@@ -21,6 +21,7 @@ export class TweetComponent implements OnInit {
   isCommenting = false;
   isEditing = false;
   comments: Comment[] = [];
+  commentPage = 1;
 
   constructor(
     private tweetService: TweetService,
@@ -98,5 +99,18 @@ export class TweetComponent implements OnInit {
         this.toastr.success('Tweet deleted successfully');
       },
     });
+  }
+
+  onScrollDown() {
+    this.commentService
+      .getComments(this.tweetId, this.commentPage)
+      .subscribe((res) => {
+        this.comments = [...this.comments, ...res];
+        this.commentPage++;
+      });
+  }
+
+  onScrollUp() {
+    console.log('scrolled up!!');
   }
 }

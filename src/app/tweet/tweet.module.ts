@@ -1,3 +1,4 @@
+import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 import { TweetRoutingModule } from './tweet-routing.module';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -9,6 +10,12 @@ import { FormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [TweetComponent, TweetCommentComponent, NewCommentComponent],
-  imports: [CommonModule, TweetRoutingModule, SharedModule, FormsModule],
+  imports: [
+    CommonModule,
+    TweetRoutingModule,
+    SharedModule,
+    FormsModule,
+    InfiniteScrollModule,
+  ],
 })
 export class TweetModule {}
