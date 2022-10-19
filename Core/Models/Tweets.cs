@@ -30,7 +30,7 @@ namespace Core.Models
         public long RetweetCount { get; set; } = 0;
 
         [BsonElement("retweet_ref")]
-        public string RetweetRef { get; set; } = String.Empty;
+        public string RetweetRefId { get; set; } = String.Empty;
 
         [BsonElement("history")]
         public string[] History { get; set; } = new string[0];

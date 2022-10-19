@@ -12,6 +12,7 @@ public static class TweetResponseExtensions
             UserId = tweet.UserId,
             Tweet = tweet.Tweet,
             Type = tweet.Type,
+            RetweetRefId = tweet.RetweetRefId,
             CommentCount = tweet.CommentCount,
             LikeCount = tweet.LikeCount,
             RetweetCount = tweet.RetweetCount,

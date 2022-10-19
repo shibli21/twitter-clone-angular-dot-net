@@ -170,7 +170,7 @@ namespace Infrastructure.Services
                         UserId = userId,
                         Tweet = tweet.Tweet,
                         Type = "Retweet",
-                        RetweetRef = id,
+                        RetweetRefId = id,
                     };
                     await _tweetCollection.InsertOneAsync(tweetModel);
 

@@ -74,7 +74,7 @@ namespace Core.Controllers
             tweetResponse.IsRetweeted = likedOrRetweet.IsRetweeted;
             if(tweet.Type == "Retweet")
             {
-                Tweets? refTweet = await _tweetService.GetTweetById(tweet.RetweetRef);
+                Tweets? refTweet = await _tweetService.GetTweetById(tweet.RetweetRefId);
                 if(refTweet != null)
                 {
                     tweetResponse.RefTweet = refTweet.AsDto();
@@ -134,7 +134,7 @@ namespace Core.Controllers
             tweetResponse.IsLiked = likedOrRetweet.IsLiked;
             tweetResponse.IsRetweeted = likedOrRetweet.IsRetweeted;
 
-            Tweets? refTweet = await _tweetService.GetTweetById(tweet.RetweetRef);
+            Tweets? refTweet = await _tweetService.GetTweetById(tweet.RetweetRefId);
             if(refTweet != null)
             {
                 tweetResponse.RefTweet = refTweet.AsDto();
@@ -240,6 +240,15 @@ namespace Core.Controllers
                     LikedOrRetweetedDto likedOrRetweet = await _iLikeCommentService.IsLikedOrRetweeted(tweet.Id);
                     tweet.IsLiked = likedOrRetweet.IsLiked;
                     tweet.IsRetweeted = likedOrRetweet.IsRetweeted;
+                    if (tweet.Type == "Retweet" && tweet.RetweetRefId != null)
+                    {
+                        Tweets? refTweet = await _tweetService.GetTweetById(tweet.RetweetRefId);
+                        if (refTweet != null)
+                        {
+                            tweet.RefTweet = refTweet.AsDto();
+                            tweet.RefTweet.User = (await _usersService.GetUserAsync(refTweet.UserId))?.AsDtoTweetComment();
+                        }
+                    }
                 }
             }
             return Ok(tweets);
