@@ -5,7 +5,7 @@ namespace Core.Models
 {
     public class Tweets
     {
-        
+
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]
         public string Id { get; set; } = String.Empty;
@@ -30,7 +30,7 @@ namespace Core.Models
         public long RetweetCount { get; set; } = 0;
 
         [BsonElement("retweet_ref")]
-        public string RetweetRef { get; set; } = String.Empty;
+        public string RetweetRefId { get; set; } = String.Empty;
 
         [BsonElement("history")]
         public string[] History { get; set; } = new string[0];
@@ -43,6 +43,6 @@ namespace Core.Models
 
         [BsonElement("deleted_at")]
         public DateTime? DeletedAt { get; set; } = null;
-   
+
     }
 }

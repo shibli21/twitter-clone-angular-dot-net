@@ -95,6 +95,38 @@ namespace Infrastructure.Services
             }
             return tweet;
         }
+        public async Task<Tweets> UpdateRetweet(Tweets tweet, RetweetRequestDto tweetRequest)
+        {
+            if (tweetRequest.Tweet != null)
+            {
+                if (tweet.History.Length == 0)
+                {
+                    tweet.History = new string[1];
+                    tweet.History[0] = tweet.Tweet;
+                }
+                else
+                {
+                    tweet.History = tweet.History.Append(tweet.Tweet).ToArray();
+                }
+                tweet.Tweet = tweetRequest.Tweet;
+            }
+            else {
+                tweet.Tweet = "";
+            }
+            tweet.UpdatedAt = DateTime.Now;
+            await _tweetCollection.ReplaceOneAsync(t => t.Id == tweet.Id, tweet);
+            await _hashTagCollection.DeleteManyAsync(hashTag => hashTag.TweetId == tweet.Id);
+            foreach (var hashTag in tweetRequest.HashTags)
+            {
+                var hashTagModel = new HashTags
+                {
+                    HashTag = hashTag,
+                    TweetId = tweet.Id,
+                };
+                await _hashTagCollection.InsertOneAsync(hashTagModel);
+            }
+            return tweet;
+        }
 
         public async Task DeleteTweet(Tweets tweet)
         {
@@ -103,17 +135,65 @@ namespace Infrastructure.Services
             await _hashTagCollection.DeleteManyAsync(hashTag => hashTag.TweetId == tweet.Id);
         }
 
-        public Task<List<TweetResponseDto>> GetTweetsByUserId(string userId, int limit, int page)
+        public async Task<PaginatedTweetResponseDto> GetTweetsByUserId(string userId, int limit, int page)
         {
-            return _tweetCollection.Find(tweet => tweet.UserId == userId && tweet.DeletedAt == null)
-                .SortByDescending(tweet => tweet.CreatedAt)
-                .Skip((page ) * limit)
-                .Limit(limit)
-                .Project(tweet => tweet.AsDto())
-                .ToListAsync();
-        
+
+            var filter = _tweetCollection.Find(tweet => tweet.UserId == userId && tweet.DeletedAt == null).SortByDescending(tweet => tweet.CreatedAt);
+            int LastPage = (int)Math.Ceiling((double)await filter.CountDocumentsAsync() / limit) - 1;
+            LastPage = LastPage < 0 ? 0 : LastPage;
+            return new PaginatedTweetResponseDto()
+            {
+                TotalElements = await filter.CountDocumentsAsync(),
+                Page = page,
+                Size = limit,
+                LastPage = LastPage,
+                TotalPages = (int)Math.Ceiling((double)await filter.CountDocumentsAsync() / limit),
+                Tweets = await filter.Skip((page) * limit)
+                                    .Limit(limit)
+                                    .Project(tweet => tweet.AsDto())
+                                    .ToListAsync()
+            };
+
+        }
+
+        public async Task<Tweets?> CreateRetweet(string id, RetweetRequestDto tweet)
+        {
+
+            Tweets? tweetModel = null;
+            if (_httpContextAccessor.HttpContext != null)
+            {
+                string? userId = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                if (userId != null)
+                {
+                    tweetModel = new Tweets
+                    {
+                        UserId = userId,
+                        Tweet = tweet.Tweet,
+                        Type = "Retweet",
+                        RetweetRefId = id,
+                    };
+                    await _tweetCollection.InsertOneAsync(tweetModel);
+
+                    foreach (var hashTag in tweet.HashTags)
+                    {
+                        var hashTagModel = new HashTags
+
+                        {
+                            HashTag = hashTag,
+                            TweetId = tweetModel.Id,
+                        };
+                        await _hashTagCollection.InsertOneAsync(hashTagModel);
+                    }
+
+                }
+            }
+            return tweetModel;
+        }
+
+        public async Task<Tweets> UpdateTweetAsync(string id, Tweets tweet)
+        {
+            await _tweetCollection.ReplaceOneAsync(t => t.Id == id, tweet);
+            return tweet;
         }
     }
-
-
 }

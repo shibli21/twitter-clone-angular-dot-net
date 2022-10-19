@@ -165,5 +165,27 @@ namespace Infrastructure.Services
             return (await _user.Find(u => likedUsersId.Contains(u.Id)).ToListAsync()).Select(u => u.AsDtoTweetComment()).ToList();
         }
 
+        public async Task<LikedOrRetweetedDto> IsLikedOrRetweeted(string tweetId)
+        {
+            LikedOrRetweetedDto likeRetweetResponse = new LikedOrRetweetedDto();
+            if (_httpContextAccessor.HttpContext != null)
+            {
+                string? userId = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                if (userId != null)
+                {
+                    LikeRetweets? likeRetweet = await _likeRetweetCollection.Find(x => x.UserId == userId && x.TweetId == tweetId).FirstOrDefaultAsync();
+                    if (likeRetweet != null)
+                    {
+                        likeRetweetResponse = new LikedOrRetweetedDto
+                        {
+                            IsLiked = likeRetweet.IsLiked,
+                            IsRetweeted = likeRetweet.IsRetweeted
+                        };
+                    }
+                }
+            }
+            return likeRetweetResponse;
+        }
+
     }
 }
