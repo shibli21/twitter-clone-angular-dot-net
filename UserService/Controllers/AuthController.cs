@@ -19,15 +19,17 @@ public class AuthController : ControllerBase
 
     private readonly IUsersService _usersService;
     private readonly IRefreshTokenService _refreshTokenService;
+    private readonly IForgotPasswordService _forgotPasswordService;
     private readonly JwtTokenHandler _jwtTokenHandler;
     private readonly IHttpContextAccessor _httpContextAccessor;
 
-    public AuthController(IUsersService usersService, JwtTokenHandler jwtTokenHandler, IRefreshTokenService refreshTokenService, IHttpContextAccessor httpContextAccessor)
+    public AuthController(IUsersService usersService, JwtTokenHandler jwtTokenHandler, IRefreshTokenService refreshTokenService, IHttpContextAccessor httpContextAccessor, IForgotPasswordService forgotPasswordService)
     {
         _usersService = usersService;
-        _refreshTokenService = refreshTokenService;
         _jwtTokenHandler = jwtTokenHandler;
+        _refreshTokenService = refreshTokenService;
         _httpContextAccessor = httpContextAccessor;
+        _forgotPasswordService = forgotPasswordService;
     }
 
     [HttpPost]
@@ -143,6 +145,38 @@ public class AuthController : ControllerBase
         return Unauthorized(new { field = "user", message = "User not found" });
     }
 
+    [HttpPost("forgot-password")]
+    public async Task<ActionResult<object>> ForgotPassword(ForgotPasswordDto forgotPasswordDto)
+    {
+        User? user = await _usersService.GetUserByEmailAsync(forgotPasswordDto.Email);
+        if (user == null)
+            return BadRequest(new { field = "email", message = "User not found" });
+        if (user.DeletedAt != null)
+            return BadRequest(new { field = "email", message = "User is deleted" });
+        if (user.BlockedAt != null)
+            return BadRequest(new { field = "email", message = "User is blocked" });
+        string token = this.CreatePasswordResetToken();
+        await _forgotPasswordService.StoreResetPasswordTokenAsync(user, token);
+        await _forgotPasswordService.SentResetPasswordEmailAsync(user,forgotPasswordDto.ResetPasswordUrl, token);
+        return Ok(new { message = "Reset password email sent" });
+    }
+
+    [HttpPost("reset-password")]
+    public async Task<ActionResult<object>> ResetPassword(ResetPasswordDto resetPasswordDto)
+    {
+        User? user = await _forgotPasswordService.GetUserByResetTokenAsync(resetPasswordDto.Token);
+        if (user == null)
+            return BadRequest(new { field = "token", message = "Token not found" });
+        if (user.DeletedAt != null)
+            return BadRequest(new { field = "token", message = "User is deleted" });
+        if (user.BlockedAt != null)
+            return BadRequest(new { field = "token", message = "User is blocked" });
+        user.Password = this.CreatePasswordHash(resetPasswordDto.Password);
+        await _usersService.UpdateGetUserAsync(user.Id, user);
+        await _forgotPasswordService.DeleteResetPasswordTokenAsync(resetPasswordDto.Token);
+        return Ok(new { message = "Password changed" });
+    }
+
 
 
     [HttpPost]
@@ -240,5 +274,10 @@ public class AuthController : ControllerBase
             }
             return stringBuilder.ToString();
         }
+    }
+
+    private string CreatePasswordResetToken()
+    {
+        return Convert.ToBase64String(RandomNumberGenerator.GetBytes(64));
     }
 }
