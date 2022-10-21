@@ -1,11 +1,11 @@
-import { TweetService } from './../../tweet/tweet.service';
-import { PaginatedComments } from './../models/tweet.model';
-import { environment } from 'src/environments/environment';
-import { BehaviorSubject, catchError, throwError, tap } from 'rxjs';
-import { AuthService } from '../../auth/auth.service';
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { BehaviorSubject, catchError, tap, throwError } from 'rxjs';
+import { environment } from 'src/environments/environment';
+import { AuthService } from '../../auth/auth.service';
 import { Comment } from '../models/tweet.model';
+import { TweetService } from './tweet.service';
+import { PaginatedComments } from './../models/tweet.model';
 
 @Injectable({
   providedIn: 'root',
@@ -29,7 +29,7 @@ export class CommentService {
     private tweetService: TweetService
   ) {}
 
-  getTweetComments(tweetId: string, page = 0, size = 10) {
+  getTweetComments(tweetId: string, page = 0, size = 20) {
     this.isLoadingComment.next(true);
     return this.http
       .get<PaginatedComments>(
@@ -51,7 +51,7 @@ export class CommentService {
       .subscribe();
   }
 
-  loadMoreComments(tweetId: string, size = 10) {
+  loadMoreComments(tweetId: string, size = 20) {
     const comments = this.comments.getValue();
     if (comments && comments.page < comments.totalPages) {
       this.getTweetComments(tweetId, comments.page + 1, size);
@@ -84,6 +84,7 @@ export class CommentService {
             this.comments.next(comments);
           }
 
+          this.tweetService.tweet.getValue()!.commentCount++;
           return comment;
         }),
         catchError((err) => {
@@ -103,6 +104,7 @@ export class CommentService {
           comments.comments = updatedComments;
           this.comments.next(comments);
         }
+        this.tweetService.tweet.getValue()!.commentCount--;
       }),
       catchError((err) => {
         return throwError(err);

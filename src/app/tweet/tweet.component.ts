@@ -6,7 +6,7 @@ import { ToastrService } from 'ngx-toastr';
 import { MenuItem } from 'primeng/api';
 import { Comment, Tweet } from '../core/models/tweet.model';
 import { CommentService } from '../core/services/comment.service';
-import { TweetService } from './tweet.service';
+import { TweetService } from '../core/services/tweet.service';
 
 @Component({
   selector: 'app-tweet',
@@ -50,12 +50,11 @@ export class TweetComponent implements OnInit {
         size: 0,
       });
 
-      this.tweetService.getTweet(this.tweetId).subscribe({
-        next: (res) => {
-          this.tweet = res;
-          this.editTweet = this.tweet.tweet;
-        },
-        error: (err) => {},
+      this.tweetService.getTweet(this.tweetId).subscribe();
+
+      this.tweetService.tweet.subscribe((res) => {
+        this.tweet = res;
+        this.editTweet = res?.tweet ?? '';
       });
 
       this.commentService.isLoadingComment.subscribe((isLoading) => {
@@ -91,9 +90,7 @@ export class TweetComponent implements OnInit {
     if (this.tweet) {
       this.tweetService.likeTweet(this.tweet.id).subscribe({
         next: (res) => {
-          this.tweetService.getTweet(this.tweetId).subscribe((res) => {
-            this.tweet = res;
-          });
+          this.tweetService.getTweet(this.tweetId).subscribe();
         },
       });
     }
@@ -104,7 +101,6 @@ export class TweetComponent implements OnInit {
     this.tweetService.editTweet(this.tweetId, this.editTweet).subscribe({
       next: (res) => {
         this.tweetService.getTweet(this.tweetId).subscribe((res) => {
-          this.tweet = res;
           this.display = false;
           this.isEditing = false;
         });

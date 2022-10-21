@@ -1,6 +1,6 @@
 import { ToastrService } from 'ngx-toastr';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
-import { TweetService } from './../../../tweet/tweet.service';
+import { TweetService } from '../../../core/services/tweet.service';
 import { Component, OnInit } from '@angular/core';
 
 @Component({

@@ -1,15 +1,16 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { catchError, throwError } from 'rxjs';
-import { Tweet } from '../core/models/tweet.model';
-import { environment } from './../../environments/environment';
+import { BehaviorSubject, catchError, tap, throwError } from 'rxjs';
+import { Tweet } from '../models/tweet.model';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class TweetService {
   baseUrl = environment.baseUrl;
+  tweet = new BehaviorSubject<Tweet | null>(null);
 
   constructor(private http: HttpClient, private router: Router) {}
 
@@ -30,6 +31,9 @@ export class TweetService {
 
   getTweet(id: string) {
     return this.http.get<Tweet>(this.baseUrl + 'tweet/' + id).pipe(
+      tap((tweet) => {
+        this.tweet.next(tweet);
+      }),
       catchError((err) => {
         return throwError(err);
       })

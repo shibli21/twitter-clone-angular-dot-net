@@ -7,7 +7,7 @@ import { AuthService } from './../auth/auth.service';
 import { BlockService } from './../core/services/block.service';
 import { TimelineService } from './../core/services/timeline.service';
 import { FollowService } from './../shared/follow/follow.service';
-import { TweetService } from './../tweet/tweet.service';
+import { TweetService } from '../core/services/tweet.service';
 import { UserService } from './user.service';
 
 @Component({
