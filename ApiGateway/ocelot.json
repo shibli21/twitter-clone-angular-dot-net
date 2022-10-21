@@ -339,6 +339,20 @@
           "Port": 5213
         }
       ]
+    },
+    {
+      "UpstreamPathTemplate": "/news-feed",
+      "UpstreamHttpMethod": [
+        "Get"
+      ],
+      "DownstreamPathTemplate": "/news-feed",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5213
+        }
+      ]
     }
   ],
   "GlobalConfiguration": {
