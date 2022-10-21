@@ -17,6 +17,7 @@ import { DropdownModule } from 'primeng/dropdown';
 import { InputTextareaModule } from 'primeng/inputtextarea';
 import { ProgressBarModule } from 'primeng/progressbar';
 import { TooltipModule } from 'primeng/tooltip';
+import { ProgressSpinnerModule } from 'primeng/progressspinner';
 
 @NgModule({
   declarations: [],
@@ -38,6 +39,7 @@ import { TooltipModule } from 'primeng/tooltip';
     TableModule,
     ProgressBarModule,
     TooltipModule,
+    ProgressSpinnerModule,
   ],
 })
 export class NgPrimeModule {}

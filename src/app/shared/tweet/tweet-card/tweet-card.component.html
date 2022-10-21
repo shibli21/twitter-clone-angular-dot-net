@@ -41,7 +41,7 @@
     <button
       pButton
       type="button"
-      icon="pi pi-heart"
+      [icon]="tweet.isLiked ? 'pi pi-heart-fill' : 'pi pi-heart'"
       (click)="likeUnlike()"
       [label]="tweet.likeCount.toString()"
       class="p-button-danger p-button-text"

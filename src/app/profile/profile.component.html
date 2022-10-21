@@ -76,10 +76,27 @@
   </div>
 </div>
 
-<!-- loop users tweets  -->
-
-<div class="space-y-2">
-  <div *ngFor="let tweet of usersTweets">
-    <app-tweet-card [tweet]="tweet"></app-tweet-card>
+<div class="space-y-2" *ngIf="usersTweets">
+  <div
+    class="search-results"
+    infinite-scroll
+    (scrolled)="loadMore()"
+    [fromRoot]="true"
+    [immediateCheck]="true"
+  >
+    <div *ngFor="let tweet of usersTweets.tweets">
+      <app-tweet-card [tweet]="tweet"></app-tweet-card>
+    </div>
   </div>
+
+  <div *ngIf="isLoading" class="py-10 flex justify-center">
+    <app-spinner></app-spinner>
+  </div>
+
+  <p
+    class="text-center py-10 font-semibold"
+    *ngIf="usersTweets.page === usersTweets.totalPages"
+  >
+    No more tweets to show
+  </p>
 </div>

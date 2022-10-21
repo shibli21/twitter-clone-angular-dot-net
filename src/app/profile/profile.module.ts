@@ -1,3 +1,4 @@
+import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { SharedModule } from './../shared/shared.module';
 import { ProfileRoutingModule } from './profile-routing.module';
@@ -15,6 +16,7 @@ import { BlockListComponent } from './block-list/block-list.component';
     SharedModule,
     FormsModule,
     ReactiveFormsModule,
+    InfiniteScrollModule,
   ],
 })
 export class ProfileModule {}

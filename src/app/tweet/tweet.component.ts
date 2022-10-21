@@ -2,8 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { MenuItem } from 'primeng/api';
+import { Comment, Tweet } from '../core/models/tweet.model';
 import { CommentService } from './comment.service';
-import { Comment, Tweet } from './models/tweet.model';
 import { TweetService } from './tweet.service';
 
 @Component({

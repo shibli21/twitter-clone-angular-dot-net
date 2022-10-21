@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { Comment } from '../models/tweet.model';
+import { Comment } from 'src/app/core/models/tweet.model';
 import { CommentService } from './../comment.service';
 
 @Component({

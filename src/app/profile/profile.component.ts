@@ -1,14 +1,14 @@
-import { BlockService } from './../core/services/block.service';
-import { FollowService } from './../shared/follow/follow.service';
-import { ToastrService } from 'ngx-toastr';
-import { UserService } from './user.service';
-import { ActivatedRoute, Router } from '@angular/router';
-import { TweetService } from './../tweet/tweet.service';
-import { Tweet } from './../tweet/models/tweet.model';
-import { AuthService } from './../auth/auth.service';
-import { MenuItem } from 'primeng/api';
 import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
+import { ToastrService } from 'ngx-toastr';
 import { User } from '../auth/Models/user.model';
+import { PaginatedTweets } from '../core/models/tweet.model';
+import { AuthService } from './../auth/auth.service';
+import { BlockService } from './../core/services/block.service';
+import { TimelineService } from './../core/services/timeline.service';
+import { FollowService } from './../shared/follow/follow.service';
+import { TweetService } from './../tweet/tweet.service';
+import { UserService } from './user.service';
 
 @Component({
   selector: 'app-profile',
@@ -16,11 +16,11 @@ import { User } from '../auth/Models/user.model';
   styleUrls: ['./profile.component.scss'],
 })
 export class ProfileComponent implements OnInit {
-  items!: MenuItem[];
-  usersTweets: Tweet[] = [];
+  usersTweets!: PaginatedTweets | null;
   userId!: string;
   profileUser!: User;
   isCurrentUser: boolean = false;
+  isLoading = false;
 
   constructor(
     private authService: AuthService,
@@ -30,15 +30,31 @@ export class ProfileComponent implements OnInit {
     private toastr: ToastrService,
     private followService: FollowService,
     private blockService: BlockService,
-    private router: Router
+    private router: Router,
+    private timelineService: TimelineService
   ) {}
 
   ngOnInit(): void {
+    this.timelineService.userTimeline.next({
+      tweets: [],
+      page: 0,
+      totalPages: 0,
+      totalElements: 0,
+      lastPage: 0,
+      size: 0,
+    });
     this.route.params.subscribe((params) => {
       this.userId = params['userId'];
-      this.tweetService.getUserTweets(this.userId).subscribe((tweets) => {
-        this.usersTweets = tweets;
+
+      this.timelineService.isLoadingUserTimeline.subscribe((isLoading) => {
+        this.isLoading = isLoading;
       });
+
+      this.timelineService.userTimeline.subscribe((userTweets) => {
+        this.usersTweets = userTweets;
+      });
+      this.timelineService.getUserTimeline(this.userId, this.usersTweets?.page);
+
       if (this.userId === this.authService.userId()) {
         this.profileUser = this.authService.currentUserValue()!;
         this.isCurrentUser = true;
@@ -49,21 +65,6 @@ export class ProfileComponent implements OnInit {
         });
       }
     });
-
-    this.items = [
-      {
-        label: 'Edit',
-        icon: 'pi pi-pencil',
-      },
-      {
-        label: 'Delete',
-        icon: 'pi pi-trash',
-      },
-      {
-        label: 'Block user',
-        icon: 'pi pi-fw pi-power-off',
-      },
-    ];
   }
 
   followUnfollowUser() {
@@ -77,5 +78,9 @@ export class ProfileComponent implements OnInit {
       this.router.navigate(['/']);
       this.toastr.success('User blocked successfully');
     });
+  }
+
+  loadMore() {
+    this.timelineService.loadMoreUserTimeline(this.userId);
   }
 }

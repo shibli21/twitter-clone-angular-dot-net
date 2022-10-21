@@ -2,8 +2,8 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { catchError, throwError } from 'rxjs';
+import { Tweet } from '../core/models/tweet.model';
 import { environment } from './../../environments/environment';
-import { Comment, Tweet } from './models/tweet.model';
 
 @Injectable({
   providedIn: 'root',

@@ -3,7 +3,7 @@ import { BehaviorSubject, catchError, throwError, tap } from 'rxjs';
 import { AuthService } from './../auth/auth.service';
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Comment } from './models/tweet.model';
+import { Comment } from '../core/models/tweet.model';
 
 @Injectable({
   providedIn: 'root',
