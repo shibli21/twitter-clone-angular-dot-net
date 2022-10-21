@@ -3,7 +3,7 @@ import { ToastrService } from 'ngx-toastr';
 import { MenuItem } from 'primeng/api';
 import { Tweet } from 'src/app/core/models/tweet.model';
 import { RetweetService } from './../../../core/services/retweet.service';
-import { CommentService } from './../../../tweet/comment.service';
+import { CommentService } from '../../../core/services/comment.service';
 import { TweetService } from './../../../tweet/tweet.service';
 
 @Component({

@@ -1,6 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { Comment } from 'src/app/core/models/tweet.model';
-import { CommentService } from './../comment.service';
+import { CommentService } from '../../core/services/comment.service';
 
 @Component({
   selector: 'app-tweet-comment',
@@ -15,10 +15,6 @@ export class TweetCommentComponent implements OnInit {
   ngOnInit(): void {}
 
   deleteComment() {
-    this.commentService.deleteComment(this.comment.id).subscribe((res) => {
-      this.commentService.getComments(this.comment.tweetId).subscribe((res) => {
-        this.commentService.comments.next(res);
-      });
-    });
+    this.commentService.deleteComment(this.comment.id).subscribe((res) => {});
   }
 }

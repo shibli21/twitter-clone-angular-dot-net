@@ -1,12 +1,3 @@
-export interface Comment {
-  id: string;
-  userId: string;
-  tweetId: string;
-  comment: string;
-  createdAt: Date;
-  user: User;
-}
-
 export interface PaginatedTweets {
   page: number;
   size: number;
@@ -40,4 +31,22 @@ export interface User {
   lastName: string;
   profilePictureUrl: string;
   coverPictureUrl: string;
+}
+
+export interface PaginatedComments {
+  page: number;
+  size: number;
+  totalElements: number;
+  lastPage: number;
+  totalPages: number;
+  comments: Comment[];
+}
+
+export interface Comment {
+  id: string;
+  userId: string;
+  tweetId: string;
+  comment: string;
+  createdAt: Date;
+  user: User;
 }

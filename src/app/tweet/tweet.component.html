@@ -75,22 +75,24 @@
         type="button"
         icon="pi pi-share-alt"
         class="p-button-help p-button-text"
+        (click)="showRetweetDialog()"
+        [loading]="isRetweeting"
       ></button>
     </div>
   </div>
 
   <app-new-comment [tweetId]="tweet.id"></app-new-comment>
 
-  <div
-    class="search-results"
-    infinite-scroll
-    (scrolled)="onScrollDown()"
-    (scrolledUp)="onScrollUp()"
-    [fromRoot]="true"
-    [immediateCheck]="true"
-  >
-    <div *ngFor="let comment of comments">
-      <app-tweet-comment [comment]="comment"></app-tweet-comment>
+  <div *ngIf="tweetComments">
+    <div
+      class="search-results"
+      infinite-scroll
+      (scrolled)="loadMore()"
+      [immediateCheck]="true"
+    >
+      <div *ngFor="let comment of tweetComments.comments">
+        <app-tweet-comment [comment]="comment"></app-tweet-comment>
+      </div>
     </div>
   </div>
 
@@ -135,6 +137,58 @@
         (click)="onEditTweet()"
         label="Save"
         [loading]="isEditing"
+        class="p-button-text -mr-2"
+      ></p-button>
+    </ng-template>
+  </p-dialog>
+
+  <!-- retweet dialog -->
+
+  <p-dialog
+    [(visible)]="retweetDisplay"
+    [modal]="true"
+    [breakpoints]="{ '960px': '600px' }"
+    [style]="{ width: '600px' }"
+    [baseZIndex]="10000"
+    [draggable]="false"
+    [resizable]="false"
+    [dismissableMask]="true"
+  >
+    <ng-template pTemplate="header">
+      <div class="flex gap-2 items-start">
+        <div class="overflow-hidden h-[40px] w-[40px] rounded-full">
+          <img
+            src="https://cdn.pixabay.com/photo/2016/11/18/23/38/child-1837375_960_720.png"
+          />
+        </div>
+        <div class="flex-row">
+          <h1 class="text-base font-bold">
+            {{ tweet.user.firstName }} {{ tweet.user.lastName }}
+          </h1>
+          <p class="text-gray-600 text-sm">
+            @{{ tweet.user.userName }} · {{ tweet.createdAt | date }}
+          </p>
+        </div>
+      </div>
+    </ng-template>
+
+    <textarea
+      [(ngModel)]="retweetText"
+      placeholder="Retweet your reply"
+      pInputTextarea
+      [rows]="2"
+    ></textarea>
+
+    <p class="px-4">
+      {{ tweet.tweet }}
+    </p>
+
+    <ng-template pTemplate="footer">
+      <p-button
+        icon="pi pi-share-alt"
+        (click)="retweet()"
+        label="Retweet"
+        [loading]="isRetweeting"
         class="p-button-text -mr-2"
       ></p-button>
     </ng-template>

@@ -3,7 +3,14 @@
     <div class="w-[40px]">
       <div class="overflow-hidden h-[30px] w-[30px] rounded-full">
         <img
-          src="https://cdn.pixabay.com/photo/2016/11/18/23/38/child-1837375_960_720.png"
+          class="w-full h-full object-cover"
+          [src]="
+            comment.user.profilePictureUrl
+              ? comment.user.profilePictureUrl
+              : 'https://avatars.dicebear.com/api/open-peeps/' +
+                comment.user.userName +
+                '.svg'
+          "
         />
       </div>
     </div>
