@@ -98,15 +98,32 @@ namespace Infrastructure.Services
         }
 
 
-        public async Task<List<CommentResponseDto>> GetComments(int max, int page, string tweetId)
+        public async Task<PaginatedCommentResponseDto> GetComments(int max, int page, string tweetId)
         {
-            List<CommentResponseDto> comments = (await _commentCollection.Find(x => x.TweetId == tweetId).Skip((page) * max).Limit(max).ToListAsync()).Select(x => x.AsDto()).ToList();
-            foreach (CommentResponseDto comment in comments)
+            var filter = _commentCollection.Find(x => x.TweetId == tweetId);
+            int LastPage = (int)Math.Ceiling((double)await filter.CountDocumentsAsync() / max) - 1;
+            LastPage = LastPage < 0 ? 0 : LastPage;
+            PaginatedCommentResponseDto commentResponse = new PaginatedCommentResponseDto()
             {
-                User user = await _user.Find(x => x.Id == comment.UserId).FirstOrDefaultAsync();
-                comment.User = user.AsDtoTweetComment();
+                TotalElements = await filter.CountDocumentsAsync(),
+                Page = page,
+                Size = max,
+                LastPage = LastPage,
+                TotalPages = (int)Math.Ceiling((double)await filter.CountDocumentsAsync() / max),
+                Comments = (await filter.Skip(page * max)
+                                    .Limit(max)
+                                    .ToListAsync())
+                                    .Select(x => x.AsDto()).ToList()
+            };
+            if (commentResponse.Comments != null)
+            {
+                foreach (CommentResponseDto comment in commentResponse.Comments)
+                {
+                    User user = await _user.Find(x => x.Id == comment.UserId).FirstOrDefaultAsync();
+                    comment.User = user.AsDtoTweetComment();
+                }
             }
-            return comments;
+            return commentResponse;
         }
 
         public async Task<string> LikeTweet(string id)
@@ -146,7 +163,7 @@ namespace Infrastructure.Services
                         {
                             likeRetweet.IsLiked = true;
                             await _likeRetweetCollection.ReplaceOneAsync(x => x.Id == likeRetweet.Id, likeRetweet);
-                            tweet.LikeCount +=1;
+                            tweet.LikeCount += 1;
                             await _tweetCollection.ReplaceOneAsync(x => x.Id == id, tweet);
                             msg = "Tweet liked";
                         }
