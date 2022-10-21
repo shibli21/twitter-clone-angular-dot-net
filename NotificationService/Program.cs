@@ -18,6 +18,8 @@ builder.Services.Configure<TwitterCloneDbConfig>(
 builder.Services.AddSingleton<IMongoClient>(sp =>
     new MongoClient(builder.Configuration.GetValue<string>("TwitterCloneDatabaseSettings:ConnectionString")));
 
+builder.Services.AddSingleton<INotificationsService, NotificationsService>();
+
 builder.Services.AddControllers();
 
 builder.Services.AddSingleton<JwtTokenHandler>();
