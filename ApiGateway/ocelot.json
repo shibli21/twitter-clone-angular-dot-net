@@ -269,6 +269,21 @@
       ]
     },
     {
+      "UpstreamPathTemplate": "/tweet/retweet/{id}",
+      "UpstreamHttpMethod": [
+        "Post",
+        "Put"
+      ],
+      "DownstreamPathTemplate": "/tweet/retweet/{id}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5212
+        }
+      ]
+    },
+    {
       "UpstreamPathTemplate": "/tweet/like/{tweetId}",
       "UpstreamHttpMethod": [
         "Post"
