@@ -197,6 +197,34 @@
       ]
     },
     {
+      "UpstreamPathTemplate": "/auth/forgot-password",
+      "UpstreamHttpMethod": [
+        "Post"
+      ],
+      "DownstreamPathTemplate": "/auth/forgot-password",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5211
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/auth/reset-password",
+      "UpstreamHttpMethod": [
+        "Post"
+      ],
+      "DownstreamPathTemplate": "/auth/reset-password",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5211
+        }
+      ]
+    },
+    {
       "UpstreamPathTemplate": "/users/current-user",
       "UpstreamHttpMethod": [
         "Post"
@@ -299,16 +327,16 @@
       ]
     },
     {
-      "UpstreamPathTemplate": "/tweet/user-tweets/{tweetId}",
+      "UpstreamPathTemplate": "/user-timeline/{userId}",
       "UpstreamHttpMethod": [
         "Get"
       ],
-      "DownstreamPathTemplate": "/tweet/user-tweets/{tweetId}",
+      "DownstreamPathTemplate": "/user-timeline/{userId}",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
           "Host": "localhost",
-          "Port": 5212
+          "Port": 5213
         }
       ]
     }
