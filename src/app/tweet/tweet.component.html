@@ -8,7 +8,14 @@
       <div class="flex gap-2 items-start">
         <div class="overflow-hidden h-[40px] w-[40px] rounded-full">
           <img
-            src="https://cdn.pixabay.com/photo/2016/11/18/23/38/child-1837375_960_720.png"
+            class="w-full h-full object-cover"
+            [src]="
+              tweet.user.profilePictureUrl
+                ? tweet.user.profilePictureUrl
+                : 'https://avatars.dicebear.com/api/open-peeps/' +
+                  tweet.user.userName +
+                  '.svg'
+            "
           />
         </div>
         <div class="flex-row">
@@ -20,7 +27,10 @@
           </p>
         </div>
       </div>
-      <div class="flex items-center gap-2 text-gray-600">
+      <div
+        *ngIf="tweet.type === 'Tweet' || tweet.refTweet"
+        class="flex items-center gap-2 text-gray-600"
+      >
         <button
           pButton
           type="button"
@@ -32,10 +42,17 @@
         <p-tieredMenu #menu [model]="items" [popup]="true"></p-tieredMenu>
       </div>
     </div>
-    <div class="p-4">{{ tweet.tweet }}</div>
+    <div class="p-4">
+      {{ tweet.tweet }}
+      <div *ngIf="tweet.type === 'Retweet'" class="">
+        <app-tweet-card [isRetweet]="true" [tweet]="tweet.refTweet">
+        </app-tweet-card>
+      </div>
+    </div>
 
     <div
       class="flex py-2 md:py-3 px-2 md:px-6 border-t border-gray-300 text-gray-600"
+      *ngIf="tweet.type === 'Tweet' || tweet.refTweet"
     >
       <button
         pButton

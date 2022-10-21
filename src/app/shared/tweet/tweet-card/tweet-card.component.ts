@@ -2,6 +2,7 @@ import { Component, Input, OnInit } from '@angular/core';
 import { ToastrService } from 'ngx-toastr';
 import { MenuItem } from 'primeng/api';
 import { Tweet } from 'src/app/core/models/tweet.model';
+import { RetweetService } from './../../../core/services/retweet.service';
 import { CommentService } from './../../../tweet/comment.service';
 import { TweetService } from './../../../tweet/tweet.service';
 
@@ -13,17 +14,23 @@ import { TweetService } from './../../../tweet/tweet.service';
 export class TweetCardComponent implements OnInit {
   items!: MenuItem[];
   @Input() tweet!: Tweet;
+  @Input() isRetweet? = false;
+
   comment = '';
   isCommenting = false;
   isEditing = false;
+  isRetweeting = false;
   display: boolean = false;
   displayEditDialog: boolean = false;
   editTweet = '';
+  retweetDisplay = false;
+  retweetText = '';
 
   constructor(
     private tweetService: TweetService,
     private commentService: CommentService,
-    private toastr: ToastrService
+    private toastr: ToastrService,
+    private retweetService: RetweetService
   ) {}
 
   ngOnInit() {
@@ -51,6 +58,10 @@ export class TweetCardComponent implements OnInit {
   }
   showEditDialog() {
     this.displayEditDialog = true;
+  }
+
+  showRetweetDialog() {
+    this.retweetDisplay = true;
   }
 
   commentOnTweet() {
@@ -94,6 +105,18 @@ export class TweetCardComponent implements OnInit {
     this.tweetService.deleteTweet(this.tweet.id).subscribe({
       next: (res) => {
         this.toastr.success('Tweet deleted successfully');
+      },
+    });
+  }
+
+  retweet() {
+    this.retweetService.retweet(this.tweet.id, this.retweetText).subscribe({
+      next: () => {
+        this.tweetService.getTweet(this.tweet.id).subscribe((res) => {
+          this.tweet = res;
+        });
+        this.toastr.success('Retweeted successfully');
+        this.retweetDisplay = false;
       },
     });
   }

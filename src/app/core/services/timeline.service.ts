@@ -61,7 +61,7 @@ export class TimelineService {
   loadMoreNewsFeed() {
     const newsFeed = this.newsFeed.getValue();
     if (newsFeed && newsFeed.page < newsFeed.totalPages) {
-      this.getNewsFeed(newsFeed.page + 1, 2);
+      this.getNewsFeed(newsFeed.page + 1, 5);
     }
   }
 
@@ -90,7 +90,7 @@ export class TimelineService {
   loadMoreUserTimeline(userId: string) {
     const userTimeline = this.userTimeline.getValue();
     if (userTimeline && userTimeline.page < userTimeline.totalPages) {
-      this.getUserTimeline(userId, userTimeline.page + 1, 2);
+      this.getUserTimeline(userId, userTimeline.page + 1, 5);
     }
   }
 }

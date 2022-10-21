@@ -35,16 +35,17 @@ export class ProfileComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.timelineService.userTimeline.next({
-      tweets: [],
-      page: 0,
-      totalPages: 0,
-      totalElements: 0,
-      lastPage: 0,
-      size: 0,
-    });
     this.route.params.subscribe((params) => {
       this.userId = params['userId'];
+
+      this.timelineService.userTimeline.next({
+        tweets: [],
+        page: 0,
+        totalPages: 0,
+        totalElements: 0,
+        lastPage: 0,
+        size: 0,
+      });
 
       this.timelineService.isLoadingUserTimeline.subscribe((isLoading) => {
         this.isLoading = isLoading;
