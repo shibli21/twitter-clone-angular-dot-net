@@ -57,7 +57,12 @@ export class EditProfileComponent implements OnInit {
       })
       .subscribe({
         next: (res) => {
-          this.authService.user.next(res);
+          this.authService.user.next({
+            ...this.authService.user.value,
+            ...res,
+            followers: this.authService.user.value!.followers,
+            following: this.authService.user.value!.following,
+          });
           this.toastr.success('Profile updated successfully');
           this.isUpdating = false;
         },
