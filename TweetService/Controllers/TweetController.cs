@@ -35,18 +35,18 @@ namespace Core.Controllers
         }
 
         [HttpPost("retweet/{id}"), Authorize]
-        public async Task<ActionResult<TweetResponseDto>> CreateRetweet(string id,RetweetRequestDto tweetRequest)
+        public async Task<ActionResult<TweetResponseDto>> CreateRetweet(string id, RetweetRequestDto tweetRequest)
         {
             Tweets? refTweet = await _tweetService.GetTweetById(id);
-            if(refTweet == null)
+            if (refTweet == null)
             {
                 return BadRequest(new { message = "Tweet could not be found" });
             }
-            Tweets? tweet = await _tweetService.CreateRetweet(id,tweetRequest);
+            Tweets? tweet = await _tweetService.CreateRetweet(id, tweetRequest);
             if (tweet != null)
             {
                 refTweet.RetweetCount += 1;
-                await _tweetService.UpdateTweetAsync(id,refTweet);
+                await _tweetService.UpdateTweetAsync(id, refTweet);
                 TweetResponseDto tweetResponse = tweet.AsDto();
                 tweetResponse.RefTweet = refTweet.AsDto();
                 tweetResponse.RefTweet.User = (await _usersService.GetUserAsync(refTweet.UserId))?.AsDtoTweetComment();
@@ -72,10 +72,10 @@ namespace Core.Controllers
             LikedOrRetweetedDto likedOrRetweet = await _iLikeCommentService.IsLikedOrRetweeted(id);
             tweetResponse.IsLiked = likedOrRetweet.IsLiked;
             tweetResponse.IsRetweeted = likedOrRetweet.IsRetweeted;
-            if(tweet.Type == "Retweet")
+            if (tweet.Type == "Retweet")
             {
                 Tweets? refTweet = await _tweetService.GetTweetById(tweet.RetweetRefId);
-                if(refTweet != null)
+                if (refTweet != null)
                 {
                     tweetResponse.RefTweet = refTweet.AsDto();
                     tweetResponse.RefTweet.User = (await _usersService.GetUserAsync(refTweet.UserId))?.AsDtoTweetComment();
@@ -121,7 +121,7 @@ namespace Core.Controllers
                     Message = "Tweet Not Found",
                 });
             }
-            if(tweet.Type != "Retweet")
+            if (tweet.Type != "Retweet")
             {
                 return BadRequest(new
                 {
@@ -135,7 +135,7 @@ namespace Core.Controllers
             tweetResponse.IsRetweeted = likedOrRetweet.IsRetweeted;
 
             Tweets? refTweet = await _tweetService.GetTweetById(tweet.RetweetRefId);
-            if(refTweet != null)
+            if (refTweet != null)
             {
                 tweetResponse.RefTweet = refTweet.AsDto();
                 tweetResponse.RefTweet.User = (await _usersService.GetUserAsync(refTweet.UserId))?.AsDtoTweetComment();
@@ -221,37 +221,6 @@ namespace Core.Controllers
         {
             List<CommentResponseDto> comments = await _iLikeCommentService.GetComments(size, page, tweetId);
             return Ok(comments);
-        }
-
-        [HttpGet("user-tweets/{userId}"), Authorize]
-        public async Task<ActionResult<PaginatedTweetResponseDto>> GetUserTweets(string userId, [FromQuery] int size = 20, [FromQuery] int page = 0)
-        {
-            TweetCommentUserResponseDto? user = (await _usersService.GetUserAsync(userId))?.AsDtoTweetComment();
-            if (user == null)
-            {
-                return NotFound(new { Message = "User Not Found" });
-            }
-            PaginatedTweetResponseDto tweets = await _tweetService.GetTweetsByUserId(userId, size, page);
-            if (tweets.Tweets != null)
-            {
-                foreach (TweetResponseDto tweet in tweets.Tweets)
-                {
-                    tweet.User = user;
-                    LikedOrRetweetedDto likedOrRetweet = await _iLikeCommentService.IsLikedOrRetweeted(tweet.Id);
-                    tweet.IsLiked = likedOrRetweet.IsLiked;
-                    tweet.IsRetweeted = likedOrRetweet.IsRetweeted;
-                    if (tweet.Type == "Retweet" && tweet.RetweetRefId != null)
-                    {
-                        Tweets? refTweet = await _tweetService.GetTweetById(tweet.RetweetRefId);
-                        if (refTweet != null)
-                        {
-                            tweet.RefTweet = refTweet.AsDto();
-                            tweet.RefTweet.User = (await _usersService.GetUserAsync(refTweet.UserId))?.AsDtoTweetComment();
-                        }
-                    }
-                }
-            }
-            return Ok(tweets);
         }
 
 

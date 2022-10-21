@@ -12,7 +12,6 @@ public interface ITweetService
     Task<Tweets> UpdateTweetAsync(string id, Tweets tweet);
     Task<Tweets?> GetTweetById(string id);
     Task DeleteTweet(Tweets tweet);
-    Task<PaginatedTweetResponseDto> GetTweetsByUserId(string userId, int limit, int page);
 
 
 

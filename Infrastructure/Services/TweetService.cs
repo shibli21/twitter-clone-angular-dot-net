@@ -135,26 +135,6 @@ namespace Infrastructure.Services
             await _hashTagCollection.DeleteManyAsync(hashTag => hashTag.TweetId == tweet.Id);
         }
 
-        public async Task<PaginatedTweetResponseDto> GetTweetsByUserId(string userId, int limit, int page)
-        {
-
-            var filter = _tweetCollection.Find(tweet => tweet.UserId == userId && tweet.DeletedAt == null).SortByDescending(tweet => tweet.CreatedAt);
-            int LastPage = (int)Math.Ceiling((double)await filter.CountDocumentsAsync() / limit) - 1;
-            LastPage = LastPage < 0 ? 0 : LastPage;
-            return new PaginatedTweetResponseDto()
-            {
-                TotalElements = await filter.CountDocumentsAsync(),
-                Page = page,
-                Size = limit,
-                LastPage = LastPage,
-                TotalPages = (int)Math.Ceiling((double)await filter.CountDocumentsAsync() / limit),
-                Tweets = await filter.Skip((page) * limit)
-                                    .Limit(limit)
-                                    .Project(tweet => tweet.AsDto())
-                                    .ToListAsync()
-            };
-
-        }
 
         public async Task<Tweets?> CreateRetweet(string id, RetweetRequestDto tweet)
         {
