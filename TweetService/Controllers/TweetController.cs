@@ -217,9 +217,9 @@ namespace Core.Controllers
         }
 
         [HttpGet("comments/{tweetId}"), Authorize]
-        public async Task<ActionResult<List<CommentResponseDto>>> GetComments(string tweetId, [FromQuery] int size = 5, [FromQuery] int page = 0)
+        public async Task<ActionResult<PaginatedCommentResponseDto>> GetComments(string tweetId, [FromQuery] int size = 5, [FromQuery] int page = 0)
         {
-            List<CommentResponseDto> comments = await _iLikeCommentService.GetComments(size, page, tweetId);
+            PaginatedCommentResponseDto comments = await _iLikeCommentService.GetComments(size, page, tweetId);
             return Ok(comments);
         }
 
