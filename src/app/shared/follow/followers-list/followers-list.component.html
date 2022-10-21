@@ -42,7 +42,7 @@
     </p>
 
     <div *ngIf="followers.users && followers.users.length > 0">
-      <h1 class="font-bold">Followers</h1>
+      <h1 class="font-bold mb-2">Followers</h1>
 
       <ul
         *ngFor="let user of followers.users"
@@ -50,7 +50,7 @@
         class="divide-y divide-gray-200"
       >
         <li
-          class="cursor-pointer py-3 sm:py-4"
+          class="rounded transition hover:bg-indigo-50 cursor-pointer py-2 px-2 sm:py-2"
           (click)="routeToProfile(user.id)"
         >
           <div class="flex items-center space-x-4">
@@ -78,19 +78,17 @@
         </li>
       </ul>
 
-      <button
-        *ngIf="this.followers.page !== this.followers.lastPage"
-        pButton
-        [disabled]="this.followers.page === this.followers.lastPage"
-        class="w-full p-button-sm"
-        [loading]="isLoading"
-        [label]="
-          this.followers.page < this.followers.lastPage
-            ? 'load more..'
-            : 'no more data'
-        "
-        (click)="onScrollDown()"
-      ></button>
+      <div class="mt-4">
+        <button
+          pButton
+          *ngIf="this.followers.page !== this.followers.lastPage"
+          [disabled]="this.followers.page === this.followers.lastPage"
+          class="w-full p-button-sm"
+          [loading]="isLoading"
+          [label]="'load more..'"
+          (click)="loadMoreFollowers()"
+        ></button>
+      </div>
     </div>
     <ng-template pTemplate="footer"> </ng-template>
   </p-dialog>

@@ -1,8 +1,8 @@
-import { PaginatedUsers } from './../../auth/Models/user.model';
+import { PaginatedUsers } from '../../auth/Models/user.model';
 import { catchError, throwError } from 'rxjs';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
-import { environment } from './../../../environments/environment';
+import { environment } from '../../../environments/environment';
 import { Injectable } from '@angular/core';
 
 @Injectable({

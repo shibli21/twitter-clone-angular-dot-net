@@ -6,7 +6,7 @@ import { PaginatedTweets } from '../core/models/tweet.model';
 import { AuthService } from './../auth/auth.service';
 import { BlockService } from './../core/services/block.service';
 import { TimelineService } from './../core/services/timeline.service';
-import { FollowService } from './../shared/follow/follow.service';
+import { FollowService } from '../core/services/follow.service';
 import { TweetService } from '../core/services/tweet.service';
 import { UserService } from './user.service';
 

@@ -42,15 +42,15 @@
       NO FOLLOWINGS
     </p>
     <div *ngIf="followings.users.length > 0">
-      <h1 class="font-bold">Followings</h1>
+      <h1 class="font-bold mb-2">Followings</h1>
 
       <ul
         *ngFor="let user of followings.users"
         role="list"
-        class="divide-y divide-gray-200"
+        class="divide-y-2 divide-gray-200"
       >
         <li
-          class="cursor-pointer py-3 sm:py-4"
+          class="rounded transition hover:bg-indigo-50 cursor-pointer py-2 px-2 sm:py-2"
           (click)="routeToProfile(user.id)"
         >
           <div class="flex items-center space-x-4">
@@ -73,24 +73,25 @@
               </p>
               <p class="text-sm text-gray-500 truncate">{{ user.email }}</p>
             </div>
-            <!-- <p-button label="Follow" styleClass="p-button"></p-button> -->
+            <div class="hidden group-hover:block">
+              <i
+                class="pi pi-arrow-right text-indigo-500 pr-4 cursor-pointer"
+              ></i>
+            </div>
           </div>
         </li>
       </ul>
-
-      <button
-        *ngIf="this.followings.page !== this.followings.lastPage"
-        pButton
-        [disabled]="this.followings.page === this.followings.lastPage"
-        class="w-full p-button-sm"
-        [loading]="isLoading"
-        [label]="
-          this.followings.page < this.followings.lastPage
-            ? 'load more..'
-            : 'no more data'
-        "
-        (click)="onScrollDown()"
-      ></button>
+      <div class="mt-4">
+        <button
+          pButton
+          *ngIf="this.followings.page !== this.followings.lastPage"
+          [disabled]="this.followings.page === this.followings.lastPage"
+          class="w-full p-button p-button-sm"
+          [loading]="isLoading"
+          [label]="'load more..'"
+          (click)="loadMoreFollowings()"
+        ></button>
+      </div>
     </div>
     <ng-template pTemplate="footer"> </ng-template>
   </p-dialog>

@@ -1,5 +1,5 @@
 import { Router } from '@angular/router';
-import { FollowService } from './../follow.service';
+import { FollowService } from '../../../core/services/follow.service';
 import { PaginatedUsers } from './../../../auth/Models/user.model';
 import { Component, Input, OnInit } from '@angular/core';
 import { User } from 'src/app/auth/Models/user.model';
@@ -38,7 +38,7 @@ export class FollowersListComponent implements OnInit {
     this.display = true;
   }
 
-  onScrollDown() {
+  loadMoreFollowers() {
     this.isLoading = true;
     if (this.followers.page < this.followers.lastPage) {
       this.followers.page++;

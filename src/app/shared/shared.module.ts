@@ -9,6 +9,7 @@ import { NewTweetComponent } from './tweet/new-tweet/new-tweet.component';
 import { FollowersListComponent } from './follow/followers-list/followers-list.component';
 import { FollowingListComponent } from './follow/following-list/following-list.component';
 import { SpinnerComponent } from './spinner/spinner.component';
+import { UserCardComponent } from './user-card/user-card.component';
 
 @NgModule({
   declarations: [
@@ -17,6 +18,7 @@ import { SpinnerComponent } from './spinner/spinner.component';
     FollowersListComponent,
     FollowingListComponent,
     SpinnerComponent,
+    UserCardComponent,
   ],
   imports: [
     CommonModule,
@@ -33,6 +35,7 @@ import { SpinnerComponent } from './spinner/spinner.component';
     FollowersListComponent,
     FollowingListComponent,
     SpinnerComponent,
+    UserCardComponent,
   ],
 })
 export class SharedModule {}
