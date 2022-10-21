@@ -65,7 +65,7 @@ namespace Infrastructure.Services
 
         public async Task<PaginatedUserResponseDto> GetAdminBlockedUsers(int size, int page)
         {
-            var filter = _usersCollection.Find(user => user.Role == "user" && user.BlockedAt != null && user.DeletedAt == null);
+            var filter = _usersCollection.Find(user =>  user.BlockedAt != null && user.DeletedAt == null);
             int LastPage = (int)Math.Ceiling((double)await filter.CountDocumentsAsync() / size) - 1;
             LastPage = LastPage < 0 ? 0 : LastPage;
             return new PaginatedUserResponseDto()
