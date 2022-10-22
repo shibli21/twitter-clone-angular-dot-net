@@ -6,6 +6,6 @@ namespace Core.Dtos
         public string UserId { get; set; } = String.Empty;
         public string RefUserId { get; set; } = String.Empty;
         public string? TweetId { get; set; } = null;
-        
+
     }
 }

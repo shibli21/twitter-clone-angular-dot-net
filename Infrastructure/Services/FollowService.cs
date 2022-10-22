@@ -3,6 +3,7 @@ using Core.Dtos;
 using Core.Interfaces;
 using Core.Models;
 using Infrastructure.Config;
+using MassTransit;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
@@ -13,9 +14,10 @@ namespace Infrastructure.Services
     {
         private readonly IMongoCollection<Follows> _followCollection;
         private readonly IMongoCollection<User> _user;
+        private readonly IBus _bus;
 
         private readonly IHttpContextAccessor _httpContextAccessor;
-        public FollowService(IOptions<TwitterCloneDbConfig> twitterCloneDbConfig, IMongoClient mongoClient, IHttpContextAccessor httpContextAccessor)
+        public FollowService(IOptions<TwitterCloneDbConfig> twitterCloneDbConfig, IMongoClient mongoClient, IHttpContextAccessor httpContextAccessor, IBus bus)
         {
 
             var mongoDatabase = mongoClient.GetDatabase(twitterCloneDbConfig.Value.DatabaseName);
@@ -25,6 +27,8 @@ namespace Infrastructure.Services
             _user = mongoDatabase.GetCollection<User>(twitterCloneDbConfig.Value.UserCollectionName);
 
             _httpContextAccessor = httpContextAccessor;
+
+            _bus = bus;
         }
 
         public async Task<string> FollowByUserId(string followingId)
@@ -46,6 +50,17 @@ namespace Infrastructure.Services
                         };
                         await _followCollection.InsertOneAsync(follow);
                         msg = "Followed";
+
+
+
+                        NotificationCreateDto notificationCreateDto = new NotificationCreateDto
+                        {
+                            UserId = followingId,
+                            RefUserId = userId,
+                            Type = "Follow",
+                        };
+                        await _bus.Publish(notificationCreateDto);
+
                     }
                     else
                     {
