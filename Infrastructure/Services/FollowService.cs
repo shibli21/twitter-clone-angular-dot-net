@@ -111,5 +111,9 @@ namespace Infrastructure.Services
             };
         }
 
+        public Task<bool> IsFollowing(string userId, string followingId)
+        {
+            return _followCollection.Find(f => f.UserId == userId && f.FollowingId == followingId).AnyAsync();
+        }
     }
 }
