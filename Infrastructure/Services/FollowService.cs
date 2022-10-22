@@ -1,10 +1,9 @@
-using System.Security.Claims;
+
 using Core.Dtos;
 using Core.Interfaces;
 using Core.Models;
 using Infrastructure.Config;
 using MassTransit;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 
@@ -14,10 +13,8 @@ namespace Infrastructure.Services
     {
         private readonly IMongoCollection<Follows> _followCollection;
         private readonly IMongoCollection<User> _user;
-        private readonly IBus _bus;
 
-        private readonly IHttpContextAccessor _httpContextAccessor;
-        public FollowService(IOptions<TwitterCloneDbConfig> twitterCloneDbConfig, IMongoClient mongoClient, IHttpContextAccessor httpContextAccessor, IBus bus)
+        public FollowService(IOptions<TwitterCloneDbConfig> twitterCloneDbConfig, IMongoClient mongoClient)
         {
 
             var mongoDatabase = mongoClient.GetDatabase(twitterCloneDbConfig.Value.DatabaseName);
@@ -26,48 +23,29 @@ namespace Infrastructure.Services
 
             _user = mongoDatabase.GetCollection<User>(twitterCloneDbConfig.Value.UserCollectionName);
 
-            _httpContextAccessor = httpContextAccessor;
-
-            _bus = bus;
         }
 
-        public async Task<string> FollowByUserId(string followingId)
+        public async Task<string> FollowByUserId(string userId, string followingId)
         {
             string msg = "Something went wrong";
-            if (_httpContextAccessor.HttpContext != null)
+
+            var follow = await _followCollection.Find(f => f.UserId == userId && f.FollowingId == followingId).FirstOrDefaultAsync();
+            if (follow == null)
             {
-                string? userId = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-                if (userId != null)
+                follow = new Follows
                 {
-                    var follow = await _followCollection.Find(f => f.UserId == userId && f.FollowingId == followingId).FirstOrDefaultAsync();
-                    if (follow == null)
-                    {
-                        follow = new Follows
-                        {
-                            UserId = userId,
-                            FollowingId = followingId,
+                    UserId = userId,
+                    FollowingId = followingId,
 
-                        };
-                        await _followCollection.InsertOneAsync(follow);
-                        msg = "Followed";
+                };
+                await _followCollection.InsertOneAsync(follow);
+                msg = "Followed";
 
-
-
-                        NotificationCreateDto notificationCreateDto = new NotificationCreateDto
-                        {
-                            UserId = followingId,
-                            RefUserId = userId,
-                            Type = "Follow",
-                        };
-                        await _bus.Publish(notificationCreateDto);
-
-                    }
-                    else
-                    {
-                        await _followCollection.DeleteOneAsync(f => f.UserId == userId && f.FollowingId == followingId);
-                        msg = "Unfollowed";
-                    }
-                }
+            }
+            else
+            {
+                await _followCollection.DeleteOneAsync(f => f.UserId == userId && f.FollowingId == followingId);
+                msg = "Unfollowed";
             }
             return msg;
 
@@ -111,5 +89,9 @@ namespace Infrastructure.Services
             };
         }
 
+        public Task<bool> IsFollowing(string userId, string followingId)
+        {
+            return _followCollection.Find(f => f.UserId == userId && f.FollowingId == followingId).AnyAsync();
+        }
     }
 }

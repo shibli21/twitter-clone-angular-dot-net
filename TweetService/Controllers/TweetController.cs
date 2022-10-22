@@ -1,8 +1,10 @@
 
 
+using System.Security.Claims;
 using Core.Dtos;
 using Core.Interfaces;
 using Core.Models;
+using MassTransit;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -15,14 +17,17 @@ namespace Core.Controllers
         private readonly ITweetService _tweetService;
         private readonly IUsersService _usersService;
         private readonly ILikeCommentService _iLikeCommentService;
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IBus _bus;
 
-        public TweetController(ITweetService tweetService, ILikeCommentService iLikeCommentService, IUsersService usersService)
+        public TweetController(ITweetService tweetService, ILikeCommentService iLikeCommentService, IUsersService usersService, IHttpContextAccessor httpContextAccessor, IBus bus)
         {
             _tweetService = tweetService;
             _iLikeCommentService = iLikeCommentService;
             _usersService = usersService;
+            _httpContextAccessor = httpContextAccessor;
+            _bus = bus;
         }
-
         [HttpPost("create"), Authorize]
         public async Task<ActionResult<TweetResponseDto>> CreateTweet(TweetRequestDto tweetRequest)
         {
@@ -37,12 +42,17 @@ namespace Core.Controllers
         [HttpPost("retweet/{id}"), Authorize]
         public async Task<ActionResult<TweetResponseDto>> CreateRetweet(string id, RetweetRequestDto tweetRequest)
         {
+            var userId = _httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == null)
+            {
+                return Unauthorized();
+            }
             Tweets? refTweet = await _tweetService.GetTweetById(id);
             if (refTweet == null)
             {
                 return BadRequest(new { message = "Tweet could not be found" });
             }
-            Tweets? tweet = await _tweetService.CreateRetweet(id, tweetRequest);
+            Tweets? tweet = await _tweetService.CreateRetweet(userId, refTweet, tweetRequest);
             if (tweet != null)
             {
                 refTweet.RetweetCount += 1;
@@ -50,6 +60,16 @@ namespace Core.Controllers
                 TweetResponseDto tweetResponse = tweet.AsDto();
                 tweetResponse.RefTweet = refTweet.AsDto();
                 tweetResponse.RefTweet.User = (await _usersService.GetUserAsync(refTweet.UserId))?.AsDtoTweetComment();
+
+                NotificationCreateDto notificationCreateDto = new NotificationCreateDto
+                {
+                    UserId = refTweet.UserId,
+                    RefUserId = userId,
+                    TweetId = tweet.Id,
+                    Type = "Retweet",
+                };
+                await _bus.Publish(notificationCreateDto);
+
                 return Ok(tweetResponse);
             }
             return BadRequest(new { message = "Tweet could not be created" });
@@ -165,15 +185,34 @@ namespace Core.Controllers
         [HttpPost("like/{tweetId}"), Authorize]
         public async Task<ActionResult<object>> LikeTweet(string tweetId)
         {
-            string msg = await _iLikeCommentService.LikeTweet(tweetId);
-            if (msg == "Something went wrong")
+            var userId = _httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == null)
             {
-                return BadRequest(new { Message = msg });
+                return Unauthorized();
             }
-            else
+            var tweet = await _tweetService.GetTweetById(tweetId);
+            if (tweet == null)
             {
-                return Ok(new { Message = msg });
+                return NotFound(new
+                {
+                    Message = "Tweet Not Found",
+                });
             }
+            string msg = await _iLikeCommentService.LikeTweet(tweet, userId);
+            if (msg == "Tweet liked")
+            {
+                NotificationCreateDto notificationCreateDto = new NotificationCreateDto
+                {
+                    UserId = tweet.UserId,
+                    RefUserId = userId,
+                    TweetId = tweet.Id,
+                    Type = "Like",
+                };
+                await _bus.Publish(notificationCreateDto);
+            }
+
+            return Ok(new { Message = msg });
+
         }
 
         [HttpGet("liked-users/{tweetId}"), Authorize]
@@ -186,11 +225,33 @@ namespace Core.Controllers
         [HttpPost("comment/{tweetId}"), Authorize]
         public async Task<ActionResult<CommentResponseDto>> Comment(string tweetId, CommentRequestDto commentRequest)
         {
-            CommentResponseDto? comment = await _iLikeCommentService.Comment(tweetId, commentRequest.Comment);
+            var userId = _httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == null)
+            {
+                return Unauthorized();
+            }
+            var tweet = await _tweetService.GetTweetById(tweetId);
+            if (tweet == null)
+            {
+                return NotFound(new
+                {
+                    Message = "Tweet Not Found",
+                });
+            }
+            CommentResponseDto? comment = await _iLikeCommentService.Comment(userId, tweet, commentRequest.Comment);
             if (comment == null)
             {
                 return BadRequest(new { Message = "Something went wrong" });
             }
+
+            NotificationCreateDto notificationCreateDto = new NotificationCreateDto
+            {
+                UserId = tweet.UserId,
+                RefUserId = userId,
+                TweetId = tweet.Id,
+                Type = "Comment",
+            };
+            await _bus.Publish(notificationCreateDto);
             return Ok(comment);
         }
 
