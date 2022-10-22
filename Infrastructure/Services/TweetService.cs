@@ -3,6 +3,7 @@ using Core.Dtos;
 using Core.Interfaces;
 using Core.Models;
 using Infrastructure.Config;
+using MassTransit;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
@@ -15,13 +16,14 @@ namespace Infrastructure.Services
         private readonly IMongoCollection<Tweets> _tweetCollection;
         private readonly IMongoCollection<HashTags> _hashTagCollection;
         private readonly IHttpContextAccessor _httpContextAccessor;
-        public TweetService(IOptions<TwitterCloneDbConfig> twitterCloneDbConfig, IMongoClient mongoClient, IHttpContextAccessor httpContextAccessor)
+        private readonly IBus _bus;
+        public TweetService(IOptions<TwitterCloneDbConfig> twitterCloneDbConfig, IMongoClient mongoClient, IHttpContextAccessor httpContextAccessor, IBus bus)
         {
-            var mongoDatabase = mongoClient.GetDatabase(twitterCloneDbConfig.Value.DatabaseName);
-
-            _tweetCollection = mongoDatabase.GetCollection<Tweets>(twitterCloneDbConfig.Value.TweetCollectionName);
-            _hashTagCollection = mongoDatabase.GetCollection<HashTags>(twitterCloneDbConfig.Value.HashTagCollectionName);
             _httpContextAccessor = httpContextAccessor;
+            _bus = bus;
+            var database = mongoClient.GetDatabase(twitterCloneDbConfig.Value.DatabaseName);
+            _tweetCollection = database.GetCollection<Tweets>(twitterCloneDbConfig.Value.TweetCollectionName);
+            _hashTagCollection = database.GetCollection<HashTags>(twitterCloneDbConfig.Value.HashTagCollectionName);
         }
         public async Task<Tweets?> CreateTweet(TweetRequestDto tweet)
         {
@@ -110,7 +112,8 @@ namespace Infrastructure.Services
                 }
                 tweet.Tweet = tweetRequest.Tweet;
             }
-            else {
+            else
+            {
                 tweet.Tweet = "";
             }
             tweet.UpdatedAt = DateTime.Now;
@@ -145,27 +148,41 @@ namespace Infrastructure.Services
                 string? userId = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
                 if (userId != null)
                 {
-                    tweetModel = new Tweets
+                    Tweets? originalTweet = await _tweetCollection.Find(t => t.Id == id && t.DeletedAt == null).FirstOrDefaultAsync();
+                    if (originalTweet != null)
                     {
-                        UserId = userId,
-                        Tweet = tweet.Tweet,
-                        Type = "Retweet",
-                        RetweetRefId = id,
-                    };
-                    await _tweetCollection.InsertOneAsync(tweetModel);
-
-                    foreach (var hashTag in tweet.HashTags)
-                    {
-                        var hashTagModel = new HashTags
-
+                        tweetModel = new Tweets
                         {
-                            HashTag = hashTag,
-                            TweetId = tweetModel.Id,
+                            UserId = userId,
+                            Tweet = tweet.Tweet,
+                            Type = "Retweet",
+                            RetweetRefId = id,
                         };
-                        await _hashTagCollection.InsertOneAsync(hashTagModel);
+                        await _tweetCollection.InsertOneAsync(tweetModel);
+
+                        foreach (var hashTag in tweet.HashTags)
+                        {
+                            var hashTagModel = new HashTags
+
+                            {
+                                HashTag = hashTag,
+                                TweetId = tweetModel.Id,
+                            };
+                            await _hashTagCollection.InsertOneAsync(hashTagModel);
+                        }
+
+                        NotificationCreateDto notificationCreateDto = new NotificationCreateDto
+                        {
+                            UserId = originalTweet.UserId,
+                            RefUserId = userId,
+                            TweetId = tweetModel.Id,
+                            Type = "Retweet",
+                        };
+                        await _bus.Publish(notificationCreateDto);
                     }
 
                 }
+
             }
             return tweetModel;
         }

@@ -3,6 +3,7 @@ using Core.Dtos;
 using Core.Interfaces;
 using Core.Models;
 using Infrastructure.Config;
+using MassTransit;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
@@ -17,14 +18,16 @@ namespace Infrastructure.Services
         private readonly IMongoCollection<User> _user;
         private readonly IMongoCollection<Tweets> _tweetCollection;
         private readonly IHttpContextAccessor _httpContextAccessor;
-        public LikeCommentService(IOptions<TwitterCloneDbConfig> twitterCloneDbConfig, IMongoClient mongoClient, IHttpContextAccessor httpContextAccessor)
+        private readonly IBus _bus;
+        public LikeCommentService(IOptions<TwitterCloneDbConfig> twitterCloneDbConfig, IMongoClient mongoClient, IHttpContextAccessor httpContextAccessor, IBus bus)
         {
-            var mongoDatabase = mongoClient.GetDatabase(twitterCloneDbConfig.Value.DatabaseName);
-            _likeRetweetCollection = mongoDatabase.GetCollection<LikeRetweets>(twitterCloneDbConfig.Value.LikeRetweetCollectionName);
-            _commentCollection = mongoDatabase.GetCollection<Comments>(twitterCloneDbConfig.Value.CommentCollectionName);
-            _user = mongoDatabase.GetCollection<User>(twitterCloneDbConfig.Value.UserCollectionName);
-            _tweetCollection = mongoDatabase.GetCollection<Tweets>(twitterCloneDbConfig.Value.TweetCollectionName);
             _httpContextAccessor = httpContextAccessor;
+            _bus = bus;
+            var database = mongoClient.GetDatabase(twitterCloneDbConfig.Value.DatabaseName);
+            _likeRetweetCollection = database.GetCollection<LikeRetweets>(twitterCloneDbConfig.Value.LikeRetweetCollectionName);
+            _commentCollection = database.GetCollection<Comments>(twitterCloneDbConfig.Value.CommentCollectionName);
+            _user = database.GetCollection<User>(twitterCloneDbConfig.Value.UserCollectionName);
+            _tweetCollection = database.GetCollection<Tweets>(twitterCloneDbConfig.Value.TweetCollectionName);
         }
 
         public async Task<CommentResponseDto?> Comment(string id, string comment)
@@ -46,8 +49,21 @@ namespace Infrastructure.Services
                     await _commentCollection.InsertOneAsync(commentObj);
                     tweet.CommentCount += 1;
                     await _tweetCollection.ReplaceOneAsync(x => x.Id == id, tweet);
+
+
+                    NotificationCreateDto notificationCreateDto = new NotificationCreateDto
+                    {
+                        UserId = tweet.UserId,
+                        RefUserId = userId,
+                        TweetId = tweet.Id,
+                        Type = "Comment",
+                    };
+                    await _bus.Publish(notificationCreateDto);
+
                     return commentObj.AsDto();
                 }
+
+
             }
             return commentResponseDto;
         }
@@ -149,6 +165,16 @@ namespace Infrastructure.Services
                         tweet.LikeCount += 1;
                         await _tweetCollection.ReplaceOneAsync(x => x.Id == id, tweet);
                         msg = "Tweet liked";
+
+
+                        NotificationCreateDto notificationCreateDto = new NotificationCreateDto
+                        {
+                            UserId = tweet.UserId,
+                            RefUserId = userId,
+                            TweetId = tweet.Id,
+                            Type = "Like",
+                        };
+                        await _bus.Publish(notificationCreateDto);
                     }
                     else
                     {
@@ -166,8 +192,19 @@ namespace Infrastructure.Services
                             tweet.LikeCount += 1;
                             await _tweetCollection.ReplaceOneAsync(x => x.Id == id, tweet);
                             msg = "Tweet liked";
+
+
+                            NotificationCreateDto notificationCreateDto = new NotificationCreateDto
+                            {
+                                UserId = tweet.UserId,
+                                RefUserId = userId,
+                                TweetId = tweet.Id,
+                                Type = "Like",
+                            };
+                            await _bus.Publish(notificationCreateDto);
                         }
                     }
+
 
                 }
             }

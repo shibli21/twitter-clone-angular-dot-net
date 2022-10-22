@@ -3,6 +3,7 @@ using Core.Interfaces;
 using Infrastructure.Config;
 using Infrastructure.Services;
 using JWTAuthenticationManager;
+using MassTransit;
 using MongoDB.Driver;
 using Serilog;
 
@@ -32,6 +33,22 @@ builder.Services.AddCustomJwtAuthentication();
 builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddSwaggerDocumentation();
+
+
+builder.Services.AddMassTransit(x =>
+{
+    x.AddBus(provider => Bus.Factory.CreateUsingRabbitMq(cfg =>
+     {
+         cfg.Host(builder.Configuration.GetValue<string>("RabbitMQSettings:Host"), h =>
+         {
+             h.Username(builder.Configuration.GetValue<string>("RabbitMQSettings:UserName"));
+             h.Password(builder.Configuration.GetValue<string>("RabbitMQSettings:Password"));
+         });
+     }));
+});
+
+
+
 
 var app = builder.Build();
 
