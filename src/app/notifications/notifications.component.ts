@@ -39,7 +39,6 @@ export class NotificationsComponent implements OnInit {
       this.notificationService.notifications.subscribe(
         (paginatedNotifications) => {
           this.paginatedNotifications = paginatedNotifications;
-          console.log('ashdakj');
         }
       );
 
