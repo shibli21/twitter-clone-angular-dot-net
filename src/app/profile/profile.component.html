@@ -35,7 +35,7 @@
           <div *ngIf="!isCurrentUser" class="flex gap-2">
             <p-button (onClick)="blockUserByUser()" label="Block"></p-button>
             <p-button
-              label="Follow"
+              [label]="!profileUser.isFollowed ? 'Follow' : 'Following'"
               (onClick)="followUnfollowUser()"
             ></p-button>
           </div>
