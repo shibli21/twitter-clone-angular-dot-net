@@ -38,6 +38,7 @@ export interface User {
   address: string;
   role: string;
   createdAt: Date;
+  isFollowed?: boolean;
 }
 
 export interface PaginatedUsers {

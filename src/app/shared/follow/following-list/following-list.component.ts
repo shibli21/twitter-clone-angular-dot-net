@@ -1,7 +1,7 @@
 import { Router } from '@angular/router';
 import { FollowService } from '../../../core/services/follow.service';
 import { Component, Input, OnInit } from '@angular/core';
-import { PaginatedUsers, User } from './../../../auth/Models/user.model';
+import { PaginatedUsers, User } from '../../../core/models/user.model';
 
 @Component({
   selector: 'app-following-list',

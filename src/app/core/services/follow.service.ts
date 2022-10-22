@@ -1,4 +1,4 @@
-import { PaginatedUsers } from '../../auth/Models/user.model';
+import { PaginatedUsers } from '../models/user.model';
 import { catchError, throwError } from 'rxjs';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';

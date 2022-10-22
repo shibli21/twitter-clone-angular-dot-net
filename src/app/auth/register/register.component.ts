@@ -1,4 +1,4 @@
-import { IRegisterUser } from './../Models/user.model';
+import { IRegisterUser } from '../../core/models/user.model';
 import { Router } from '@angular/router';
 import { Component, OnInit } from '@angular/core';
 import {

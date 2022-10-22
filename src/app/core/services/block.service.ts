@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { catchError, throwError } from 'rxjs';
-import { PaginatedUsers } from 'src/app/auth/Models/user.model';
+import { PaginatedUsers } from 'src/app/core/models/user.model';
 import { environment } from './../../../environments/environment';
 
 @Injectable({

@@ -1,5 +1,5 @@
 import { FollowService } from './../../core/services/follow.service';
-import { User } from 'src/app/auth/Models/user.model';
+import { User } from 'src/app/core/models/user.model';
 import { Component, Input, OnInit } from '@angular/core';
 
 @Component({

@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
-import { ILoginUser } from '../Models/user.model';
+import { ILoginUser } from '../../core/models/user.model';
 import { AuthService } from './../auth.service';
 
 @Component({

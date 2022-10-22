@@ -7,6 +7,7 @@ import { ProfileCardComponent } from './profile-card/profile-card.component';
 import { UserLayoutComponent } from './user-layout/user-layout.component';
 import { AdminLayoutComponent } from './admin-layout/admin-layout.component';
 import { AdminNavComponent } from './admin-nav/admin-nav.component';
+import { FormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [
@@ -17,6 +18,6 @@ import { AdminNavComponent } from './admin-nav/admin-nav.component';
     AdminLayoutComponent,
     AdminNavComponent,
   ],
-  imports: [CommonModule, SharedModule],
+  imports: [CommonModule, SharedModule, FormsModule],
 })
 export class LayoutModule {}

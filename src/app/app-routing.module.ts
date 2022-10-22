@@ -41,6 +41,11 @@ const routes: Routes = [
         loadChildren: () =>
           import('./tweet/tweet.module').then((m) => m.TweetModule),
       },
+      {
+        path: 'search',
+        loadChildren: () =>
+          import('./search/search.module').then((m) => m.SearchModule),
+      },
     ],
   },
   {

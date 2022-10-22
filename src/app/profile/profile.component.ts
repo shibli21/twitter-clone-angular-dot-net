@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
-import { User } from '../auth/Models/user.model';
+import { User } from '../core/models/user.model';
 import { PaginatedTweets } from '../core/models/tweet.model';
 import { AuthService } from './../auth/auth.service';
 import { BlockService } from './../core/services/block.service';

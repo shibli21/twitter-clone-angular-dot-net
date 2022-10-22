@@ -1,7 +1,7 @@
 import { ToastrService } from 'ngx-toastr';
 import { BlockService } from './../../core/services/block.service';
 import { Component, OnInit } from '@angular/core';
-import { PaginatedUsers } from 'src/app/auth/Models/user.model';
+import { PaginatedUsers } from 'src/app/core/models/user.model';
 
 @Component({
   selector: 'app-block-list',

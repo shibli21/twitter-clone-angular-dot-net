@@ -1,6 +1,6 @@
 import { AuthService } from './../../auth/auth.service';
 import { Component, OnInit } from '@angular/core';
-import { User } from '../../auth/Models/user.model';
+import { User } from '../../core/models/user.model';
 
 @Component({
   selector: 'app-profile-card',

@@ -10,7 +10,7 @@ import {
   IRegisterUser,
   LoginResponse,
   User,
-} from './Models/user.model';
+} from '../core/models/user.model';
 
 @Injectable({
   providedIn: 'root',

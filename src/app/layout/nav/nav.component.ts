@@ -1,3 +1,5 @@
+import { Router, ActivatedRoute } from '@angular/router';
+import { SearchService } from './../../core/services/search.service';
 import { AuthService } from './../../auth/auth.service';
 import { Component, OnInit } from '@angular/core';
 import { MenuItem } from 'primeng/api';
@@ -9,8 +11,14 @@ import { MenuItem } from 'primeng/api';
 })
 export class NavComponent implements OnInit {
   items!: MenuItem[];
+  searchQuery!: string;
 
-  constructor(private authService: AuthService) {}
+  constructor(
+    private authService: AuthService,
+    private searchService: SearchService,
+    private router: Router,
+    private route: ActivatedRoute
+  ) {}
 
   ngOnInit() {
     this.items = [
@@ -61,5 +69,20 @@ export class NavComponent implements OnInit {
         visible: this.authService.isAdmin(),
       },
     ];
+  }
+
+  onSubmit() {
+    if (this.searchQuery.startsWith('#')) {
+      this.searchService.tweetSearchQuery.next(this.searchQuery);
+      if (this.router.url !== '/search/search-tweets') {
+        this.router.navigate(['/search/search-tweets']);
+      }
+    } else {
+      this.searchService.searchQuery.next(this.searchQuery);
+      if (this.router.url !== '/search/search-users') {
+        this.router.navigate(['/search/search-users']);
+      }
+    }
+    this.searchQuery = '';
   }
 }

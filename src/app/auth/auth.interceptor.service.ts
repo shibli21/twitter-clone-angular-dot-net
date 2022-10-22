@@ -6,7 +6,7 @@ import {
 } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { LoginResponse } from './Models/user.model';
+import { LoginResponse } from '../core/models/user.model';
 
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
