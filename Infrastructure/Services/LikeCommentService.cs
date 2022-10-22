@@ -3,7 +3,6 @@ using Core.Dtos;
 using Core.Interfaces;
 using Core.Models;
 using Infrastructure.Config;
-using MassTransit;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
@@ -18,11 +17,9 @@ namespace Infrastructure.Services
         private readonly IMongoCollection<User> _user;
         private readonly IMongoCollection<Tweets> _tweetCollection;
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly IBus _bus;
-        public LikeCommentService(IOptions<TwitterCloneDbConfig> twitterCloneDbConfig, IMongoClient mongoClient, IHttpContextAccessor httpContextAccessor, IBus bus)
+        public LikeCommentService(IOptions<TwitterCloneDbConfig> twitterCloneDbConfig, IMongoClient mongoClient, IHttpContextAccessor httpContextAccessor)
         {
             _httpContextAccessor = httpContextAccessor;
-            _bus = bus;
             var database = mongoClient.GetDatabase(twitterCloneDbConfig.Value.DatabaseName);
             _likeRetweetCollection = database.GetCollection<LikeRetweets>(twitterCloneDbConfig.Value.LikeRetweetCollectionName);
             _commentCollection = database.GetCollection<Comments>(twitterCloneDbConfig.Value.CommentCollectionName);
@@ -30,42 +27,20 @@ namespace Infrastructure.Services
             _tweetCollection = database.GetCollection<Tweets>(twitterCloneDbConfig.Value.TweetCollectionName);
         }
 
-        public async Task<CommentResponseDto?> Comment(string id, string comment)
+        public async Task<CommentResponseDto?> Comment(string userId, Tweets tweet, string comment)
         {
-            CommentResponseDto? commentResponseDto = null;
-            if (_httpContextAccessor.HttpContext != null)
+            Comments commentObj = new Comments
             {
-                string? userId = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-                Tweets? tweet = await _tweetCollection.Find(x => x.Id == id).FirstOrDefaultAsync();
-                if (userId != null && tweet != null)
-                {
-                    Comments commentObj = new Comments
-                    {
-                        TweetId = id,
-                        Comment = comment,
-                        UserId = userId,
-                        CreatedAt = DateTime.Now
-                    };
-                    await _commentCollection.InsertOneAsync(commentObj);
-                    tweet.CommentCount += 1;
-                    await _tweetCollection.ReplaceOneAsync(x => x.Id == id, tweet);
+                TweetId = tweet.Id,
+                Comment = comment,
+                UserId = userId,
+                CreatedAt = DateTime.Now
+            };
+            await _commentCollection.InsertOneAsync(commentObj);
+            tweet.CommentCount += 1;
+            await _tweetCollection.ReplaceOneAsync(x => x.Id == tweet.Id, tweet);
+            return commentObj.AsDto();
 
-
-                    NotificationCreateDto notificationCreateDto = new NotificationCreateDto
-                    {
-                        UserId = tweet.UserId,
-                        RefUserId = userId,
-                        TweetId = tweet.Id,
-                        Type = "Comment",
-                    };
-                    await _bus.Publish(notificationCreateDto);
-
-                    return commentObj.AsDto();
-                }
-
-
-            }
-            return commentResponseDto;
         }
 
         public async Task<CommentResponseDto?> UpdateComment(string commentId, string comment)
@@ -142,72 +117,47 @@ namespace Infrastructure.Services
             return commentResponse;
         }
 
-        public async Task<string> LikeTweet(string id)
+        public async Task<string> LikeTweet(Tweets tweet, string userId)
         {
-            string msg = "Something went wrong";
-            if (_httpContextAccessor.HttpContext != null)
+            string msg = "";
+
+            var likeRetweet = await _likeRetweetCollection.Find(x => x.UserId == userId && x.TweetId == tweet.Id).FirstOrDefaultAsync();
+            if (likeRetweet == null)
             {
-                string? userId = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-                Tweets? tweet = await _tweetCollection.Find(x => x.Id == id).FirstOrDefaultAsync();
-                if (userId != null && tweet != null)
+                likeRetweet = new LikeRetweets
                 {
-                    var likeRetweet = await _likeRetweetCollection.Find(x => x.UserId == userId && x.TweetId == id).FirstOrDefaultAsync();
-                    if (likeRetweet == null)
-                    {
-                        likeRetweet = new LikeRetweets
-                        {
-                            UserId = userId,
-                            TweetId = id,
-                            IsLiked = true,
-                            IsRetweeted = false,
-                        };
-                        await _likeRetweetCollection.InsertOneAsync(likeRetweet);
-                        tweet.LikeCount += 1;
-                        await _tweetCollection.ReplaceOneAsync(x => x.Id == id, tweet);
-                        msg = "Tweet liked";
+                    UserId = userId,
+                    TweetId = tweet.Id,
+                    IsLiked = true,
+                    IsRetweeted = false,
+                };
+                await _likeRetweetCollection.InsertOneAsync(likeRetweet);
+                tweet.LikeCount += 1;
+                await _tweetCollection.ReplaceOneAsync(x => x.Id == tweet.Id, tweet);
+                msg = "Tweet liked";
 
-
-                        NotificationCreateDto notificationCreateDto = new NotificationCreateDto
-                        {
-                            UserId = tweet.UserId,
-                            RefUserId = userId,
-                            TweetId = tweet.Id,
-                            Type = "Like",
-                        };
-                        await _bus.Publish(notificationCreateDto);
-                    }
-                    else
-                    {
-                        if (likeRetweet.IsLiked)
-                        {
-                            await _likeRetweetCollection.DeleteOneAsync(x => x.Id == likeRetweet.Id);
-                            tweet.LikeCount -= 1;
-                            await _tweetCollection.ReplaceOneAsync(x => x.Id == id, tweet);
-                            msg = "Tweet unliked";
-                        }
-                        else
-                        {
-                            likeRetweet.IsLiked = true;
-                            await _likeRetweetCollection.ReplaceOneAsync(x => x.Id == likeRetweet.Id, likeRetweet);
-                            tweet.LikeCount += 1;
-                            await _tweetCollection.ReplaceOneAsync(x => x.Id == id, tweet);
-                            msg = "Tweet liked";
-
-
-                            NotificationCreateDto notificationCreateDto = new NotificationCreateDto
-                            {
-                                UserId = tweet.UserId,
-                                RefUserId = userId,
-                                TweetId = tweet.Id,
-                                Type = "Like",
-                            };
-                            await _bus.Publish(notificationCreateDto);
-                        }
-                    }
-
+            }
+            else
+            {
+                if (likeRetweet.IsLiked)
+                {
+                    await _likeRetweetCollection.DeleteOneAsync(x => x.Id == likeRetweet.Id);
+                    tweet.LikeCount -= 1;
+                    await _tweetCollection.ReplaceOneAsync(x => x.Id == tweet.Id, tweet);
+                    msg = "Tweet unliked";
+                }
+                else
+                {
+                    likeRetweet.IsLiked = true;
+                    await _likeRetweetCollection.ReplaceOneAsync(x => x.Id == likeRetweet.Id, likeRetweet);
+                    tweet.LikeCount += 1;
+                    await _tweetCollection.ReplaceOneAsync(x => x.Id == tweet.Id, tweet);
+                    msg = "Tweet liked";
 
                 }
             }
+
+
             return msg;
         }
 
