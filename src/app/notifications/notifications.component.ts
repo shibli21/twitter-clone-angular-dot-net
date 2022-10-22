@@ -1,9 +1,10 @@
+import { ActivatedRoute, Router } from '@angular/router';
+import { NotificationService } from './../core/services/notification.service';
+import {
+  Notification,
+  PaginatedNotifications,
+} from './../core/models/notification.model';
 import { Component, OnInit } from '@angular/core';
-
-interface INotifications {
-  type: string;
-  message: string;
-}
 
 @Component({
   selector: 'app-notifications',
@@ -11,26 +12,65 @@ interface INotifications {
   styleUrls: ['./notifications.component.scss'],
 })
 export class NotificationsComponent implements OnInit {
-  notifications: INotifications[] = [
-    {
-      type: 'comment',
-      message: 'Nimil commented on your post',
-    },
-    {
-      type: 'heart',
-      message: 'Zakaria liked your post',
-    },
-    {
-      type: 'user',
-      message: 'Snigdho followed you',
-    },
-    {
-      type: 'share-alt',
-      message: 'Masum retweeted your post',
-    },
-  ];
+  paginatedNotifications!: PaginatedNotifications | null;
+  isLoading = false;
 
-  constructor() {}
+  constructor(
+    private notificationService: NotificationService,
+    private route: ActivatedRoute,
+    private router: Router
+  ) {}
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.route.data.subscribe((data) => {
+      this.notificationService.notifications.next({
+        notifications: [],
+        lastPage: 0,
+        page: 0,
+        size: 0,
+        totalElements: 0,
+        totalPages: 0,
+      });
+
+      this.notificationService.isLoadingNotifications.subscribe((isLoading) => {
+        this.isLoading = isLoading;
+      });
+
+      this.notificationService.notifications.subscribe(
+        (paginatedNotifications) => {
+          this.paginatedNotifications = paginatedNotifications;
+          console.log('ashdakj');
+        }
+      );
+
+      this.notificationService.getNotifications(
+        this.paginatedNotifications?.page
+      );
+    });
+  }
+
+  loadMore() {
+    this.notificationService.loadMoreNotifications();
+  }
+
+  markAsRead(notification: Notification) {
+    this.notificationService.markAsRead(notification.id).subscribe(() => {
+      this.router.navigate(['/tweet', notification.tweetId]);
+    });
+  }
+
+  getNotificationTypeIcon(type: string) {
+    switch (type) {
+      case 'Follow':
+        return 'user';
+      case 'Like':
+        return 'heart';
+      case 'Retweet':
+        return 'share-alt';
+      case 'Comment':
+        return 'comment';
+      default:
+        return '';
+    }
+  }
 }
