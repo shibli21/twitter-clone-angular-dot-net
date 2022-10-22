@@ -368,6 +368,34 @@
           "Port": 5213
         }
       ]
+    },
+    {
+      "UpstreamPathTemplate": "/search/search-users",
+      "UpstreamHttpMethod": [
+        "Get"
+      ],
+      "DownstreamPathTemplate": "/search/search-users",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5214
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/search/search-tweets",
+      "UpstreamHttpMethod": [
+        "Get"
+      ],
+      "DownstreamPathTemplate": "/search/search-tweets",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5214
+        }
+      ]
     }
   ],
   "GlobalConfiguration": {
