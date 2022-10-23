@@ -3,7 +3,8 @@ using Core.Extensions;
 using Core.Interfaces;
 using Infrastructure.Config;
 using Infrastructure.Services;
-using Infrastructure.Consumers;
+using NotificationService.Consumers;
+using NotificationService.Hubs;
 using JWTAuthenticationManager;
 using MongoDB.Driver;
 using Serilog;
@@ -33,6 +34,16 @@ builder.Services.AddEndpointsApiExplorer();
 
 builder.Services.AddSwaggerDocumentation();
 
+builder.Services.AddCors(p => p.AddPolicy("TwitterCloneCorsPolicy", builder =>
+   {
+       builder.AllowAnyMethod()
+              .AllowAnyHeader()
+              .AllowCredentials()
+              .WithOrigins("http://localhost:4200");
+   }));
+
+
+builder.Services.AddSignalR();
 
 builder.Services.AddMassTransit(x =>
 {
@@ -54,11 +65,17 @@ builder.Services.AddMassTransit(x =>
 
 var app = builder.Build();
 
+app.UseRouting();
+
+app.UseCors("TwitterCloneCorsPolicy");
+
 app.UseSwaggerDocumentation();
 
 app.UseAuthentication();
 
 app.UseAuthorization();
+
+app.MapHub<NotificationHub>("/live-notification");
 
 app.MapControllers();
 

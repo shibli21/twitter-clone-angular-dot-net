@@ -12,4 +12,5 @@ public class TwitterCloneDbConfig
     public string CommentCollectionName { get; set; } = String.Empty;
     public string BlockCollectionName { get; set; } = String.Empty;
     public string NotificationCollectionName { get; set; } = String.Empty;
+    public string SignalrConnectionCollectionName { get; set; } = String.Empty;
 }
