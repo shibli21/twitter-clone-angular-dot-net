@@ -21,7 +21,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TweetService", "TweetServic
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TimelineService", "TimelineService\TimelineService.csproj", "{B44A16FD-E4A1-4B47-8279-84119BE703A8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SearchService", "SearchService\SearchService.csproj", "{EF7FC5A5-63EF-4A86-A5EC-5B7B2A83FE76}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SearchService", "SearchService\SearchService.csproj", "{EF7FC5A5-63EF-4A86-A5EC-5B7B2A83FE76}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CacheService", "CacheService\CacheService.csproj", "{30A52E55-CB72-4F58-A323-A95F6C29C86F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -61,6 +63,10 @@ Global
 		{EF7FC5A5-63EF-4A86-A5EC-5B7B2A83FE76}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EF7FC5A5-63EF-4A86-A5EC-5B7B2A83FE76}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EF7FC5A5-63EF-4A86-A5EC-5B7B2A83FE76}.Release|Any CPU.Build.0 = Release|Any CPU
+		{30A52E55-CB72-4F58-A323-A95F6C29C86F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{30A52E55-CB72-4F58-A323-A95F6C29C86F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{30A52E55-CB72-4F58-A323-A95F6C29C86F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{30A52E55-CB72-4F58-A323-A95F6C29C86F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -71,6 +77,7 @@ Global
 		{E217B3F5-4703-4A1A-A7FB-B9232AB58900} = {B27556CA-34FA-438D-86E4-B75673E83015}
 		{B44A16FD-E4A1-4B47-8279-84119BE703A8} = {B27556CA-34FA-438D-86E4-B75673E83015}
 		{EF7FC5A5-63EF-4A86-A5EC-5B7B2A83FE76} = {B27556CA-34FA-438D-86E4-B75673E83015}
+		{30A52E55-CB72-4F58-A323-A95F6C29C86F} = {B27556CA-34FA-438D-86E4-B75673E83015}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {9D7B4051-6123-4936-B4B1-90FFC90AD120}
