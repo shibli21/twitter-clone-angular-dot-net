@@ -1,111 +1,101 @@
-<p-table
-  #dt
-  [value]="customers"
-  dataKey="id"
-  styleClass="p-datatable-customers"
-  [rowHover]="true"
-  [rows]="10"
-  [showCurrentPageReport]="true"
-  [rowsPerPageOptions]="[10, 25, 50]"
-  [loading]="loading"
-  responsiveLayout="scroll"
-  [paginator]="true"
-  currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
-  [filterDelay]="0"
->
-  <ng-template pTemplate="caption">
-    <div class="table-header flex justify-between">
-      <h3 class="text-xl font-semibold mb-6 leading-none text-gray-900">
-        List of Users
-      </h3>
-      <span class="p-input-icon-left">
-        <i class="pi pi-search"></i>
-        <input pInputText type="text" placeholder="Global Search" />
-      </span>
-    </div>
-  </ng-template>
-  <ng-template pTemplate="header">
-    <tr>
-      <th pSortableColumn="name">
-        <div class="flex justify-between items-center">
-          Name
-          <p-sortIcon field="name"></p-sortIcon>
-        </div>
-      </th>
-      <th pSortableColumn="country.name">
-        <div class="flex justify-between items-center">
-          Country
-          <p-sortIcon field="country.name"></p-sortIcon>
-        </div>
-      </th>
-      <th pSortableColumn="representative.name">
-        <div class="flex justify-between items-center">
-          Agent
-          <p-sortIcon field="representative.name"></p-sortIcon>
-        </div>
-      </th>
-      <th pSortableColumn="date">
-        <div class="flex justify-between items-center">
-          Date
-          <p-sortIcon field="date"></p-sortIcon>
-        </div>
-      </th>
-
-      <th pSortableColumn="status">
-        <div class="flex justify-between items-center">
-          Status
-          <p-sortIcon field="status"></p-sortIcon>
-        </div>
-      </th>
-      <th>
-        <div class="flex justify-end items-center">Activity</div>
-      </th>
-    </tr>
-  </ng-template>
-  <ng-template pTemplate="body" let-customer>
-    <tr class="p-selectable-row">
-      <td>
-        <span class="p-column-title">Name</span>
-        {{ customer.name }}
-      </td>
-      <td>
-        <span class="p-column-title">Country</span>
-        <span class="image-text">{{ customer.country.name }}</span>
-      </td>
-      <td>
-        <span class="p-column-title">Representative</span>
-        <span class="image-text">{{ customer.representative.name }}</span>
-      </td>
-      <td>
-        <span class="p-column-title">Date</span>
-        {{ customer.date | date: "MM/dd/yyyy" }}
-      </td>
-
-      <td>
-        <span class="p-column-title">Status</span>
-        <span [class]="'customer-badge status-' + customer.status">{{
-          customer.status
-        }}</span>
-      </td>
-
-      <td>
-        <span class="p-column-title">Activity</span>
-        <div class="flex justify-end gap-2">
-          <button pButton type="button" label="Edit" icon="pi pi-cog"></button>
+<div class="overflow-auto">
+  <ngx-datatable
+    class="material"
+    [rows]="rows"
+    [columnMode]="'force'"
+    [headerHeight]="50"
+    [footerHeight]="50"
+    [rowHeight]="'auto'"
+    [externalPaging]="true"
+    [count]="page.totalElements"
+    [offset]="page.page"
+    [limit]="page.size"
+    (page)="setPage($event)"
+    [externalPaging]="true"
+    [scrollbarH]="true"
+  >
+    <ngx-datatable-column
+      name="Username"
+      [sortable]="false"
+      prop="userName"
+    ></ngx-datatable-column>
+    <ngx-datatable-column
+      [sortable]="false"
+      name="Email"
+    ></ngx-datatable-column>
+    <ngx-datatable-column [sortable]="false" name="Birth Date">
+      <ng-template
+        let-row="row"
+        let-value="dateOfBirth"
+        ngx-datatable-cell-template
+      >
+        {{ row.dateOfBirth | date: "dd/MM/yyyy" }}
+      </ng-template>
+    </ngx-datatable-column>
+    <ngx-datatable-column
+      [sortable]="false"
+      name="Gender"
+      prop="gender"
+    ></ngx-datatable-column>
+    <ngx-datatable-column [minWidth]="220" name="Actions" [sortable]="false">
+      <ng-template let-row="row" let-value="value" ngx-datatable-cell-template>
+        <div class="flex gap-4">
+          <button
+            (click)="showEditUseDialog(row)"
+            pButton
+            type="button"
+            label="Edit"
+            icon="pi pi-cog"
+          ></button>
           <button
             pButton
             type="button"
             label="Block"
             icon="pi pi-minus-circle"
             class="p-button-danger"
+            (click)="onBlockUser(row.id)"
           ></button>
         </div>
-      </td>
-    </tr>
-  </ng-template>
-  <ng-template pTemplate="emptymessage">
-    <tr>
-      <td colspan="8">No customers found.</td>
-    </tr>
-  </ng-template>
-</p-table>
+      </ng-template>
+    </ngx-datatable-column>
+  </ngx-datatable>
+</div>
+
+<div>
+  <p-dialog
+    [(visible)]="editUserDialog"
+    [modal]="true"
+    [draggable]="false"
+    [resizable]="false"
+    appendTo="body"
+    [dismissableMask]="true"
+  >
+    <ng-template pTemplate="header">
+      <div class="flex gap-2 items-start">
+        <div class="overflow-hidden h-[40px] w-[40px] rounded-full">
+          <img
+            class="object-cover"
+            [src]="
+              editingUser.profilePictureUrl
+                ? editingUser.profilePictureUrl
+                : 'https://avatars.dicebear.com/api/open-peeps/' +
+                  editingUser.userName +
+                  '.svg'
+            "
+            alt=""
+          />
+        </div>
+        <div class="flex-row">
+          <h1 class="text-base font-bold">
+            {{ editingUser.firstName }} {{ editingUser.lastName }}
+          </h1>
+          <p class="text-gray-600 text-sm">@{{ editingUser.userName }}</p>
+        </div>
+      </div>
+    </ng-template>
+    <ng-template pTemplate="content">
+      <app-edit-profile-form [user]="editingUser"></app-edit-profile-form>
+    </ng-template>
+    <ng-template pTemplate="footer"> </ng-template>
+  </p-dialog>
+</div>

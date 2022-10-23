@@ -1,4 +1,3 @@
-import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { IconsModule } from './icons/icons.module';
 import { NgPrimeModule } from './ng-prime/ng-prime.module';

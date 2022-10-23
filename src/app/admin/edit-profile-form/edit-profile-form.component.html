@@ -1,0 +1,218 @@
+<form
+  [formGroup]="editProfileForm"
+  (ngSubmit)="onSubmit()"
+  class="flex flex-col space-y-5"
+>
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+    <div class="space-y-1">
+      <label class="text-gray-600">Username</label>
+      <div>
+        <input
+          type="text"
+          pInputText
+          class="p-inputtext-sm"
+          placeholder="Username"
+          formControlName="userName"
+        />
+        <div *ngIf="isInvalidTouchedDirty('userName')">
+          <div
+            *ngIf="editProfileFormControl['userName'].errors?.['required']"
+            class="input-error"
+          >
+            Username is required.
+          </div>
+          <div
+            *ngIf="editProfileFormControl['userName'].errors?.['userName']"
+            class="input-error"
+          >
+            {{editProfileFormControl['userName'].errors?.['userName']}}
+          </div>
+          <div
+            *ngIf="editProfileFormControl['userName'].errors?.['minlength']"
+            class="input-error"
+          >
+            Must be at least 4 characters long.
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="space-y-1">
+      <label class="text-gray-600">Email Address</label>
+      <div>
+        <input
+          type="email"
+          pInputText
+          class="p-inputtext-sm"
+          placeholder="Email Address"
+          formControlName="email"
+        />
+        <div *ngIf="isInvalidTouchedDirty('email')">
+          <div
+            *ngIf="editProfileFormControl['email'].errors?.['required']"
+            class="input-error"
+          >
+            Email is required.
+          </div>
+          <div
+            *ngIf="editProfileFormControl['email'].errors?.['email']"
+            class="input-error"
+          >
+            Email is not valid.
+          </div>
+          <div
+            *ngIf="editProfileFormControl['email'].errors?.['serverErrorEmail']"
+            class="input-error"
+          >
+            {{editProfileFormControl['email'].errors?.['serverErrorEmail']}}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+    <div class="space-y-1">
+      <label class="text-gray-600">First Name</label>
+      <div>
+        <input
+          type="text"
+          pInputText
+          class="p-inputtext-sm"
+          placeholder="First Name"
+          formControlName="firstName"
+        />
+        <div *ngIf="isInvalidTouchedDirty('firstName')">
+          <div
+            *ngIf="editProfileFormControl['firstName'].errors?.['required']"
+            class="input-error"
+          >
+            First name is required.
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="space-y-1">
+      <label class="text-gray-600">Last Name</label>
+      <div>
+        <input
+          type="text"
+          pInputText
+          class="p-inputtext-sm"
+          placeholder="Last Name"
+          formControlName="lastName"
+        />
+        <div *ngIf="isInvalidTouchedDirty('lastName')">
+          <div
+            *ngIf="editProfileFormControl['lastName'].errors?.['required']"
+            class="input-error"
+          >
+            Last name is required.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="space-y-1">
+    <label class="text-gray-600">Profile Picture Url</label>
+    <div>
+      <input
+        formControlName="profilePictureUrl"
+        type="text"
+        pInputText
+        class="p-inputtext-sm"
+      />
+      <div *ngIf="isInvalidTouchedDirty('profilePictureUrl')">
+        <div
+          *ngIf="editProfileFormControl['profilePictureUrl'].errors?.['required']"
+          class="input-error"
+        >
+          profilePictureUrl is required.
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="space-y-1">
+    <label class="text-gray-600">Cover Picture Url</label>
+    <div>
+      <input
+        formControlName="coverPictureUrl"
+        type="text"
+        pInputText
+        class="p-inputtext-sm"
+      />
+    </div>
+  </div>
+  <div class="space-y-1">
+    <label class="text-gray-600">Bio</label>
+    <textarea
+      placeholder="Bio"
+      pInputTextarea
+      [rows]="2"
+      formControlName="bio"
+    ></textarea>
+  </div>
+
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+    <div class="space-y-1">
+      <label class="text-gray-600">Date of birth</label>
+      <div>
+        <div>
+          <p-calendar
+            class="p-inputtext-sm"
+            placeholder="Date of Birth"
+            formControlName="dateOfBirth"
+          ></p-calendar>
+          <div *ngIf="isInvalidTouchedDirty('dateOfBirth')">
+            <div
+              *ngIf="editProfileFormControl['dateOfBirth'].errors?.['required']"
+              class="input-error"
+            >
+              Birthday is required.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="space-y-1">
+      <label class="text-gray-600">Gender</label>
+      <div class="w-full">
+        <p-dropdown
+          placeholder="Gender"
+          [autoDisplayFirst]="false"
+          [options]="genders"
+          formControlName="gender"
+          optionLabel="name"
+          optionValue="value"
+          class="p-inputtext-sm"
+        ></p-dropdown>
+      </div>
+    </div>
+  </div>
+
+  <div class="space-y-1">
+    <label class="text-gray-600">Address</label>
+    <div>
+      <input
+        formControlName="address"
+        type="text"
+        pInputText
+        class="p-inputtext-sm"
+      />
+      <div *ngIf="isInvalidTouchedDirty('address')">
+        <div
+          *ngIf="editProfileFormControl['address'].errors?.['required']"
+          class="input-error"
+        >
+          Address is required.
+        </div>
+      </div>
+    </div>
+  </div>
+  <p-button
+    [disabled]="editProfileForm.invalid"
+    type="submit"
+    class="text-right"
+    label="Update"
+    [loading]="isUpdating"
+    styleClass="p-button"
+  ></p-button>
+</form>

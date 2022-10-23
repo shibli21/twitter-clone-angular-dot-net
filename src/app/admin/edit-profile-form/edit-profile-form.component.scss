@@ -1,0 +1,41 @@
+:host ::ng-deep {
+  .p-button {
+    @apply px-4 py-1.5 shadow-none text-sm w-full;
+  }
+
+  i-tabler {
+    width: 1.2rem;
+  }
+
+  .p-inputtext {
+    @apply w-full focus:shadow-none focus:border-2;
+
+    &.ng-dirty.ng-invalid {
+      @apply border-red-500 border-2;
+    }
+  }
+
+  p-password.ng-touched.ng-invalid > .p-password > .p-inputtext {
+    @apply border-red-500 border-2;
+  }
+
+  p-calendar.ng-dirty.ng-invalid > .p-calendar > .p-inputtext {
+    @apply border-red-500 border-2;
+  }
+
+  input.ng-touched.ng-invalid {
+    @apply border-red-500 border-2;
+  }
+
+  .input-error {
+    @apply text-red-500;
+  }
+
+  .p-calendar {
+    @apply w-full;
+  }
+
+  .p-dropdown {
+    @apply w-full;
+  }
+}
