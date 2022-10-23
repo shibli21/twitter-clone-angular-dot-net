@@ -44,6 +44,14 @@ namespace NotificationService.Consumers
                 var connectionIds = await _connectionsCollection.Find(x => x.UserId == notification.UserId).Project(x => x.ConnectionId).ToListAsync();
                 NotificationResponseDto notificationResponse = notification.AsDto();
                 notificationResponse.RefUser = await _usersCollection.Find(x => x.Id == notification.RefUserId).Project(x => x.AsDto()).FirstOrDefaultAsync();
+                notificationResponse.Message = notificationResponse.Type switch
+                {
+                    "Like" => $"{notificationResponse.RefUser?.FirstName} {notificationResponse.RefUser?.LastName} liked your tweet",
+                    "Retweet" => $"{notificationResponse.RefUser?.FirstName} {notificationResponse.RefUser?.LastName} retweeted your tweet",
+                    "Follow" => $"{notificationResponse.RefUser?.FirstName} {notificationResponse.RefUser?.LastName} started following you",
+                    "Comment" => $"{notificationResponse.RefUser?.FirstName} {notificationResponse.RefUser?.LastName} commented on your tweet",
+                    _ => "Unknown"
+                };
                 await _notificationHub.Clients.Clients(connectionIds).SendAsync("ReceiveNotification", notificationResponse);
             }
 
