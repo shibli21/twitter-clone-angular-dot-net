@@ -1,6 +1,20 @@
 {
   "Routes": [
     {
+      "UpstreamPathTemplate": "/users",
+      "UpstreamHttpMethod": [
+        "Get"
+      ],
+      "DownstreamPathTemplate": "/users",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5211
+        }
+      ]
+    },
+    {
       "UpstreamPathTemplate": "/users/{id}",
       "UpstreamHttpMethod": [
         "Get"
