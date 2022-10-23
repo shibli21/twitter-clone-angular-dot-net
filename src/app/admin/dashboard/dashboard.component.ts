@@ -62,7 +62,10 @@ export class DashboardComponent implements OnInit {
 
   showEditUseDialog(user: User) {
     this.editingUser = user;
-
     this.editUserService.editingDialog.next(true);
+  }
+
+  closeEditUserDialog() {
+    this.editUserService.editingDialog.next(false);
   }
 }

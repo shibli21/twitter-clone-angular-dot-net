@@ -69,6 +69,7 @@
     [resizable]="false"
     appendTo="body"
     [dismissableMask]="true"
+    (onHide)="closeEditUserDialog()"
   >
     <ng-template pTemplate="header">
       <div class="flex gap-2 items-start">
