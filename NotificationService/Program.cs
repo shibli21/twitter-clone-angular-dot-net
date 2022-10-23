@@ -1,4 +1,4 @@
-using System.Reflection;
+
 using Core.Extensions;
 using Core.Interfaces;
 using Infrastructure.Config;
@@ -16,6 +16,10 @@ builder.Host.UseSerilog((ctx, lc) => lc.WriteTo.Console());
 
 builder.Services.Configure<TwitterCloneDbConfig>(
     builder.Configuration.GetSection("TwitterCloneDatabaseSettings")
+);
+
+builder.Services.Configure<TwitterCloneSmtpConfig>(
+    builder.Configuration.GetSection("EmailSettings")
 );
 
 builder.Services.AddSingleton<IMongoClient>(sp =>
@@ -48,6 +52,7 @@ builder.Services.AddSignalR();
 builder.Services.AddMassTransit(x =>
 {
     x.AddConsumer<NotificationConsumer>();
+    x.AddConsumer<EmailConsumer>();
     x.UsingRabbitMq((context, cfg) =>
     {
         cfg.Host(builder.Configuration.GetValue<string>("RabbitMQSettings:Host"), h =>
@@ -58,6 +63,10 @@ builder.Services.AddMassTransit(x =>
         cfg.ReceiveEndpoint("notification-service", e =>
         {
             e.ConfigureConsumer<NotificationConsumer>(context);
+        });
+        cfg.ReceiveEndpoint("email-service", e =>
+        {
+            e.ConfigureConsumer<EmailConsumer>(context);
         });
     });
 });

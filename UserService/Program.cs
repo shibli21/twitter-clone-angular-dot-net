@@ -22,9 +22,6 @@ builder.Services.Configure<TwitterCloneRedisConfig>(
     builder.Configuration.GetSection("RedisSettings")
 );
 
-builder.Services.Configure<TwitterCloneSmtpConfig>(
-    builder.Configuration.GetSection("EmailSettings")
-);
 
 builder.Services.AddSingleton<IMongoClient>(sp =>
     new MongoClient(builder.Configuration.GetValue<string>("TwitterCloneDatabaseSettings:ConnectionString")));
