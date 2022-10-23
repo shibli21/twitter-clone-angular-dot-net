@@ -5,14 +5,10 @@
         You may follow
       </h3>
     </div>
-    <div class="w-full">
-      <ul
-        *ngFor="let user of users"
-        role="list"
-        class="divide-y divide-gray-200"
-      >
+    <div class="w-full space-y-2">
+      <div *ngFor="let user of users" role="list">
         <app-user-card [user]="user"></app-user-card>
-      </ul>
+      </div>
       <p *ngIf="users.length === 0">You are following all users.</p>
     </div>
   </div>

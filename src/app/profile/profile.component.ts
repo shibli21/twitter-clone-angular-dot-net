@@ -71,6 +71,7 @@ export class ProfileComponent implements OnInit {
   followUnfollowUser() {
     this.followService.followUnfollowUser(this.userId).subscribe((res: any) => {
       this.toastr.success(res.message);
+      this.profileUser.isFollowed = !this.profileUser.isFollowed;
     });
   }
 
