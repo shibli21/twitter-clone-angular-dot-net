@@ -1,0 +1,111 @@
+<div>
+  <h3 class="text-xl text-center uppercase font-bold text-gray-900 my-10">
+    Active users list
+  </h3>
+
+  <ngx-datatable
+    class="material"
+    [rows]="rows"
+    [columnMode]="'force'"
+    [headerHeight]="50"
+    [footerHeight]="50"
+    [rowHeight]="'auto'"
+    [externalPaging]="true"
+    [count]="page.totalElements"
+    [offset]="page.page"
+    [limit]="page.size"
+    (page)="setPage($event)"
+    [externalPaging]="true"
+    [scrollbarH]="true"
+  >
+    <ngx-datatable-column
+      name="Username"
+      [sortable]="false"
+      prop="userName"
+    ></ngx-datatable-column>
+    <ngx-datatable-column [width]="200" name="Full Name" [sortable]="false">
+      <ng-template let-row="row" let-value="value" ngx-datatable-cell-template>
+        {{ row.firstName }} {{ row.lastName }}
+      </ng-template>
+    </ngx-datatable-column>
+    <ngx-datatable-column
+      [sortable]="false"
+      name="Email"
+    ></ngx-datatable-column>
+    <ngx-datatable-column [sortable]="false" name="Birth Date">
+      <ng-template
+        let-row="row"
+        let-value="dateOfBirth"
+        ngx-datatable-cell-template
+      >
+        {{ row.dateOfBirth | date: "dd/MM/yyyy" }}
+      </ng-template>
+    </ngx-datatable-column>
+    <ngx-datatable-column
+      [sortable]="false"
+      name="Gender"
+      prop="gender"
+    ></ngx-datatable-column>
+    <ngx-datatable-column [minWidth]="220" name="Actions" [sortable]="false">
+      <ng-template let-row="row" let-value="value" ngx-datatable-cell-template>
+        <div class="flex gap-4">
+          <button
+            (click)="showEditUseDialog(row)"
+            pButton
+            type="button"
+            label="Edit"
+            icon="pi pi-cog"
+          ></button>
+          <button
+            pButton
+            type="button"
+            label="Block"
+            icon="pi pi-minus-circle"
+            class="p-button-danger"
+            (click)="onBlockUser(row.id)"
+          ></button>
+        </div>
+      </ng-template>
+    </ngx-datatable-column>
+  </ngx-datatable>
+</div>
+
+<div>
+  <p-dialog
+    [(visible)]="editUserDialog"
+    [modal]="true"
+    [draggable]="false"
+    [resizable]="false"
+    appendTo="body"
+    [dismissableMask]="true"
+    (onHide)="closeEditUserDialog()"
+  >
+    <ng-template pTemplate="header">
+      <div class="flex gap-2 items-start">
+        <div class="overflow-hidden h-[40px] w-[40px] rounded-full">
+          <img
+            class="object-cover"
+            [src]="
+              editingUser.profilePictureUrl
+                ? editingUser.profilePictureUrl
+                : 'https://avatars.dicebear.com/api/open-peeps/' +
+                  editingUser.userName +
+                  '.svg'
+            "
+            alt=""
+          />
+        </div>
+        <div class="flex-row">
+          <h1 class="text-base font-bold">
+            {{ editingUser.firstName }} {{ editingUser.lastName }}
+          </h1>
+          <p class="text-gray-600 text-sm">@{{ editingUser.userName }}</p>
+        </div>
+      </div>
+    </ng-template>
+    <ng-template pTemplate="content">
+      <app-edit-profile-form [user]="editingUser"></app-edit-profile-form>
+    </ng-template>
+    <ng-template pTemplate="footer"> </ng-template>
+  </p-dialog>
+</div>

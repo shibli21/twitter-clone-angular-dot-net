@@ -5,43 +5,4 @@
   .p-button-danger {
     @apply enabled:focus:shadow-none;
   }
-
-  .ngx-datatable.material {
-    @apply rounded-md shadow my-20;
-    .datatable-header {
-      @apply border-b;
-      .datatable-header-cell {
-        @apply text-sm  font-semibold;
-      }
-    }
-    .datatable-body-row {
-      @apply border-b;
-    }
-  }
-
-  .datatable-row-detail {
-    width: 100vw;
-  }
-
-  .ngx-datatable {
-    .datatable-footer-inner {
-      display: flex;
-      flex-flow: row nowrap; // can't wrap because footer height fixed
-      justify-content: space-between; // probably not needed because .page-count flex grows
-      > .page-count {
-        // remove padding so there's more room in-between
-        padding-right: 0 !important;
-      }
-      > .datatable-pager {
-        margin: 0 !important;
-        // don't grow, otherwise pager won't be right-aligned
-        flex: 0 0 auto !important;
-        > .pager {
-          // prevent numbers from wrapping
-          display: flex !important;
-          flex-flow: row nowrap;
-        }
-      }
-    }
-  }
 }

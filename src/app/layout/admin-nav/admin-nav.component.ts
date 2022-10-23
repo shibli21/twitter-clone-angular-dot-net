@@ -18,6 +18,16 @@ export class AdminNavComponent implements OnInit {
         routerLink: ['/admin/dashboard'],
       },
       {
+        label: 'Users',
+        icon: 'pi pi-user',
+        routerLink: ['/admin/users-list'],
+      },
+      {
+        label: 'Blocked Users',
+        icon: 'pi pi-circle-fill',
+        routerLink: ['/admin/blocked-users-list'],
+      },
+      {
         label: 'Logout',
         icon: 'pi pi-fw pi-power-off',
         routerLink: ['/login'],
