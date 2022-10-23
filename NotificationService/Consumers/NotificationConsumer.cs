@@ -28,22 +28,33 @@ namespace NotificationService.Consumers
         public async Task Consume(ConsumeContext<NotificationCreateDto> context)
         {
             NotificationCreateDto notificationCreateDto = context.Message;
-
-            var notification = new Notifications
+            if (notificationCreateDto.UserId != notificationCreateDto.RefUserId)
             {
-                Type = notificationCreateDto.Type,
-                UserId = notificationCreateDto.UserId,
-                RefUserId = notificationCreateDto.RefUserId,
-                TweetId = notificationCreateDto.TweetId,
-                IsRead = false,
-                CreatedAt = DateTime.Now
-            };
-            await _notificationCollection.InsertOneAsync(notification);
+                var notification = new Notifications
+                {
+                    Type = notificationCreateDto.Type,
+                    UserId = notificationCreateDto.UserId,
+                    RefUserId = notificationCreateDto.RefUserId,
+                    TweetId = notificationCreateDto.TweetId,
+                    IsRead = false,
+                    CreatedAt = DateTime.Now
+                };
+                await _notificationCollection.InsertOneAsync(notification);
 
-            var connectionIds = await _connectionsCollection.Find(x => x.UserId == notification.UserId).Project(x => x.ConnectionId).ToListAsync();
-            NotificationResponseDto notificationResponse = notification.AsDto();
-            notificationResponse.RefUser = await _usersCollection.Find(x => x.Id == notification.RefUserId).Project(x => x.AsDto()).FirstOrDefaultAsync();
-            await _notificationHub.Clients.Clients(connectionIds).SendAsync("ReceiveNotification", notificationResponse);
+                var connectionIds = await _connectionsCollection.Find(x => x.UserId == notification.UserId).Project(x => x.ConnectionId).ToListAsync();
+                NotificationResponseDto notificationResponse = notification.AsDto();
+                notificationResponse.RefUser = await _usersCollection.Find(x => x.Id == notification.RefUserId).Project(x => x.AsDto()).FirstOrDefaultAsync();
+                notificationResponse.Message = notificationResponse.Type switch
+                {
+                    "Like" => $"{notificationResponse.RefUser?.FirstName} {notificationResponse.RefUser?.LastName} liked your tweet",
+                    "Retweet" => $"{notificationResponse.RefUser?.FirstName} {notificationResponse.RefUser?.LastName} retweeted your tweet",
+                    "Follow" => $"{notificationResponse.RefUser?.FirstName} {notificationResponse.RefUser?.LastName} started following you",
+                    "Comment" => $"{notificationResponse.RefUser?.FirstName} {notificationResponse.RefUser?.LastName} commented on your tweet",
+                    _ => "Unknown"
+                };
+                await _notificationHub.Clients.Clients(connectionIds).SendAsync("ReceiveNotification", notificationResponse);
+            }
+
         }
     }
 }

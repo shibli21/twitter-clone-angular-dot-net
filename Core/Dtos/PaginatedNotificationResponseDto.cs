@@ -7,6 +7,7 @@ namespace Core.Dtos
         public long TotalElements { get; set; } = 0;
         public int LastPage { get; set; } = 0;
         public int TotalPages { get; set; } = 0;
+        public long TotalUnread { get; set; } = 0;
         public List<NotificationResponseDto>? Notifications { get; set; }
     }
 }
