@@ -1,6 +1,20 @@
 {
   "Routes": [
     {
+      "UpstreamPathTemplate": "/users",
+      "UpstreamHttpMethod": [
+        "Get"
+      ],
+      "DownstreamPathTemplate": "/users",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5211
+        }
+      ]
+    },
+    {
       "UpstreamPathTemplate": "/users/{id}",
       "UpstreamHttpMethod": [
         "Get"
@@ -366,6 +380,62 @@
         {
           "Host": "localhost",
           "Port": 5213
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/search/search-users",
+      "UpstreamHttpMethod": [
+        "Get"
+      ],
+      "DownstreamPathTemplate": "/search/search-users",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5214
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/search/search-tweets",
+      "UpstreamHttpMethod": [
+        "Get"
+      ],
+      "DownstreamPathTemplate": "/search/search-tweets",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5214
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/notifications/all",
+      "UpstreamHttpMethod": [
+        "Get"
+      ],
+      "DownstreamPathTemplate": "/notifications/all",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5215
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/notifications/{id}",
+      "UpstreamHttpMethod": [
+        "Put"
+      ],
+      "DownstreamPathTemplate": "/notifications/{id}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5215
         }
       ]
     }
