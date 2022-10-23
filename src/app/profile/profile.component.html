@@ -98,7 +98,7 @@
 
   <p
     class="text-center py-10 font-semibold"
-    *ngIf="usersTweets.page === usersTweets.totalPages"
+    *ngIf="usersTweets.page === usersTweets.totalPages && !isLoading"
   >
     No more tweets to show
   </p>

@@ -35,6 +35,19 @@
           </div>
         </li>
       </ul>
+      <div *ngIf="isLoading" class="py-10 flex justify-center">
+        <app-spinner></app-spinner>
+      </div>
+
+      <p
+        class="text-center py-10 font-semibold"
+        *ngIf="
+          paginatedNotifications.page === paginatedNotifications.totalPages &&
+          !isLoading
+        "
+      >
+        No more notification to show
+      </p>
     </div>
   </div>
 </div>

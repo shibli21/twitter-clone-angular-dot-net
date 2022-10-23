@@ -22,6 +22,7 @@ export class NotificationService {
   constructor(private http: HttpClient) {}
 
   getNotifications(page = 0, size = 20) {
+    this.isLoadingNotifications.next(true);
     return this.http
       .get<PaginatedNotifications>(
         this.baseUrl + 'notifications/all' + `?page=${page}&size=${size}`
