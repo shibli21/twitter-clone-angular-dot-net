@@ -7,6 +7,5 @@ namespace Core.Interfaces
         Task StoreResetPasswordTokenAsync(User user, string token);
         Task<User?> GetUserByResetTokenAsync(string token);
         Task DeleteResetPasswordTokenAsync(string token);
-        Task SentResetPasswordEmailAsync(User user, string url, string token);
     }
 }

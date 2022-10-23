@@ -7,6 +7,7 @@ using JWTAuthenticationManager;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
+using MassTransit;
 
 namespace UserService.Controllers;
 
@@ -22,14 +23,16 @@ public class AuthController : ControllerBase
     private readonly IForgotPasswordService _forgotPasswordService;
     private readonly JwtTokenHandler _jwtTokenHandler;
     private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly IBus _bus;
 
-    public AuthController(IUsersService usersService, JwtTokenHandler jwtTokenHandler, IRefreshTokenService refreshTokenService, IHttpContextAccessor httpContextAccessor, IForgotPasswordService forgotPasswordService)
+    public AuthController(IUsersService usersService, JwtTokenHandler jwtTokenHandler, IRefreshTokenService refreshTokenService, IHttpContextAccessor httpContextAccessor, IForgotPasswordService forgotPasswordService , IBus bus)
     {
         _usersService = usersService;
         _jwtTokenHandler = jwtTokenHandler;
         _refreshTokenService = refreshTokenService;
         _httpContextAccessor = httpContextAccessor;
         _forgotPasswordService = forgotPasswordService;
+        _bus = bus;
     }
 
     [HttpPost]
@@ -157,7 +160,13 @@ public class AuthController : ControllerBase
             return BadRequest(new { field = "email", message = "User is blocked" });
         string token = this.CreatePasswordResetToken();
         await _forgotPasswordService.StoreResetPasswordTokenAsync(user, token);
-        await _forgotPasswordService.SentResetPasswordEmailAsync(user,forgotPasswordDto.ResetPasswordUrl, token);
+        MailDto mailDto = new MailDto
+        {
+            To = user.Email,
+            Subject = "Reset Password",
+            Body = $"Hi {user.FirstName} {user.LastName}, <br/> <br/> Please click on the link below to reset your password <br/> <br/> <a href='{ forgotPasswordDto.ResetPasswordUrl}?token={token}'>Reset Password</a> <br/> <br/> If you did not request a password reset, please ignore this email."
+        };
+        await _bus.Publish(mailDto);
         return Ok(new { message = "Reset password email sent" });
     }
 
