@@ -1,12 +1,13 @@
-import { PaginatedComments } from './../core/models/tweet.model';
-import { RetweetService } from './../core/services/retweet.service';
+import { User } from 'src/app/core/models/user.model';
+import { AuthService } from './../auth/auth.service';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
-import { MenuItem } from 'primeng/api';
-import { Comment, Tweet } from '../core/models/tweet.model';
+import { Tweet } from '../core/models/tweet.model';
 import { CommentService } from '../core/services/comment.service';
 import { TweetService } from '../core/services/tweet.service';
+import { PaginatedComments } from './../core/models/tweet.model';
+import { RetweetService } from './../core/services/retweet.service';
 
 @Component({
   selector: 'app-tweet',
@@ -14,7 +15,6 @@ import { TweetService } from '../core/services/tweet.service';
   styleUrls: ['./tweet.component.scss'],
 })
 export class TweetComponent implements OnInit {
-  items!: MenuItem[];
   display = false;
   retweetDisplay = false;
   tweet!: Tweet | null;
@@ -28,12 +28,15 @@ export class TweetComponent implements OnInit {
 
   tweetComments!: PaginatedComments | null;
 
+  isCurrentUserId: string = '';
+
   constructor(
     private tweetService: TweetService,
     private router: Router,
     private route: ActivatedRoute,
     private commentService: CommentService,
     private retweetService: RetweetService,
+    private authService: AuthService,
     private toastr: ToastrService
   ) {}
 
@@ -66,24 +69,9 @@ export class TweetComponent implements OnInit {
       });
 
       this.commentService.getTweetComments(this.tweetId);
-    });
 
-    this.items = [
-      {
-        label: 'Edit',
-        icon: 'pi pi-pencil',
-        command: () => {
-          this.display = true;
-        },
-      },
-      {
-        label: 'Delete',
-        icon: 'pi pi-trash',
-        command: () => {
-          this.deleteTweet();
-        },
-      },
-    ];
+      this.isCurrentUserId = this.authService.userId()!;
+    });
   }
 
   likeUnlike() {
@@ -98,14 +86,23 @@ export class TweetComponent implements OnInit {
 
   onEditTweet() {
     this.isEditing = true;
-    this.tweetService.editTweet(this.tweetId, this.editTweet).subscribe({
-      next: (res) => {
-        this.tweetService.getTweet(this.tweetId).subscribe((res) => {
-          this.display = false;
+    if (this.tweet?.type === 'Retweet') {
+      this.tweetService.editRetweet(this.tweetId, this.editTweet).subscribe({
+        next: (res) => {
           this.isEditing = false;
-        });
-      },
-    });
+          this.display = false;
+        },
+      });
+    } else {
+      this.tweetService.editTweet(this.tweetId, this.editTweet).subscribe({
+        next: (res) => {
+          this.tweetService.getTweet(this.tweetId).subscribe((res) => {
+            this.isEditing = false;
+            this.display = false;
+          });
+        },
+      });
+    }
   }
 
   showRetweetDialog() {

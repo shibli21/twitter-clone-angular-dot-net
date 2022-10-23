@@ -1,10 +1,10 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { ToastrService } from 'ngx-toastr';
-import { MenuItem } from 'primeng/api';
 import { Tweet } from 'src/app/core/models/tweet.model';
-import { RetweetService } from './../../../core/services/retweet.service';
 import { CommentService } from '../../../core/services/comment.service';
 import { TweetService } from '../../../core/services/tweet.service';
+import { AuthService } from './../../../auth/auth.service';
+import { RetweetService } from './../../../core/services/retweet.service';
 
 @Component({
   selector: 'app-tweet-card',
@@ -12,7 +12,6 @@ import { TweetService } from '../../../core/services/tweet.service';
   styleUrls: ['./tweet-card.component.scss'],
 })
 export class TweetCardComponent implements OnInit {
-  items!: MenuItem[];
   @Input() tweet!: Tweet;
   @Input() isRetweet? = false;
 
@@ -25,32 +24,20 @@ export class TweetCardComponent implements OnInit {
   editTweet = '';
   retweetDisplay = false;
   retweetText = '';
+  isCurrentUserId = '';
 
   constructor(
     private tweetService: TweetService,
     private commentService: CommentService,
     private toastr: ToastrService,
-    private retweetService: RetweetService
+    private retweetService: RetweetService,
+    private authService: AuthService
   ) {}
 
   ngOnInit() {
-    this.items = [
-      {
-        label: 'Edit',
-        icon: 'pi pi-pencil',
-        command: () => {
-          this.showEditDialog();
-        },
-      },
-      {
-        label: 'Delete',
-        icon: 'pi pi-trash',
-        command: () => {
-          this.deleteTweet();
-        },
-      },
-    ];
     this.editTweet = this.tweet.tweet;
+
+    this.isCurrentUserId = this.authService.userId()!;
   }
 
   showDialog() {
@@ -90,15 +77,23 @@ export class TweetCardComponent implements OnInit {
 
   onEditTweet() {
     this.isEditing = true;
-    this.tweetService.editTweet(this.tweet.id, this.editTweet).subscribe({
-      next: (res) => {
-        this.tweetService.getTweet(this.tweet.id).subscribe((res) => {
-          this.tweet = res;
-          this.displayEditDialog = false;
+    if (this.tweet?.type === 'Retweet') {
+      this.tweetService.editRetweet(this.tweet.id, this.editTweet).subscribe({
+        next: (res) => {
           this.isEditing = false;
-        });
-      },
-    });
+          this.displayEditDialog = false;
+        },
+      });
+    } else {
+      this.tweetService.editTweet(this.tweet.id, this.editTweet).subscribe({
+        next: (res) => {
+          this.tweetService.getTweet(this.tweet.id).subscribe((res) => {
+            this.isEditing = false;
+            this.displayEditDialog = false;
+          });
+        },
+      });
+    }
   }
 
   deleteTweet() {

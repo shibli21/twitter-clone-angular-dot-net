@@ -26,16 +26,23 @@
         </p>
       </div>
     </div>
-    <div class="flex items-center gap-2 text-gray-600" *ngIf="!isRetweet">
-      <button
-        pButton
-        type="button"
-        icon="pi pi-ellipsis-h"
-        class="p-button-rounded p-button-text p-button-sm"
-        (click)="menu.toggle($event)"
-      ></button>
-
-      <p-tieredMenu #menu [model]="items" [popup]="true"></p-tieredMenu>
+    <div *ngIf="isCurrentUserId === tweet.user.id">
+      <div class="flex items-center text-gray-600" *ngIf="!isRetweet">
+        <button
+          pButton
+          type="button "
+          icon="pi pi-pencil"
+          class="p-button-sm p-button-text"
+          (click)="showEditDialog()"
+        ></button>
+        <button
+          pButton
+          type="button"
+          icon="pi pi-trash"
+          class="p-button-danger p-button-sm p-button-text"
+          (click)="deleteTweet()"
+        ></button>
+      </div>
     </div>
   </div>
 

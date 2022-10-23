@@ -1,13 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
-import { User } from '../core/models/user.model';
 import { PaginatedTweets } from '../core/models/tweet.model';
+import { User } from '../core/models/user.model';
+import { FollowService } from '../core/services/follow.service';
 import { AuthService } from './../auth/auth.service';
 import { BlockService } from './../core/services/block.service';
 import { TimelineService } from './../core/services/timeline.service';
-import { FollowService } from '../core/services/follow.service';
-import { TweetService } from '../core/services/tweet.service';
 import { UserService } from './user.service';
 
 @Component({
@@ -24,7 +23,6 @@ export class ProfileComponent implements OnInit {
 
   constructor(
     private authService: AuthService,
-    private tweetService: TweetService,
     private userService: UserService,
     private route: ActivatedRoute,
     private toastr: ToastrService,

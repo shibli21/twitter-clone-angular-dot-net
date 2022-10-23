@@ -6,6 +6,10 @@
   .p-button {
     @apply items-center justify-center;
   }
+
+  .p-button.p-button-sm {
+    @apply px-2 py-2;
+  }
   .ql-container {
     * {
       @apply cursor-pointer;

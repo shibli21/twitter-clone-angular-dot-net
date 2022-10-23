@@ -80,4 +80,19 @@ export class TweetService {
       })
     );
   }
+
+  editRetweet(retweetId: string, tweetText: string) {
+    const hashTags = tweetText.match(/#\w+/g);
+
+    return this.http
+      .put<Tweet>(this.baseUrl + 'tweet/retweet/' + retweetId, {
+        tweet: tweetText,
+        hashTags: hashTags ? hashTags : [],
+      })
+      .pipe(
+        catchError((err) => {
+          return throwError(err);
+        })
+      );
+  }
 }

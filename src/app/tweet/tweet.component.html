@@ -27,19 +27,26 @@
           </p>
         </div>
       </div>
-      <div
-        *ngIf="tweet.type === 'Tweet' || tweet.refTweet"
-        class="flex items-center gap-2 text-gray-600"
-      >
-        <button
-          pButton
-          type="button"
-          icon="pi pi-ellipsis-h"
-          class="p-button-rounded p-button-text p-button-sm"
-          (click)="menu.toggle($event)"
-        ></button>
-
-        <p-tieredMenu #menu [model]="items" [popup]="true"></p-tieredMenu>
+      <div *ngIf="isCurrentUserId === tweet.user.id">
+        <div
+          *ngIf="tweet.type === 'Tweet' || tweet.refTweet"
+          class="flex items-center text-gray-600"
+        >
+          <button
+            pButton
+            type="button "
+            icon="pi pi-pencil"
+            class="p-button-sm p-button-text"
+            (click)="display = true"
+          ></button>
+          <button
+            pButton
+            type="button"
+            icon="pi pi-trash"
+            class="p-button-danger p-button-sm p-button-text"
+            (click)="deleteTweet()"
+          ></button>
+        </div>
       </div>
     </div>
     <div class="p-4">
@@ -143,10 +150,10 @@
     <ng-template pTemplate="footer">
       <p-button
         icon="pi pi-save"
-        (click)="onEditTweet()"
         label="Save"
-        [loading]="isEditing"
         class="p-button-text -mr-2"
+        [loading]="isEditing"
+        (click)="onEditTweet()"
       ></p-button>
     </ng-template>
   </p-dialog>
