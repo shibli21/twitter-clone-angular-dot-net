@@ -1,30 +1,35 @@
 <div class="cursor-pointer border w-full transition rounded-md mb-2">
   <div class="border-gray-300 px-4 py-2 items-center justify-between flex">
-    <div class="flex gap-2 w-full">
+    <div class="flex gap-4 w-full">
       <div class="overflow-hidden h-[40px] w-[40px]">
         <img
           src="https://cdn.pixabay.com/photo/2016/11/18/23/38/child-1837375_960_720.png"
         />
       </div>
-      <form class="w-full" [formGroup]="newTweetForm" (ngSubmit)="onSubmit()">
-        <textarea
-          formControlName="tweet"
+      <div class="w-full relative">
+        <quill-editor
+          class="w-full"
+          theme="snow"
           placeholder="What's happening?"
-          pInputTextarea
-          class=""
-          [rows]="2"
-          (blur)="onBlur('tweet')"
-        ></textarea>
-
-        <div class="text-right">
-          <button
-            pButton
-            [disabled]="newTweetForm.invalid"
-            label="Tweet"
-            type="submit"
-          ></button>
-        </div>
-      </form>
+          customToolbarPosition="bottom"
+          [(ngModel)]="tweet"
+          name="tweet"
+          [styles]="{
+            height: 'auto',
+            maxWidth: '600px',
+            flexDirection: 'column-reverse !important'
+          }"
+        >
+        </quill-editor>
+        <button
+          [loading]="isLoading"
+          (click)="onSubmit()"
+          pButton
+          [disabled]="tweet.length === 0"
+          label="Tweet"
+          type="submit"
+        ></button>
+      </div>
     </div>
   </div>
 </div>

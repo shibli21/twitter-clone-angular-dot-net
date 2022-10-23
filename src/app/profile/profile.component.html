@@ -79,9 +79,9 @@
   </div>
 </div>
 
-<div class="space-y-2" *ngIf="usersTweets">
+<div *ngIf="usersTweets">
   <div
-    class="search-results"
+    class="space-y-2"
     infinite-scroll
     (scrolled)="loadMore()"
     [fromRoot]="true"

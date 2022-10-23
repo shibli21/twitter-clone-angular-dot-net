@@ -6,4 +6,9 @@
   .p-button {
     @apply items-center justify-center;
   }
+  .ql-container {
+    * {
+      @apply cursor-pointer;
+    }
+  }
 }

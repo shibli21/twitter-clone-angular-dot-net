@@ -1,3 +1,4 @@
+import { QuillModule } from 'ngx-quill';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { IconsModule } from './icons/icons.module';
 import { NgPrimeModule } from './ng-prime/ng-prime.module';
@@ -25,6 +26,16 @@ import { UserCardComponent } from './user-card/user-card.component';
     IconsModule,
     FormsModule,
     ReactiveFormsModule,
+    QuillModule.forRoot({
+      modules: {
+        toolbar: [
+          ['bold', 'italic', 'underline', 'strike'], // toggled buttons
+          ['blockquote'],
+
+          [{ header: 1 }, { header: 2 }], // custom button values
+        ],
+      },
+    }),
   ],
   exports: [
     NgPrimeModule,

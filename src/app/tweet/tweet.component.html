@@ -43,7 +43,8 @@
       </div>
     </div>
     <div class="p-4">
-      {{ tweet.tweet }}
+      <quill-view-html [content]="tweet.tweet" theme="bubble"></quill-view-html>
+
       <div *ngIf="tweet.type === 'Retweet'" class="">
         <app-tweet-card [isRetweet]="true" [tweet]="tweet.refTweet">
         </app-tweet-card>
@@ -124,12 +125,20 @@
       </div>
     </ng-template>
 
-    <textarea
+    <quill-editor
+      class="w-full"
+      theme="snow"
+      placeholder="Retweet your reply..."
+      customToolbarPosition="bottom"
       [(ngModel)]="editTweet"
-      placeholder="Tweet your reply"
-      pInputTextarea
-      [rows]="3"
-    ></textarea>
+      name="retweetText"
+      [styles]="{
+        height: 'auto',
+        maxWidth: '600px',
+        flexDirection: 'column-reverse !important'
+      }"
+    >
+    </quill-editor>
 
     <ng-template pTemplate="footer">
       <p-button
@@ -141,7 +150,6 @@
       ></p-button>
     </ng-template>
   </p-dialog>
-
   <!-- retweet dialog -->
 
   <p-dialog
@@ -172,16 +180,58 @@
       </div>
     </ng-template>
 
-    <textarea
+    <quill-editor
+      class="w-full"
+      theme="snow"
+      placeholder="Retweet your reply..."
+      customToolbarPosition="bottom"
       [(ngModel)]="retweetText"
-      placeholder="Retweet your reply"
-      pInputTextarea
-      [rows]="2"
-    ></textarea>
+      name="retweetText"
+      [styles]="{
+        height: 'auto',
+        maxWidth: '600px',
+        flexDirection: 'column-reverse !important'
+      }"
+    >
+    </quill-editor>
 
-    <p class="px-4">
-      {{ tweet.tweet }}
-    </p>
+    <div
+      class="hover:bg-gray-50 cursor-pointer border w-full transition rounded-md"
+    >
+      <div
+        class="border-b border-gray-300 px-2 md:px-4 py-2 items-center justify-between flex"
+      >
+        <div class="flex gap-2 items-start">
+          <div class="overflow-hidden h-[40px] w-[40px] rounded-full">
+            <img
+              class="w-full h-full object-cover"
+              [src]="
+                tweet.user.profilePictureUrl
+                  ? tweet.user.profilePictureUrl
+                  : 'https://avatars.dicebear.com/api/open-peeps/' +
+                    tweet.user.userName +
+                    '.svg'
+              "
+            />
+          </div>
+          <div class="flex-row">
+            <h1 class="text-base font-bold">
+              {{ tweet.user.firstName }} {{ tweet.user.lastName }}
+            </h1>
+            <p class="text-gray-600 text-sm">
+              @{{ tweet.user.userName }} · {{ tweet.createdAt | date }}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="p-4" [routerLink]="['/tweet', tweet.id]">
+        <quill-view-html [content]="tweet.tweet"></quill-view-html>
+      </div>
+    </div>
+    <!-- <p class="px-4">
+    {{ tweet.tweet }}
+  </p> -->
 
     <ng-template pTemplate="footer">
       <p-button
@@ -193,6 +243,6 @@
       ></p-button>
     </ng-template>
   </p-dialog>
-</div>
 
-<div *ngIf="!tweet">Tweet not found</div>
+  <div *ngIf="!tweet">Tweet not found</div>
+</div>

@@ -30,4 +30,57 @@
   .input-error {
     @apply text-red-500;
   }
+
+  .ql-container {
+    @apply border-0 -ml-[12px];
+  }
+
+  .ql-toolbar {
+    @apply border-0 -ml-[12px];
+  }
+
+  .ql-editor {
+    @apply text-[18px];
+
+    blockquote {
+      @apply text-[18px];
+    }
+    p {
+      @apply text-[18px];
+    }
+    h1 {
+      @apply text-3xl;
+    }
+    h2 {
+      @apply text-xl;
+    }
+  }
 }
+
+//  .ql-container {
+//     @apply border-0 p-0;
+//   }
+
+//   .ql-toolbar {
+//     @apply border-0 p-0;
+//   }
+
+//   .ql-editor.ql-blank::before {
+//     @apply left-0 right-0;
+//   }
+//   .ql-editor {
+//     @apply text-[18px] py-2 px-2;
+
+//     blockquote {
+//       @apply text-[18px];
+//     }
+//     p {
+//       @apply text-[18px];
+//     }
+//     h1 {
+//       @apply text-3xl;
+//     }
+//     h2 {
+//       @apply text-xl;
+//     }
+//   }

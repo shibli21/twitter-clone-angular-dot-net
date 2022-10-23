@@ -1,0 +1,15 @@
+:host ::ng-deep {
+  .p-button-label {
+    @apply flex-none;
+  }
+
+  .p-button {
+    @apply items-center justify-center;
+  }
+
+  .ql-container {
+    * {
+      @apply cursor-pointer;
+    }
+  }
+}

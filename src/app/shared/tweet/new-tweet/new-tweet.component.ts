@@ -9,9 +9,8 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./new-tweet.component.scss'],
 })
 export class NewTweetComponent implements OnInit {
-  newTweetForm = new FormGroup({
-    tweet: new FormControl('', [Validators.required]),
-  });
+  tweet = '';
+  isLoading = false;
 
   constructor(
     private tweetService: TweetService,
@@ -23,25 +22,18 @@ export class NewTweetComponent implements OnInit {
   create() {}
 
   onSubmit() {
-    if (!this.newTweetForm.valid) {
-      return;
-    }
+    this.isLoading = true;
 
-    this.tweetService
-      .createTweet(this.newTweetForm.value.tweet as string)
-      .subscribe({
-        next: (tweet) => {
-          this.toastr.success('Tweeted successfully');
-          this.newTweetForm.reset();
-        },
-        error: (error) => {
-          this.toastr.error(error.error.message);
-        },
-      });
-  }
-
-  onBlur(key: string) {
-    let form = this.newTweetForm;
-    form.controls.tweet.markAsUntouched();
+    this.tweetService.createTweet(this.tweet).subscribe({
+      next: (tweet) => {
+        this.toastr.success('Tweeted successfully');
+        this.tweet = '';
+        this.isLoading = false;
+      },
+      error: (error) => {
+        this.toastr.error(error.error.message);
+        this.isLoading = false;
+      },
+    });
   }
 }
