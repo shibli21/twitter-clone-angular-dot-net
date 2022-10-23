@@ -61,14 +61,20 @@ namespace Core.Controllers
                 tweetResponse.RefTweet = refTweet.AsDto();
                 tweetResponse.RefTweet.User = (await _usersService.GetUserAsync(refTweet.UserId))?.AsDtoTweetComment();
 
-                NotificationCreateDto notificationCreateDto = new NotificationCreateDto
+                CacheNotificationConsumerDto cacheNotificationConsumerDto = new CacheNotificationConsumerDto
                 {
-                    UserId = refTweet.UserId,
-                    RefUserId = userId,
-                    TweetId = tweet.Id,
-                    Type = "Retweet",
+                    Type = "Notification",
+                    IsNotification = true,
+                    Notification = new NotificationCreateDto
+                    {
+                        UserId = refTweet.UserId,
+                        RefUserId = userId,
+                        TweetId = tweet.Id,
+                        Type = "Retweet",
+                    }
                 };
-                await _bus.Publish(notificationCreateDto);
+
+                await _bus.Publish(cacheNotificationConsumerDto);
 
                 return Ok(tweetResponse);
             }
@@ -201,14 +207,19 @@ namespace Core.Controllers
             string msg = await _iLikeCommentService.LikeTweet(tweet, userId);
             if (msg == "Tweet liked")
             {
-                NotificationCreateDto notificationCreateDto = new NotificationCreateDto
+                CacheNotificationConsumerDto cacheNotificationConsumerDto = new CacheNotificationConsumerDto
                 {
-                    UserId = tweet.UserId,
-                    RefUserId = userId,
-                    TweetId = tweet.Id,
-                    Type = "Like",
+                    Type = "Notification",
+                    IsNotification = true,
+                    Notification = new NotificationCreateDto
+                    {
+                        UserId = tweet.UserId,
+                        RefUserId = userId,
+                        TweetId = tweet.Id,
+                        Type = "Like",
+                    }
                 };
-                await _bus.Publish(notificationCreateDto);
+                await _bus.Publish(cacheNotificationConsumerDto);
             }
 
             return Ok(new { Message = msg });
@@ -244,14 +255,21 @@ namespace Core.Controllers
                 return BadRequest(new { Message = "Something went wrong" });
             }
 
-            NotificationCreateDto notificationCreateDto = new NotificationCreateDto
+            CacheNotificationConsumerDto cacheNotificationConsumerDto = new CacheNotificationConsumerDto
             {
-                UserId = tweet.UserId,
-                RefUserId = userId,
-                TweetId = tweet.Id,
-                Type = "Comment",
+                Type = "Notification",
+                IsNotification = true,
+                Notification = new NotificationCreateDto
+                {
+                    UserId = tweet.UserId,
+                    RefUserId = userId,
+                    TweetId = tweet.Id,
+                    Type = "Comment",
+                }
             };
-            await _bus.Publish(notificationCreateDto);
+            await _bus.Publish(cacheNotificationConsumerDto);
+
+
             return Ok(comment);
         }
 
