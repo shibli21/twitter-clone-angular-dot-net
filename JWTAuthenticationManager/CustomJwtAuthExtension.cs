@@ -25,6 +25,22 @@ public static class CustomJwtAuthExtension
                 ClockSkew = TimeSpan.Zero,
                 IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(JwtTokenHandler.JWT_SECRET_KEY))
             };
+            o.Events = new JwtBearerEvents
+            {
+               OnMessageReceived = context =>
+               {
+                   var accessToken = context.Request.Query["access_token"];
+                   var path = context.HttpContext.Request.Path;
+                   if (!string.IsNullOrEmpty(accessToken) )
+                   {
+                       context.Token = accessToken;
+                   }
+                   return System.Threading.Tasks.Task.CompletedTask;
+               }
+            };
+
+
+
         });
     }
 }
