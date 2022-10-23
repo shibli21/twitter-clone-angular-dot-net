@@ -52,6 +52,7 @@ namespace Infrastructure.Services
                 Size = size,
                 LastPage = LastPage,
                 TotalPages = (int)Math.Ceiling((double)TotalElements / size),
+                TotalUnread = await _notificationCollection.Find(x => x.UserId == userId && x.IsRead == false).CountDocumentsAsync(),
                 Notifications = (await filter.SortByDescending(x => x.CreatedAt).Skip((page) * size).Limit(size).ToListAsync()).Select(notification => notification.AsDto()).ToList()
             };
             foreach (var notification in notificationRes.Notifications)
