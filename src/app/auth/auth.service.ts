@@ -64,12 +64,16 @@ export class AuthService {
 
     localStorage.setItem('userData', JSON.stringify(loginResponse));
 
-    this.currentUser().subscribe((user) => {
-      if (user.role === 'admin') {
-        this.router.navigate(['/admin']);
-      } else {
-        this.router.navigate(['/']);
-      }
+    this.currentUser().subscribe({
+      next: (user) => {
+        if (this.router.routerState.snapshot.url === '/login') {
+          if (user?.role === 'admin') {
+            this.router.navigate(['/admin']);
+          } else {
+            this.router.navigate(['/']);
+          }
+        }
+      },
     });
   }
 
