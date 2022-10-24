@@ -1,3 +1,4 @@
+import { Router } from '@angular/router';
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
@@ -35,13 +36,14 @@ export class LoginComponent implements OnInit {
     const { email, password } = this.loginForm.value as ILoginUser;
 
     this.authService.loginUser({ email, password }).subscribe({
-      next: (loginResponse) => {
-        this.isLoading = false;
-      },
       error: (error) => {
         this.isLoading = false;
         this.toastr.error(error.error.message);
       },
+    });
+
+    this.authService.isLoggingInLoading.subscribe((isLoading) => {
+      this.isLoading = isLoading;
     });
   }
 

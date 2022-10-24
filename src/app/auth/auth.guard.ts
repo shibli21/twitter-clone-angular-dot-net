@@ -29,17 +29,6 @@ export class AuthGuard implements CanActivate {
       map((user) => {
         const isAuth = !!user;
         if (isAuth) {
-          if (
-            route.data['roles'] &&
-            route.data['roles'].indexOf(user.role) === -1
-          ) {
-            if (user.role === 'admin') {
-              this.router.navigate(['/admin']);
-            } else {
-              this.router.navigate(['/']);
-            }
-            return true;
-          }
           return true;
         }
         return this.router.createUrlTree(['/login']);

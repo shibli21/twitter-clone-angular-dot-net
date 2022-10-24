@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { environment } from 'src/environments/environment';
 
-import { BehaviorSubject, catchError, tap, throwError } from 'rxjs';
+import { BehaviorSubject, catchError, map, tap, throwError } from 'rxjs';
 
 import {
   ILoginUser,
@@ -16,10 +16,9 @@ import {
   providedIn: 'root',
 })
 export class AuthService {
-  user = new BehaviorSubject<User | null>(null);
-  private tokenExpirationTimer: string | number | NodeJS.Timeout | undefined;
-
   baseUrl = environment.baseUrl;
+  user = new BehaviorSubject<User | null>(null);
+  isLoggingInLoading = new BehaviorSubject<boolean>(false);
 
   constructor(private http: HttpClient, private router: Router) {}
 
@@ -32,19 +31,41 @@ export class AuthService {
   }
 
   loginUser(loginUser: ILoginUser) {
+    this.isLoggingInLoading.next(true);
     return this.http
       .post<LoginResponse>(this.baseUrl + 'auth/login', loginUser, {
         withCredentials: true,
       })
       .pipe(
         tap((loginResponse) => {
-          this.handleAuthentication(loginResponse);
+          localStorage.setItem('userData', JSON.stringify(loginResponse));
+          this.currentUser().subscribe({
+            next: (user) => {
+              if (user.role === 'admin') {
+                this.router.navigate(['/admin']);
+              } else {
+                this.router.navigate(['/']);
+              }
+              this.isLoggingInLoading.next(false);
+            },
+            error: (err) => {
+              this.isLoggingInLoading.next(false);
+              this.logout();
+            },
+          });
+        }),
+        catchError((err) => {
+          return throwError(err);
         })
       );
   }
 
   isAuthenticated() {
-    return this.user.value !== null;
+    const userAuthData = localStorage.getItem('userData');
+    if (!userAuthData) {
+      return false;
+    }
+    return true;
   }
 
   isAdmin() {
@@ -59,39 +80,21 @@ export class AuthService {
     return this.user.value;
   }
 
-  handleAuthentication(loginResponse: LoginResponse) {
-    this.autoLogout(loginResponse.jwtExpiresIn);
-
-    localStorage.setItem('userData', JSON.stringify(loginResponse));
-
-    this.currentUser().subscribe({
-      next: (user) => {
-        if (this.router.routerState.snapshot.url === '/login') {
-          if (user?.role === 'admin') {
-            this.router.navigate(['/admin']);
-          } else {
-            this.router.navigate(['/']);
-          }
-        }
-      },
-    });
+  jwtToken() {
+    const userAuthData = localStorage.getItem('userData');
+    if (!userAuthData) {
+      return '';
+    }
+    const { jwtToken } = JSON.parse(userAuthData) as LoginResponse;
+    return jwtToken;
   }
 
   currentUser() {
     return this.http.get<User>(this.baseUrl + 'users/current-user').pipe(
       tap((user) => {
         this.user.next(user);
-      }),
-      catchError((error) => {
-        return throwError(error);
       })
     );
-  }
-
-  autoLogout(expirationDuration: number) {
-    this.tokenExpirationTimer = setTimeout(() => {
-      this.getRefreshToken().subscribe();
-    }, expirationDuration * 1000 - 60 * 1000);
   }
 
   getRefreshToken() {
@@ -105,7 +108,8 @@ export class AuthService {
       )
       .pipe(
         tap((loginResponse) => {
-          this.handleAuthentication(loginResponse);
+          localStorage.setItem('userData', JSON.stringify(loginResponse));
+          this.currentUser().subscribe();
         }),
         catchError((error) => {
           this.logout();
@@ -120,16 +124,17 @@ export class AuthService {
       .subscribe();
 
     this.user.next(null);
-
-    this.router.navigate(['/login']);
     localStorage.removeItem('userData');
-    if (this.tokenExpirationTimer) {
-      clearTimeout(this.tokenExpirationTimer);
-    }
-    this.user.next(null);
+    this.router.navigate(['/login']);
   }
 
   autoLogin() {
-    this.getRefreshToken().subscribe();
+    const userAuthData = localStorage.getItem('userData');
+
+    if (!userAuthData) {
+      return this.getRefreshToken().subscribe();
+    }
+
+    return this.currentUser().subscribe();
   }
 }
