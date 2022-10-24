@@ -38,7 +38,13 @@ public class SearchController : ControllerBase
         {
             foreach (TweetResponseDto tweet in tweets.Tweets)
             {
-                tweet.User = (await _usersService.GetUserAsync(tweet.UserId))?.AsDtoTweetComment();
+                User? userModel = await _usersService.GetUserAsync(tweet.UserId);
+                if (userModel == null || userModel.DeletedAt != null || userModel.BlockedAt != null)
+                {
+                    tweets.Tweets.Remove(tweet);
+                    continue;
+                }
+                tweet.User = userModel.AsDtoTweetComment();
                 LikedOrRetweetedDto likedOrRetweet = await _iLikeCommentService.IsLikedOrRetweeted(tweet.Id);
                 tweet.IsLiked = likedOrRetweet.IsLiked;
                 tweet.IsRetweeted = likedOrRetweet.IsRetweeted;
@@ -47,8 +53,12 @@ public class SearchController : ControllerBase
                     Tweets? refTweet = await _tweetService.GetTweetById(tweet.RetweetRefId);
                     if (refTweet != null)
                     {
-                        tweet.RefTweet = refTweet.AsDto();
-                        tweet.RefTweet.User = (await _usersService.GetUserAsync(refTweet.UserId))?.AsDtoTweetComment();
+                        User? refUser = await _usersService.GetUserAsync(refTweet.UserId);
+                        if (refUser != null && refUser.DeletedAt == null && refUser.BlockedAt == null)
+                        {
+                            tweet.RefTweet = refTweet.AsDto();
+                            tweet.RefTweet.User = refUser.AsDtoTweetComment();
+                        }
                     }
                 }
             }

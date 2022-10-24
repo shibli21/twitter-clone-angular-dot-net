@@ -70,12 +70,16 @@ public class UsersService : IUsersService
             string? id = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (id != null)
             {
-                user = (await GetUserAsync(id))?.AsDto();
-                if (user != null)
+                User? userFromDb = await GetUserAsync(id);
+                if (userFromDb != null && userFromDb.DeletedAt == null && userFromDb.BlockedAt == null)
                 {
+                    user = userFromDb.AsDto();
                     user.Followers = await GetFollowerCount(id);
                     user.Following = await GetFollowingCount(id);
+
                 }
+
+
             }
         }
         return user;
@@ -95,7 +99,7 @@ public class UsersService : IUsersService
                 var blockedIds = blocked.Select(block => block.BlockedUserId).ToList();
                 var mergeIds = followingIds.Union(blockedIds).ToArray();
                 Console.WriteLine("mergeIds");
-                users = (await _usersCollection.Find(user => !mergeIds.Contains(user.Id) && user.Id != id)
+                users = (await _usersCollection.Find(user => !mergeIds.Contains(user.Id) && user.Id != id && user.DeletedAt == null && user.BlockedAt == null)
                     .Limit(size)
                     .ToListAsync()).Select(user => user.AsDto()).ToList();
             }

@@ -4,6 +4,8 @@ namespace Core.Dtos
     {
         public string Type { get; set; } = string.Empty;
         public bool IsNotification { get; set; } = false;
+        public string? UserId { get; set; } = string.Empty;
+        public string? RefUserId { get; set; } = string.Empty;
         public TweetResponseDto? Tweet { get; set; } = null;
         public NotificationCreateDto? Notification { get; set; } = null;
     }

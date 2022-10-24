@@ -206,8 +206,10 @@ public class AuthController : ControllerBase
 
         if (user == null)
             return Unauthorized(new { field = "refreshToken", message = "User not found." });
-
-
+        if(user.DeletedAt != null)
+            return Unauthorized(new { field = "refreshToken", message = "User is deleted." });
+        if(user.BlockedAt != null)
+            return Unauthorized(new { field = "refreshToken", message = "User is blocked." });
         RefreshToken refreshToken = this.CreateRefreshToken(user);
         refreshToken.Id = oldToken.Id;
         RefreshToken newRefreshToken = await _refreshTokenService.UpdateToken(oldToken.Id, refreshToken);

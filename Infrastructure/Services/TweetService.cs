@@ -14,7 +14,7 @@ namespace Infrastructure.Services
 
         private readonly IMongoCollection<Tweets> _tweetCollection;
         private readonly IMongoCollection<HashTags> _hashTagCollection;
-        private readonly IHttpContextAccessor _httpContextAccessor;        
+        private readonly IHttpContextAccessor _httpContextAccessor;
         public TweetService(IOptions<TwitterCloneDbConfig> twitterCloneDbConfig, IMongoClient mongoClient, IHttpContextAccessor httpContextAccessor)
         {
             _httpContextAccessor = httpContextAccessor;
@@ -22,33 +22,24 @@ namespace Infrastructure.Services
             _tweetCollection = database.GetCollection<Tweets>(twitterCloneDbConfig.Value.TweetCollectionName);
             _hashTagCollection = database.GetCollection<HashTags>(twitterCloneDbConfig.Value.HashTagCollectionName);
         }
-        public async Task<Tweets?> CreateTweet(TweetRequestDto tweet)
+        public async Task<Tweets?> CreateTweet(string userId, TweetRequestDto tweet)
         {
-            Tweets? tweetModel = null;
-            if (_httpContextAccessor.HttpContext != null)
+            Tweets tweetModel = new Tweets
             {
-                string? userId = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-                if (userId != null)
+                UserId = userId,
+                Tweet = tweet.Tweet,
+            };
+            await _tweetCollection.InsertOneAsync(tweetModel);
+
+            foreach (var hashTag in tweet.HashTags)
+            {
+                var hashTagModel = new HashTags
+
                 {
-                    tweetModel = new Tweets
-                    {
-                        UserId = userId,
-                        Tweet = tweet.Tweet,
-                    };
-                    await _tweetCollection.InsertOneAsync(tweetModel);
-
-                    foreach (var hashTag in tweet.HashTags)
-                    {
-                        var hashTagModel = new HashTags
-
-                        {
-                            HashTag = hashTag,
-                            TweetId = tweetModel.Id,
-                        };
-                        await _hashTagCollection.InsertOneAsync(hashTagModel);
-                    }
-
-                }
+                    HashTag = hashTag,
+                    TweetId = tweetModel.Id,
+                };
+                await _hashTagCollection.InsertOneAsync(hashTagModel);
             }
             return tweetModel;
         }
