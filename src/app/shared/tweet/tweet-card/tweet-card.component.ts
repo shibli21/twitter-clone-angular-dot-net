@@ -1,3 +1,4 @@
+import { User } from './../../../core/models/user.model';
 import { Component, Input, OnInit } from '@angular/core';
 import { ToastrService } from 'ngx-toastr';
 import { Tweet } from 'src/app/core/models/tweet.model';
@@ -24,7 +25,7 @@ export class TweetCardComponent implements OnInit {
   editTweet = '';
   retweetDisplay = false;
   retweetText = '';
-  isCurrentUserId = '';
+  currentUser!: User;
 
   constructor(
     private tweetService: TweetService,
@@ -37,7 +38,11 @@ export class TweetCardComponent implements OnInit {
   ngOnInit() {
     this.editTweet = this.tweet.tweet;
 
-    this.isCurrentUserId = this.authService.userId()!;
+    this.authService.user.subscribe((res) => {
+      if (res) {
+        this.currentUser = res;
+      }
+    });
   }
 
   showDialog() {

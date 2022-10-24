@@ -22,7 +22,7 @@
           </h1>
           <p class="text-gray-600 text-sm">
             @{{ comment.user.userName }} ·
-            {{ comment.createdAt | date: "shortTime" }}
+            {{ comment.createdAt | amTimeAgo }}
           </p>
         </div>
         <div>

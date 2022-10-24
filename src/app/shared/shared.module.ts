@@ -10,6 +10,8 @@ import { FollowersListComponent } from './follow/followers-list/followers-list.c
 import { FollowingListComponent } from './follow/following-list/following-list.component';
 import { SpinnerComponent } from './spinner/spinner.component';
 import { UserCardComponent } from './user-card/user-card.component';
+import { NameAndTimeHeaderComponent } from './name-and-time-header/name-and-time-header.component';
+import { MomentModule } from 'ngx-moment';
 
 @NgModule({
   declarations: [
@@ -19,6 +21,7 @@ import { UserCardComponent } from './user-card/user-card.component';
     FollowingListComponent,
     SpinnerComponent,
     UserCardComponent,
+    NameAndTimeHeaderComponent,
   ],
   imports: [
     CommonModule,
@@ -26,6 +29,7 @@ import { UserCardComponent } from './user-card/user-card.component';
     IconsModule,
     FormsModule,
     ReactiveFormsModule,
+    MomentModule,
     QuillModule.forRoot({
       modules: {
         toolbar: [
@@ -50,6 +54,7 @@ import { UserCardComponent } from './user-card/user-card.component';
     FollowingListComponent,
     SpinnerComponent,
     UserCardComponent,
+    NameAndTimeHeaderComponent,
   ],
 })
 export class SharedModule {}

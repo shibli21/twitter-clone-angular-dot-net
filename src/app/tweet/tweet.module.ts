@@ -1,3 +1,4 @@
+import { MomentModule } from 'ngx-moment';
 import { QuillModule } from 'ngx-quill';
 import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 import { TweetRoutingModule } from './tweet-routing.module';
@@ -18,6 +19,7 @@ import { FormsModule } from '@angular/forms';
     FormsModule,
     InfiniteScrollModule,
     QuillModule,
+    MomentModule,
   ],
 })
 export class TweetModule {}

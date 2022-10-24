@@ -1,0 +1,22 @@
+<div class="flex gap-2 items-start">
+  <div class="overflow-hidden h-[40px] w-[40px] rounded-full">
+    <img
+      class="w-full h-full object-cover"
+      [src]="
+        user.profilePictureUrl
+          ? user.profilePictureUrl
+          : 'https://avatars.dicebear.com/api/open-peeps/' +
+            user.userName +
+            '.svg'
+      "
+    />
+  </div>
+  <div class="flex-row">
+    <h1 class="text-base font-bold">
+      {{ user.firstName }} {{ user.lastName }}
+    </h1>
+    <p class="text-gray-600 text-sm">
+      @{{ user.userName }} <span *ngIf="date"> · {{ date | amTimeAgo }} </span>
+    </p>
+  </div>
+</div>

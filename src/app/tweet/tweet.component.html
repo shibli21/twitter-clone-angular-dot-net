@@ -5,29 +5,11 @@
     <div
       class="border-b border-gray-300 px-2 md:px-4 py-2 items-center justify-between flex"
     >
-      <div class="flex gap-2 items-start">
-        <div class="overflow-hidden h-[40px] w-[40px] rounded-full">
-          <img
-            class="w-full h-full object-cover"
-            [src]="
-              tweet.user.profilePictureUrl
-                ? tweet.user.profilePictureUrl
-                : 'https://avatars.dicebear.com/api/open-peeps/' +
-                  tweet.user.userName +
-                  '.svg'
-            "
-          />
-        </div>
-        <div class="flex-row">
-          <h1 class="text-base font-bold">
-            {{ tweet.user.firstName }} {{ tweet.user.lastName }}
-          </h1>
-          <p class="text-gray-600 text-sm">
-            @{{ tweet.user.userName }} · {{ tweet.createdAt | date }}
-          </p>
-        </div>
-      </div>
-      <div *ngIf="isCurrentUserId === tweet.user.id">
+      <app-name-and-time-header
+        [date]="tweet.createdAt"
+        [user]="tweet.user"
+      ></app-name-and-time-header>
+      <div *ngIf="currentUser.id === tweet.user.id">
         <div
           *ngIf="tweet.type === 'Tweet' || tweet.refTweet"
           class="flex items-center text-gray-600"
@@ -115,21 +97,10 @@
     [dismissableMask]="true"
   >
     <ng-template pTemplate="header">
-      <div class="flex gap-2 items-start">
-        <div class="overflow-hidden h-[40px] w-[40px] rounded-full">
-          <img
-            src="https://cdn.pixabay.com/photo/2016/11/18/23/38/child-1837375_960_720.png"
-          />
-        </div>
-        <div class="flex-row">
-          <h1 class="text-base font-bold">
-            {{ tweet.user.firstName }} {{ tweet.user.lastName }}
-          </h1>
-          <p class="text-gray-600 text-sm">
-            @{{ tweet.user.userName }} · {{ tweet.createdAt | date }}
-          </p>
-        </div>
-      </div>
+      <app-name-and-time-header
+        [date]="tweet.createdAt"
+        [user]="tweet.user"
+      ></app-name-and-time-header>
     </ng-template>
 
     <quill-editor
@@ -170,21 +141,7 @@
     [dismissableMask]="true"
   >
     <ng-template pTemplate="header">
-      <div class="flex gap-2 items-start">
-        <div class="overflow-hidden h-[40px] w-[40px] rounded-full">
-          <img
-            src="https://cdn.pixabay.com/photo/2016/11/18/23/38/child-1837375_960_720.png"
-          />
-        </div>
-        <div class="flex-row">
-          <h1 class="text-base font-bold">
-            {{ tweet.user.firstName }} {{ tweet.user.lastName }}
-          </h1>
-          <p class="text-gray-600 text-sm">
-            @{{ tweet.user.userName }} · {{ tweet.createdAt | date }}
-          </p>
-        </div>
-      </div>
+      <app-name-and-time-header [user]="currentUser"></app-name-and-time-header>
     </ng-template>
 
     <quill-editor
@@ -208,28 +165,10 @@
       <div
         class="border-b border-gray-300 px-2 md:px-4 py-2 items-center justify-between flex"
       >
-        <div class="flex gap-2 items-start">
-          <div class="overflow-hidden h-[40px] w-[40px] rounded-full">
-            <img
-              class="w-full h-full object-cover"
-              [src]="
-                tweet.user.profilePictureUrl
-                  ? tweet.user.profilePictureUrl
-                  : 'https://avatars.dicebear.com/api/open-peeps/' +
-                    tweet.user.userName +
-                    '.svg'
-              "
-            />
-          </div>
-          <div class="flex-row">
-            <h1 class="text-base font-bold">
-              {{ tweet.user.firstName }} {{ tweet.user.lastName }}
-            </h1>
-            <p class="text-gray-600 text-sm">
-              @{{ tweet.user.userName }} · {{ tweet.createdAt | date }}
-            </p>
-          </div>
-        </div>
+        <app-name-and-time-header
+          [date]="tweet.createdAt"
+          [user]="tweet.user"
+        ></app-name-and-time-header>
       </div>
 
       <div class="p-4" [routerLink]="['/tweet', tweet.id]">

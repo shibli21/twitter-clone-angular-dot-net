@@ -25,10 +25,9 @@ export class TweetComponent implements OnInit {
   isCommenting = false;
   isEditing = false;
   isRetweeting = false;
+  currentUser!: User;
 
   tweetComments!: PaginatedComments | null;
-
-  isCurrentUserId: string = '';
 
   constructor(
     private tweetService: TweetService,
@@ -70,7 +69,11 @@ export class TweetComponent implements OnInit {
 
       this.commentService.getTweetComments(this.tweetId);
 
-      this.isCurrentUserId = this.authService.userId()!;
+      this.authService.user.subscribe((user) => {
+        if (user) {
+          this.currentUser = user;
+        }
+      });
     });
   }
 
