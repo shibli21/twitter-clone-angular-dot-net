@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { environment } from 'src/environments/environment';
 
-import { BehaviorSubject, catchError, map, tap, throwError } from 'rxjs';
+import { BehaviorSubject, catchError, tap, throwError } from 'rxjs';
 
 import {
   ILoginUser,
@@ -39,9 +39,6 @@ export class AuthService {
       .pipe(
         tap((loginResponse) => {
           this.handleAuthentication(loginResponse);
-        }),
-        catchError((err) => {
-          return throwError(err);
         })
       );
   }
@@ -68,7 +65,6 @@ export class AuthService {
     localStorage.setItem('userData', JSON.stringify(loginResponse));
 
     this.currentUser().subscribe((user) => {
-      this.user.next(user);
       if (user.role === 'admin') {
         this.router.navigate(['/admin']);
       } else {
@@ -130,21 +126,6 @@ export class AuthService {
   }
 
   autoLogin() {
-    const userAuthData = localStorage.getItem('userData');
-
-    if (!userAuthData) {
-      return;
-    }
-
-    const { jwtToken, jwtExpiresIn } = JSON.parse(
-      userAuthData
-    ) as LoginResponse;
-
-    if (jwtToken && jwtExpiresIn) {
-      this.autoLogout(jwtExpiresIn);
-      this.currentUser().subscribe((user) => {
-        this.user.next(user);
-      });
-    }
+    this.getRefreshToken().subscribe();
   }
 }
