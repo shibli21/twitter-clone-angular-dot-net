@@ -26,6 +26,8 @@ export class NotificationsComponent implements OnInit {
 
   ngOnInit(): void {
     this.route.data.subscribe((data) => {
+      const prevNot = this.notificationService.notifications.getValue();
+
       this.notificationService.notifications.next({
         notifications: [],
         lastPage: 0,
@@ -33,7 +35,7 @@ export class NotificationsComponent implements OnInit {
         size: 0,
         totalElements: 0,
         totalPages: 0,
-        totalUnread: 0,
+        totalUnread: prevNot.totalUnread,
       });
 
       this.notificationService.isLoadingNotifications.subscribe((isLoading) => {
