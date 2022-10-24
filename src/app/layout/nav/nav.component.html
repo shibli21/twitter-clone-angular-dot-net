@@ -9,8 +9,12 @@
           pBadge
           style="font-size: 1.4rem"
         ></i>
-        <div class="md:hidden block mr-4">
-          <i style="font-size: 1.4rem" class="pi pi-search"></i>
+        <div class="block md:hidden mr-4">
+          <i
+            (click)="display = true"
+            style="font-size: 1.4rem"
+            class="pi pi-search cursor-pointer hover:text-indigo-700"
+          ></i>
         </div>
         <div class="hidden md:block">
           <form (ngSubmit)="onSubmit()" class="p-input-icon-left">
@@ -28,4 +32,38 @@
       </div>
     </ng-template>
   </p-menubar>
+
+  <p-dialog
+    header="Search"
+    [(visible)]="display"
+    [modal]="true"
+    position="top"
+    [responsive]="true"
+    [resizable]="false"
+    [dismissableMask]="true"
+    [draggable]="false"
+    appendTo="body"
+    [style]="{ width: '100%', maxWidth: '500px' }"
+  >
+    <form (ngSubmit)="onSubmit()" class="flex gap-2">
+      <div class="p-input-icon-left w-full">
+        <i class="pi pi-search"></i>
+        <input
+          autofocus
+          type="text"
+          name="search"
+          pInputText
+          placeholder="Search"
+          class="p-inputtext-sm w-full"
+          [(ngModel)]="searchQuery"
+        />
+      </div>
+      <!-- <p-button
+      icon="pi pi-search"
+      (click)="display = false"
+      label="Search"
+      styleClass="p-button-sm"
+    ></p-button> -->
+    </form>
+  </p-dialog>
 </div>

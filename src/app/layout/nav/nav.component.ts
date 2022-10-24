@@ -17,6 +17,7 @@ import { SearchService } from './../../core/services/search.service';
 export class NavComponent implements OnInit {
   searchQuery!: string;
   totalUnreadNotifications = 0;
+  display = false;
 
   items: MenuItem[] = [
     {
@@ -110,6 +111,7 @@ export class NavComponent implements OnInit {
   }
 
   onSubmit() {
+    this.display = false;
     if (this.searchQuery.startsWith('#')) {
       this.searchService.tweetSearchQuery.next(this.searchQuery);
       if (this.router.url !== '/search/search-tweets') {
