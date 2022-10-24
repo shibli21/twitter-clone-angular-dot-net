@@ -105,7 +105,6 @@ export class NavComponent implements OnInit {
     this.notificationService.notifications.subscribe(
       (paginatedNotifications) => {
         this.totalUnreadNotifications = paginatedNotifications.totalUnread;
-        console.log(paginatedNotifications);
       }
     );
   }
