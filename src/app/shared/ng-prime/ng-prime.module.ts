@@ -18,6 +18,7 @@ import { InputTextareaModule } from 'primeng/inputtextarea';
 import { ProgressBarModule } from 'primeng/progressbar';
 import { TooltipModule } from 'primeng/tooltip';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
+import { BadgeModule } from 'primeng/badge';
 
 @NgModule({
   declarations: [],
@@ -40,6 +41,7 @@ import { ProgressSpinnerModule } from 'primeng/progressspinner';
     ProgressBarModule,
     TooltipModule,
     ProgressSpinnerModule,
+    BadgeModule,
   ],
 })
 export class NgPrimeModule {}

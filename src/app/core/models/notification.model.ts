@@ -4,6 +4,7 @@ export interface PaginatedNotifications {
   totalElements: number;
   lastPage: number;
   totalPages: number;
+  totalUnread: number;
   notifications: Notification[];
 }
 

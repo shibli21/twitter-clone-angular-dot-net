@@ -1,3 +1,4 @@
+import { LoginResponse } from './../core/models/user.model';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NotificationService } from './../core/services/notification.service';
 import {
@@ -5,13 +6,15 @@ import {
   PaginatedNotifications,
 } from './../core/models/notification.model';
 import { Component, OnInit } from '@angular/core';
-
+import { HubConnection, HubConnectionBuilder } from '@microsoft/signalr';
 @Component({
   selector: 'app-notifications',
   templateUrl: './notifications.component.html',
   styleUrls: ['./notifications.component.scss'],
 })
 export class NotificationsComponent implements OnInit {
+  private _hubConnection!: HubConnection;
+
   paginatedNotifications!: PaginatedNotifications | null;
   isLoading = false;
 
@@ -30,6 +33,7 @@ export class NotificationsComponent implements OnInit {
         size: 0,
         totalElements: 0,
         totalPages: 0,
+        totalUnread: 0,
       });
 
       this.notificationService.isLoadingNotifications.subscribe((isLoading) => {

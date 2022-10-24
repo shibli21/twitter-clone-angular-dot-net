@@ -16,6 +16,7 @@ export class NotificationService {
     lastPage: 0,
     totalPages: 0,
     notifications: [],
+    totalUnread: 0,
   });
   isLoadingNotifications = new BehaviorSubject<boolean>(false);
 
@@ -51,6 +52,21 @@ export class NotificationService {
   }
 
   markAsRead(notificationId: string) {
-    return this.http.put(this.baseUrl + 'notifications/' + notificationId, {});
+    return this.http
+      .put(this.baseUrl + 'notifications/' + notificationId, {})
+      .pipe(
+        tap((notification) => {
+          const prevNotifications = this.notifications.getValue();
+
+          const updatedNotifications: PaginatedNotifications = {
+            ...prevNotifications,
+            totalUnread: prevNotifications.totalUnread - 1,
+          };
+
+          this.notifications.next(updatedNotifications);
+
+          return notification;
+        })
+      );
   }
 }

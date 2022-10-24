@@ -1,17 +1,31 @@
 <div class="border-b sticky top-0 bg-white z-50">
   <p-menubar [model]="items" [baseZIndex]="1000">
     <ng-template pTemplate="end">
-      <form (ngSubmit)="onSubmit()" class="p-input-icon-left">
-        <i class="pi pi-search"></i>
-        <input
-          type="text"
-          name="search"
-          pInputText
-          placeholder="Search"
-          class="p-inputtext-sm"
-          [(ngModel)]="searchQuery"
-        />
-      </form>
+      <div class="flex items-center py-2">
+        <i
+          [routerLink]="['/notifications']"
+          class="pi pi-bell ml-4 mr-8 cursor-pointer"
+          [value]="totalUnreadNotifications.toString()"
+          pBadge
+          style="font-size: 1.4rem"
+        ></i>
+        <div class="md:hidden block mr-4">
+          <i style="font-size: 1.4rem" class="pi pi-search"></i>
+        </div>
+        <div class="hidden md:block">
+          <form (ngSubmit)="onSubmit()" class="p-input-icon-left">
+            <i class="pi pi-search"></i>
+            <input
+              type="text"
+              name="search"
+              pInputText
+              placeholder="Search"
+              class="p-inputtext-sm"
+              [(ngModel)]="searchQuery"
+            />
+          </form>
+        </div>
+      </div>
     </ng-template>
   </p-menubar>
 </div>
