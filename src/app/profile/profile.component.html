@@ -1,10 +1,15 @@
-<div class="" *ngIf="profileUser">
+<div *ngIf="isProfileLoading" class="py-10 flex justify-center">
+  <app-spinner></app-spinner>
+</div>
+
+<div class="" *ngIf="profileUser && !isProfileLoading">
   <div
     class="w-full flex flex-row justify-center items-center border rounded-md overflow-hidden"
   >
     <div class="w-full mx-auto bg-white">
       <div class="h-40 bg-indigo-600 overflow-hidden">
         <img
+          *ngIf="profileUser.coverPictureUrl"
           class="object-cover w-full h-full"
           [src]="profileUser.coverPictureUrl"
         />
@@ -92,7 +97,7 @@
     </div>
   </div>
 
-  <div *ngIf="isLoading" class="py-10 flex justify-center">
+  <div *ngIf="isLoading && !isProfileLoading" class="py-10 flex justify-center">
     <app-spinner></app-spinner>
   </div>
 

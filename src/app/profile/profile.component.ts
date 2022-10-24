@@ -20,6 +20,7 @@ export class ProfileComponent implements OnInit {
   profileUser!: User;
   isCurrentUser: boolean = false;
   isLoading = false;
+  isProfileLoading = false;
 
   constructor(
     private authService: AuthService,
@@ -58,9 +59,11 @@ export class ProfileComponent implements OnInit {
         this.profileUser = this.authService.currentUserValue()!;
         this.isCurrentUser = true;
       } else {
+        this.isProfileLoading = true;
         this.userService.getUserById(this.userId).subscribe((user) => {
           this.profileUser = user;
           this.isCurrentUser = false;
+          this.isProfileLoading = false;
         });
       }
     });

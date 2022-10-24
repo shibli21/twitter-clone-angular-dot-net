@@ -23,6 +23,7 @@ export class TweetComponent implements OnInit {
   tweetId = '';
   retweetText = '';
   isCommenting = false;
+  isLoading = false;
   isEditing = false;
   isRetweeting = false;
   currentUser!: User;
@@ -40,6 +41,7 @@ export class TweetComponent implements OnInit {
   ) {}
 
   ngOnInit() {
+    this.isLoading = true;
     this.route.params.subscribe((params) => {
       this.tweetId = params['id'];
 
@@ -57,6 +59,7 @@ export class TweetComponent implements OnInit {
       this.tweetService.tweet.subscribe((res) => {
         this.tweet = res;
         this.editTweet = res?.tweet ?? '';
+        this.isLoading = false;
       });
 
       this.commentService.isLoadingComment.subscribe((isLoading) => {
@@ -75,6 +78,7 @@ export class TweetComponent implements OnInit {
         }
       });
     });
+    this.isLoading = true;
   }
 
   likeUnlike() {

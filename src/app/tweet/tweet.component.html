@@ -1,4 +1,8 @@
-<div *ngIf="tweet">
+<div *ngIf="isLoading" class="py-10 flex justify-center">
+  <app-spinner></app-spinner>
+</div>
+
+<div *ngIf="tweet && !isLoading">
   <div
     class="hover:bg-gray-50 cursor-pointer border w-full transition rounded-md"
   >
