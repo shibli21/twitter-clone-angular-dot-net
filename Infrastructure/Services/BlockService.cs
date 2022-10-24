@@ -105,7 +105,7 @@ namespace Infrastructure.Services
                                                                     .ToListAsync()
                                                                     .ContinueWith(task => task.Result.Select(block => block.BlockedUserId).ToArray());
 
-                        List<UserResponseDto> users = await _usersCollection.Find(user => blockedUsersIds.Contains(user.Id))
+                        List<UserResponseDto> users = await _usersCollection.Find(user => blockedUsersIds.Contains(user.Id) && user.DeletedAt == null)
                                                                             .ToListAsync()
                                                                             .ContinueWith(task => task.Result.Select(user => user.AsDto()).ToList());
                         paginatedUserResponseDto = new PaginatedUserResponseDto()

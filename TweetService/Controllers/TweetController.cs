@@ -31,10 +31,31 @@ namespace Core.Controllers
         [HttpPost("create"), Authorize]
         public async Task<ActionResult<TweetResponseDto>> CreateTweet(TweetRequestDto tweetRequest)
         {
-            Tweets? tweet = await _tweetService.CreateTweet(tweetRequest);
+            var userId = _httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == null)
+            {
+                return Unauthorized();
+            }
+            Tweets? tweet = await _tweetService.CreateTweet(userId, tweetRequest);
             if (tweet != null)
             {
-                return Ok(tweet.AsDto());
+                TweetResponseDto tweetResponse = tweet.AsDto();
+                User? user = await _usersService.GetUserAsync(userId);
+                if (user == null || user.DeletedAt != null || user.BlockedAt != null)
+                {
+                    return Unauthorized(new { message = "User not found" });
+                }
+                tweetResponse.User = user.AsDtoTweetComment();
+
+                CacheNotificationConsumerDto cacheNotificationConsumerDto = new CacheNotificationConsumerDto
+                {
+                    Type = "Create Tweet",
+                    IsNotification = true,
+                    Tweet = tweetResponse,
+                };
+                await _bus.Publish(cacheNotificationConsumerDto);
+                return Ok(tweetResponse);
+
             }
             return BadRequest(new { message = "Tweet could not be created" });
         }
@@ -55,20 +76,37 @@ namespace Core.Controllers
             Tweets? tweet = await _tweetService.CreateRetweet(userId, refTweet, tweetRequest);
             if (tweet != null)
             {
+                User? tweetOwner = await _usersService.GetUserAsync(refTweet.UserId);
+                if (tweetOwner == null || tweetOwner.BlockedAt != null || tweetOwner.DeletedAt != null)
+                {
+                    return BadRequest(new { message = "Tweet owner could not be found" });
+                }
                 refTweet.RetweetCount += 1;
                 await _tweetService.UpdateTweetAsync(id, refTweet);
                 TweetResponseDto tweetResponse = tweet.AsDto();
-                tweetResponse.RefTweet = refTweet.AsDto();
-                tweetResponse.RefTweet.User = (await _usersService.GetUserAsync(refTweet.UserId))?.AsDtoTweetComment();
-
-                NotificationCreateDto notificationCreateDto = new NotificationCreateDto
+                User? user = await _usersService.GetUserAsync(userId);
+                if (user == null || user.DeletedAt != null || user.BlockedAt != null)
                 {
-                    UserId = refTweet.UserId,
-                    RefUserId = userId,
-                    TweetId = tweet.Id,
-                    Type = "Retweet",
+                    return Unauthorized(new { message = "User not found" });
+                }
+                tweetResponse.User = user.AsDtoTweetComment();
+                tweetResponse.RefTweet = refTweet.AsDto();
+                tweetResponse.RefTweet.User = tweetOwner.AsDtoTweetComment();
+
+                CacheNotificationConsumerDto cacheNotificationConsumerDto = new CacheNotificationConsumerDto
+                {
+                    Type = "Create Retweet",
+                    IsNotification = true,
+                    Notification = new NotificationCreateDto
+                    {
+                        UserId = refTweet.UserId,
+                        RefUserId = userId,
+                        TweetId = tweet.Id,
+                        Type = "Retweet",
+                    },
+                    Tweet = tweetResponse,
                 };
-                await _bus.Publish(notificationCreateDto);
+                await _bus.Publish(cacheNotificationConsumerDto);
 
                 return Ok(tweetResponse);
             }
@@ -87,7 +125,12 @@ namespace Core.Controllers
                 });
             }
             TweetResponseDto tweetResponse = tweet.AsDto();
-            TweetCommentUserResponseDto? user = (await _usersService.GetUserAsync(tweet.UserId))?.AsDtoTweetComment();
+            User? userModel = await _usersService.GetUserAsync(tweet.UserId);
+            if (userModel == null || userModel.DeletedAt != null || userModel.BlockedAt != null)
+            {
+                return NotFound(new { message = "Retweet owner not found" });
+            }
+            TweetCommentUserResponseDto? user = userModel.AsDtoTweetComment();
             tweetResponse.User = user;
             LikedOrRetweetedDto likedOrRetweet = await _iLikeCommentService.IsLikedOrRetweeted(id);
             tweetResponse.IsLiked = likedOrRetweet.IsLiked;
@@ -97,8 +140,12 @@ namespace Core.Controllers
                 Tweets? refTweet = await _tweetService.GetTweetById(tweet.RetweetRefId);
                 if (refTweet != null)
                 {
-                    tweetResponse.RefTweet = refTweet.AsDto();
-                    tweetResponse.RefTweet.User = (await _usersService.GetUserAsync(refTweet.UserId))?.AsDtoTweetComment();
+                    User? refUser = await _usersService.GetUserAsync(refTweet.UserId);
+                    if (refUser != null && refUser.DeletedAt == null && refUser.BlockedAt == null)
+                    {
+                        tweetResponse.RefTweet = refTweet.AsDto();
+                        tweetResponse.RefTweet.User = refUser.AsDtoTweetComment();
+                    }
                 }
             }
             return Ok(tweetResponse);
@@ -122,8 +169,15 @@ namespace Core.Controllers
                     Message = "Retweet cannot be updated here",
                 });
             }
+            User? user = await _usersService.GetUserAsync(tweet.UserId);
+
+            if (user == null || user.DeletedAt != null || user.BlockedAt != null || user.Id != tweet.UserId)
+            {
+                return Unauthorized(new { message = "User not found" });
+            }
             await _tweetService.UpdateTweet(tweet, tweetRequest);
             TweetResponseDto tweetResponse = tweet.AsDto();
+            tweetResponse.User = user.AsDtoTweetComment();
             LikedOrRetweetedDto likedOrRetweet = await _iLikeCommentService.IsLikedOrRetweeted(id);
             tweetResponse.IsLiked = likedOrRetweet.IsLiked;
             tweetResponse.IsRetweeted = likedOrRetweet.IsRetweeted;
@@ -133,6 +187,11 @@ namespace Core.Controllers
         [HttpPut("retweet/{id}"), Authorize]
         public async Task<ActionResult<TweetResponseDto>> UpdateRetweet(string id, RetweetRequestDto tweetRequest)
         {
+            var userId = _httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == null)
+            {
+                return Unauthorized();
+            }
             var tweet = await _tweetService.GetTweetById(id);
             if (tweet == null)
             {
@@ -148,17 +207,27 @@ namespace Core.Controllers
                     Message = "Tweet is not a retweet",
                 });
             }
+            User? user = await _usersService.GetUserAsync(userId);
+            if (user == null || user.DeletedAt != null || user.BlockedAt != null || user.Id != tweet.UserId)
+            {
+                return Unauthorized(new { message = "User not found" });
+            }
             await _tweetService.UpdateRetweet(tweet, tweetRequest);
             TweetResponseDto tweetResponse = tweet.AsDto();
             LikedOrRetweetedDto likedOrRetweet = await _iLikeCommentService.IsLikedOrRetweeted(id);
             tweetResponse.IsLiked = likedOrRetweet.IsLiked;
             tweetResponse.IsRetweeted = likedOrRetweet.IsRetweeted;
 
+
             Tweets? refTweet = await _tweetService.GetTweetById(tweet.RetweetRefId);
             if (refTweet != null)
             {
-                tweetResponse.RefTweet = refTweet.AsDto();
-                tweetResponse.RefTweet.User = (await _usersService.GetUserAsync(refTweet.UserId))?.AsDtoTweetComment();
+                User? refUser = await _usersService.GetUserAsync(refTweet.UserId);
+                if (refUser != null && refUser.DeletedAt == null && refUser.BlockedAt == null)
+                {
+                    tweetResponse.RefTweet = refTweet.AsDto();
+                    tweetResponse.RefTweet.User = refUser.AsDtoTweetComment();
+                }
             }
             return Ok(tweetResponse);
         }
@@ -166,6 +235,11 @@ namespace Core.Controllers
         [HttpDelete("{id}"), Authorize]
         public async Task<ActionResult<object>> DeleteTweet(string id)
         {
+            var userId = _httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == null)
+            {
+                return Unauthorized();
+            }
             var tweet = await _tweetService.GetTweetById(id);
             if (tweet == null)
             {
@@ -173,6 +247,11 @@ namespace Core.Controllers
                 {
                     Message = "Tweet Not Found",
                 });
+            }
+            User? user = await _usersService.GetUserAsync(userId);
+            if (user == null || user.DeletedAt != null || user.BlockedAt != null || user.Id != tweet.UserId)
+            {
+                return Unauthorized();
             }
             await _tweetService.DeleteTweet(tweet);
             return Ok(new
@@ -190,6 +269,11 @@ namespace Core.Controllers
             {
                 return Unauthorized();
             }
+            User? user = await _usersService.GetUserAsync(userId);
+            if (user == null || user.DeletedAt != null || user.BlockedAt != null)
+            {
+                return Unauthorized();
+            }
             var tweet = await _tweetService.GetTweetById(tweetId);
             if (tweet == null)
             {
@@ -201,14 +285,19 @@ namespace Core.Controllers
             string msg = await _iLikeCommentService.LikeTweet(tweet, userId);
             if (msg == "Tweet liked")
             {
-                NotificationCreateDto notificationCreateDto = new NotificationCreateDto
+                CacheNotificationConsumerDto cacheNotificationConsumerDto = new CacheNotificationConsumerDto
                 {
-                    UserId = tweet.UserId,
-                    RefUserId = userId,
-                    TweetId = tweet.Id,
-                    Type = "Like",
+                    Type = "Notification",
+                    IsNotification = true,
+                    Notification = new NotificationCreateDto
+                    {
+                        UserId = tweet.UserId,
+                        RefUserId = userId,
+                        TweetId = tweet.Id,
+                        Type = "Like",
+                    }
                 };
-                await _bus.Publish(notificationCreateDto);
+                await _bus.Publish(cacheNotificationConsumerDto);
             }
 
             return Ok(new { Message = msg });
@@ -230,6 +319,11 @@ namespace Core.Controllers
             {
                 return Unauthorized();
             }
+            User? user = await _usersService.GetUserAsync(userId);
+            if (user == null || user.DeletedAt != null || user.BlockedAt != null)
+            {
+                return Unauthorized();
+            }
             var tweet = await _tweetService.GetTweetById(tweetId);
             if (tweet == null)
             {
@@ -243,21 +337,41 @@ namespace Core.Controllers
             {
                 return BadRequest(new { Message = "Something went wrong" });
             }
+            comment.User = user.AsDtoTweetComment();
 
-            NotificationCreateDto notificationCreateDto = new NotificationCreateDto
+
+            // publish to RabbitMQ start
+            CacheNotificationConsumerDto cacheNotificationConsumerDto = new CacheNotificationConsumerDto
             {
-                UserId = tweet.UserId,
-                RefUserId = userId,
-                TweetId = tweet.Id,
-                Type = "Comment",
+                Type = "Notification",
+                IsNotification = true,
+                Notification = new NotificationCreateDto
+                {
+                    UserId = tweet.UserId,
+                    RefUserId = userId,
+                    TweetId = tweet.Id,
+                    Type = "Comment",
+                }
             };
-            await _bus.Publish(notificationCreateDto);
+            await _bus.Publish(cacheNotificationConsumerDto);
+            // publish to RabbitMQ end
+
             return Ok(comment);
         }
 
         [HttpDelete("comment/{commentId}"), Authorize]
         public async Task<ActionResult<object>> DeleteComment(string commentId)
         {
+            var userId = _httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == null)
+            {
+                return Unauthorized();
+            }
+            User? user = await _usersService.GetUserAsync(userId);
+            if (user == null || user.DeletedAt != null || user.BlockedAt != null)
+            {
+                return Unauthorized();
+            }
             bool isDeleted = await _iLikeCommentService.DeleteComment(commentId);
             if (isDeleted)
             {
@@ -269,6 +383,16 @@ namespace Core.Controllers
         [HttpPut("comment/{commentId}"), Authorize]
         public async Task<ActionResult<CommentResponseDto>> UpdateComment(string commentId, CommentRequestDto commentRequest)
         {
+            var userId = _httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == null)
+            {
+                return Unauthorized();
+            }
+            User? user = await _usersService.GetUserAsync(userId);
+            if (user == null || user.DeletedAt != null || user.BlockedAt != null)
+            {
+                return Unauthorized();
+            }
             CommentResponseDto? comment = await _iLikeCommentService.UpdateComment(commentId, commentRequest.Comment);
             if (comment == null)
             {

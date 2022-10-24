@@ -28,7 +28,7 @@ public class UsersController : ControllerBase
     {
         var userId = _httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier);
         User? user = await _usersService.GetUserAsync(id);
-        if (user == null)
+        if (user == null || user.DeletedAt != null || user.BlockedAt != null)
         {
             return NotFound();
         }
@@ -61,7 +61,7 @@ public class UsersController : ControllerBase
         if (_httpContextAccessor.HttpContext != null)
         {
             User? user = await _usersService.GetUserAsync(userEditDto.Id);
-            if (user == null)
+            if (user == null || user.DeletedAt != null || user.BlockedAt != null)
             {
                 return NotFound();
             }

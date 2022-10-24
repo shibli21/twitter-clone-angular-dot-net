@@ -34,13 +34,21 @@ public class FollowController : ControllerBase
         var msg = await _followerService.FollowByUserId(userId, followingId);
         if (msg == "Followed")
         {
-            NotificationCreateDto notificationCreateDto = new NotificationCreateDto
+            CacheNotificationConsumerDto cacheNotificationConsumerDto = new CacheNotificationConsumerDto
             {
-                UserId = followingId,
-                RefUserId = userId,
-                Type = "Follow",
+                Type = "Notification",
+                IsNotification = true,
+                Notification = new NotificationCreateDto
+                {
+                    UserId = followingId,
+                    RefUserId = userId,
+                    Type = "Follow",
+                }
             };
-            await _bus.Publish(notificationCreateDto);
+
+            await _bus.Publish(cacheNotificationConsumerDto);
+
+
             return Ok(new { message = "Followed successfully" });
         }
         else if (msg == "Unfollowed")

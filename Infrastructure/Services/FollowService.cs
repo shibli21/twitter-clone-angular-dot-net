@@ -30,6 +30,26 @@ namespace Infrastructure.Services
             string msg = "Something went wrong";
 
             var follow = await _followCollection.Find(f => f.UserId == userId && f.FollowingId == followingId).FirstOrDefaultAsync();
+            var followingUser = await _user.Find(u => u.Id == followingId && u.DeletedAt == null && u.BlockedAt == null).FirstOrDefaultAsync();
+            if (followingUser == null)
+            {
+                return msg;
+            }
+            else if (follow == null)
+            {
+                follow = new Follows
+                {
+                    UserId = userId,
+                    FollowingId = followingId
+                };
+                await _followCollection.InsertOneAsync(follow);
+                msg = "User followed successfully";
+            }
+            else
+            {
+                await _followCollection.DeleteOneAsync(f => f.UserId == userId && f.FollowingId == followingId);
+                msg = "User unfollowed successfully";
+            }
             if (follow == null)
             {
                 follow = new Follows
@@ -58,7 +78,7 @@ namespace Infrastructure.Services
             int LastPage = (int)Math.Ceiling((double)await filter.CountDocumentsAsync() / limit) - 1;
             LastPage = LastPage < 0 ? 0 : LastPage;
             string[] followersIds = (await filter.Skip((page) * limit).Limit(limit).ToListAsync()).Select(f => f.UserId).ToArray();
-            var users = await _user.Find(u => followersIds.Contains(u.Id)).ToListAsync();
+            var users = await _user.Find(u => followersIds.Contains(u.Id) && u.DeletedAt == null && u.BlockedAt == null).ToListAsync();
             return new PaginatedUserResponseDto
             {
                 TotalElements = await filter.CountDocumentsAsync(),
@@ -77,7 +97,7 @@ namespace Infrastructure.Services
             int LastPage = (int)Math.Ceiling((double)await filter.CountDocumentsAsync() / limit) - 1;
             LastPage = LastPage < 0 ? 0 : LastPage;
             string[] followingIds = (await filter.Skip((page) * limit).Limit(limit).ToListAsync()).Select(f => f.FollowingId).ToArray();
-            var users = await _user.Find(u => followingIds.Contains(u.Id)).ToListAsync();
+            var users = await _user.Find(u => followingIds.Contains(u.Id) && u.DeletedAt == null && u.BlockedAt == null).ToListAsync();
             return new PaginatedUserResponseDto
             {
                 TotalElements = await filter.CountDocumentsAsync(),

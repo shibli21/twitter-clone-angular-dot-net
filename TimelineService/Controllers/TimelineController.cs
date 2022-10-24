@@ -14,7 +14,7 @@ namespace TimelineService.Controllers
         private readonly IUsersService _usersService;
         private readonly ILikeCommentService _iLikeCommentService;
         private readonly ITimeLineService _iTimeLineService;
-        public TimelineController(ITweetService tweetService, ILikeCommentService iLikeCommentService, IUsersService usersService , ITimeLineService iTimeLineService)
+        public TimelineController(ITweetService tweetService, ILikeCommentService iLikeCommentService, IUsersService usersService, ITimeLineService iTimeLineService)
         {
             _tweetService = tweetService;
             _iLikeCommentService = iLikeCommentService;
@@ -24,11 +24,13 @@ namespace TimelineService.Controllers
         [HttpGet("user-timeline/{userId}"), Authorize]
         public async Task<ActionResult<PaginatedTweetResponseDto>> GetUserTweets(string userId, [FromQuery] int size = 20, [FromQuery] int page = 0)
         {
-            TweetCommentUserResponseDto? user = (await _usersService.GetUserAsync(userId))?.AsDtoTweetComment();
-            if (user == null)
+            User? userModel = await _usersService.GetUserAsync(userId);
+            if (userModel == null || userModel.DeletedAt != null || userModel.BlockedAt != null)
             {
                 return NotFound(new { Message = "User Not Found" });
             }
+            TweetCommentUserResponseDto user = userModel.AsDtoTweetComment();
+
             PaginatedTweetResponseDto tweets = await _iTimeLineService.GetUserTimeLine(userId, size, page);
             if (tweets.Tweets != null)
             {
@@ -43,9 +45,14 @@ namespace TimelineService.Controllers
                         Tweets? refTweet = await _tweetService.GetTweetById(tweet.RetweetRefId);
                         if (refTweet != null)
                         {
-                            tweet.RefTweet = refTweet.AsDto();
-                            tweet.RefTweet.User = (await _usersService.GetUserAsync(refTweet.UserId))?.AsDtoTweetComment();
+                            User? refUser = await _usersService.GetUserAsync(refTweet.UserId);
+                            if (refUser != null && refUser.DeletedAt == null && refUser.BlockedAt == null)
+                            {
+                                tweet.RefTweet = refTweet.AsDto();
+                                tweet.RefTweet.User = refUser.AsDtoTweetComment();
+                            }
                         }
+
                     }
                 }
             }
@@ -69,8 +76,12 @@ namespace TimelineService.Controllers
                         Tweets? refTweet = await _tweetService.GetTweetById(tweet.RetweetRefId);
                         if (refTweet != null)
                         {
-                            tweet.RefTweet = refTweet.AsDto();
-                            tweet.RefTweet.User = (await _usersService.GetUserAsync(refTweet.UserId))?.AsDtoTweetComment();
+                            User? refUser = await _usersService.GetUserAsync(refTweet.UserId);
+                            if (refUser != null && refUser.DeletedAt == null && refUser.BlockedAt == null)
+                            {
+                                tweet.RefTweet = refTweet.AsDto();
+                                tweet.RefTweet.User = refUser.AsDtoTweetComment();
+                            }
                         }
                     }
                 }
