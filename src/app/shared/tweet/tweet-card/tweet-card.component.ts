@@ -57,7 +57,11 @@ export class TweetCardComponent implements OnInit {
       next: () => {
         this.tweetService.getTweet(this.tweet.id).subscribe((res) => {
           this.tweet = res;
+          this.display = false;
+          this.isCommenting = false;
         });
+      },
+      error: (err) => {
         this.isCommenting = false;
         this.display = false;
         this.comment = '';

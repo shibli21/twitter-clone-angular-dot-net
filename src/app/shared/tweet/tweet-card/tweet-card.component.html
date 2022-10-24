@@ -114,16 +114,18 @@
     </div>
   </ng-template>
 
-  <div class="border-b mb-4 pb-2">
-    {{ tweet.tweet }}
+  <div class="mb-4 pb-2">
+    <quill-view-html [content]="tweet.tweet"></quill-view-html>
   </div>
 
-  <textarea
-    placeholder="Tweet your reply"
-    pInputTextarea
-    [rows]="3"
-    [(ngModel)]="comment"
-  ></textarea>
+  <form (ngSubmit)="commentOnTweet()">
+    <input
+      name="newComment"
+      [(ngModel)]="comment"
+      placeholder="Tweet your reply"
+      pInputText
+    />
+  </form>
 
   <ng-template pTemplate="footer">
     <p-button

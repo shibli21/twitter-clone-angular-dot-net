@@ -29,10 +29,14 @@ import { UserCardComponent } from './user-card/user-card.component';
     QuillModule.forRoot({
       modules: {
         toolbar: [
-          ['bold', 'italic', 'underline', 'strike'], // toggled buttons
-          ['blockquote'],
-
-          [{ header: 1 }, { header: 2 }], // custom button values
+          [
+            'bold',
+            'italic',
+            'underline',
+            'blockquote',
+            { header: 1 },
+            { header: 2 },
+          ],
         ],
       },
     }),
