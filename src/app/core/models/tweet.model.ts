@@ -20,7 +20,7 @@ export interface Tweet {
   isLiked: boolean;
   isRetweeted: boolean;
   user: User;
-  refTweet: any;
+  refTweet: Tweet | null;
   createdAt: Date;
 }
 

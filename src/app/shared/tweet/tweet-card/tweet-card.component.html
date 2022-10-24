@@ -32,8 +32,17 @@
     <quill-view-html [content]="tweet.tweet"></quill-view-html>
 
     <div *ngIf="tweet.type === 'Retweet'" class="">
-      <app-tweet-card [tweet]="tweet.refTweet" [isRetweet]="true">
-      </app-tweet-card>
+      <div *ngIf="tweet.refTweet">
+        <app-tweet-card [isRetweet]="true" [tweet]="tweet.refTweet">
+        </app-tweet-card>
+      </div>
+      <div *ngIf="!tweet.refTweet" class="">
+        <div
+          class="text-gray-500 text-sm border border-gray-300 px-2 md:px-4 py-2 items-center justify-between flex"
+        >
+          This tweet is no longer available.
+        </div>
+      </div>
     </div>
   </div>
 
