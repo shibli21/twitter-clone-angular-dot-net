@@ -12,7 +12,10 @@
     />
   </div>
   <div class="flex-row">
-    <h1 class="text-base font-bold">
+    <h1
+      class="text-base font-bold hover:text-indigo-700"
+      [routerLink]="['/profile', user.id]"
+    >
       {{ user.firstName }} {{ user.lastName }}
     </h1>
     <p class="text-gray-600 text-sm">
