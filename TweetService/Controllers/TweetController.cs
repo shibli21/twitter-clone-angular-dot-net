@@ -47,13 +47,9 @@ namespace Core.Controllers
                 }
                 tweetResponse.User = user.AsDtoTweetComment();
 
-                CacheNotificationConsumerDto cacheNotificationConsumerDto = new CacheNotificationConsumerDto
-                {
-                    Type = "Create Tweet",
-                    IsNotification = true,
-                    Tweet = tweetResponse,
-                };
-                await _bus.Publish(cacheNotificationConsumerDto);
+                // Publish to RabbitMQ start
+                publishToRabbitMQ("Create Tweet", false, null, tweetResponse);
+                // Publish to RabbitMQ end
                 return Ok(tweetResponse);
 
             }
@@ -92,22 +88,16 @@ namespace Core.Controllers
                 tweetResponse.User = user.AsDtoTweetComment();
                 tweetResponse.RefTweet = refTweet.AsDto();
                 tweetResponse.RefTweet.User = tweetOwner.AsDtoTweetComment();
-
-                CacheNotificationConsumerDto cacheNotificationConsumerDto = new CacheNotificationConsumerDto
+                // Publish to RabbitMQ start
+                NotificationCreateDto notificationCreateDto = new NotificationCreateDto
                 {
-                    Type = "Create Retweet",
-                    IsNotification = true,
-                    Notification = new NotificationCreateDto
-                    {
-                        UserId = refTweet.UserId,
-                        RefUserId = userId,
-                        TweetId = tweet.Id,
-                        Type = "Retweet",
-                    },
-                    Tweet = tweetResponse,
+                    UserId = refTweet.UserId,
+                    RefUserId = userId,
+                    TweetId = tweet.Id,
+                    Type = "Retweet",
                 };
-                await _bus.Publish(cacheNotificationConsumerDto);
-
+                publishToRabbitMQ("Create Retweet", true, notificationCreateDto, tweetResponse);
+                // Publish to RabbitMQ end
                 return Ok(tweetResponse);
             }
             return BadRequest(new { message = "Tweet could not be created" });
@@ -181,6 +171,9 @@ namespace Core.Controllers
             LikedOrRetweetedDto likedOrRetweet = await _iLikeCommentService.IsLikedOrRetweeted(id);
             tweetResponse.IsLiked = likedOrRetweet.IsLiked;
             tweetResponse.IsRetweeted = likedOrRetweet.IsRetweeted;
+            // Publish to RabbitMQ start
+            publishToRabbitMQ("Update", false, null, tweetResponse);
+            // Publish to RabbitMQ end
             return Ok(tweetResponse);
         }
 
@@ -229,6 +222,9 @@ namespace Core.Controllers
                     tweetResponse.RefTweet.User = refUser.AsDtoTweetComment();
                 }
             }
+            // Publish to RabbitMQ start
+            publishToRabbitMQ("Update", false, null, tweetResponse);
+            // Publish to RabbitMQ end
             return Ok(tweetResponse);
         }
 
@@ -254,6 +250,9 @@ namespace Core.Controllers
                 return Unauthorized();
             }
             await _tweetService.DeleteTweet(tweet);
+            // Publish to RabbitMQ start
+            publishToRabbitMQ("Delete", false, null, tweet.AsDto());
+            // Publish to RabbitMQ end
             return Ok(new
             {
                 Message = "Tweet Deleted Successfully",
@@ -283,22 +282,25 @@ namespace Core.Controllers
                 });
             }
             string msg = await _iLikeCommentService.LikeTweet(tweet, userId);
+            // Publish to RabbitMQ start
             if (msg == "Tweet liked")
             {
-                CacheNotificationConsumerDto cacheNotificationConsumerDto = new CacheNotificationConsumerDto
+
+                NotificationCreateDto notificationCreateDto = new NotificationCreateDto
                 {
-                    Type = "Notification",
-                    IsNotification = true,
-                    Notification = new NotificationCreateDto
-                    {
-                        UserId = tweet.UserId,
-                        RefUserId = userId,
-                        TweetId = tweet.Id,
-                        Type = "Like",
-                    }
+                    UserId = tweet.UserId,
+                    RefUserId = userId,
+                    TweetId = tweet.Id,
+                    Type = "Like",
                 };
-                await _bus.Publish(cacheNotificationConsumerDto);
+                publishToRabbitMQ("Like", true, notificationCreateDto, tweet.AsDto());
+
             }
+            else if (msg == "Tweet unliked")
+            {
+                publishToRabbitMQ("Unlike", false, null, tweet.AsDto());
+            }
+            // Publish to RabbitMQ end
 
             return Ok(new { Message = msg });
 
@@ -337,23 +339,19 @@ namespace Core.Controllers
             {
                 return BadRequest(new { Message = "Something went wrong" });
             }
+
             comment.User = user.AsDtoTweetComment();
 
 
             // publish to RabbitMQ start
-            CacheNotificationConsumerDto cacheNotificationConsumerDto = new CacheNotificationConsumerDto
+            NotificationCreateDto notification = new NotificationCreateDto
             {
-                Type = "Notification",
-                IsNotification = true,
-                Notification = new NotificationCreateDto
-                {
-                    UserId = tweet.UserId,
-                    RefUserId = userId,
-                    TweetId = tweet.Id,
-                    Type = "Comment",
-                }
+                UserId = tweet.UserId,
+                RefUserId = userId,
+                TweetId = tweet.Id,
+                Type = "Comment",
             };
-            await _bus.Publish(cacheNotificationConsumerDto);
+            publishToRabbitMQ("Comment", true, notification, tweet.AsDto());
             // publish to RabbitMQ end
 
             return Ok(comment);
@@ -372,10 +370,25 @@ namespace Core.Controllers
             {
                 return Unauthorized();
             }
-            bool isDeleted = await _iLikeCommentService.DeleteComment(commentId);
-            if (isDeleted)
+            Comments? comment = await _iLikeCommentService.GetCommentById(commentId);
+            if (comment == null)
             {
-                return Ok(new { Message = "Comment Deleted Successfully" });
+                return NotFound(new
+                {
+                    Message = "Comment Not Found",
+                });
+            }
+            Tweets? tweet = await _tweetService.GetTweetById(comment.TweetId);
+            if (tweet != null && tweet.DeletedAt == null)
+            {
+                bool isDeleted = await _iLikeCommentService.DeleteComment(comment,tweet);
+                if (isDeleted)
+                {
+                    // publish to RabbitMQ start
+                    publishToRabbitMQ("Delete Comment", false, null, tweet.AsDto());
+                    // publish to RabbitMQ end
+                    return Ok(new { Message = "Comment Deleted Successfully" });
+                }
             }
             return BadRequest(new { Message = "Something went wrong" });
         }
@@ -406,6 +419,19 @@ namespace Core.Controllers
         {
             PaginatedCommentResponseDto comments = await _iLikeCommentService.GetComments(size, page, tweetId);
             return Ok(comments);
+        }
+
+
+        private async void publishToRabbitMQ(string type, bool isNotification, NotificationCreateDto? notification, TweetResponseDto? tweet)
+        {
+            CacheNotificationConsumerDto cacheNotificationConsumerDto = new CacheNotificationConsumerDto
+            {
+                Type = type,
+                IsNotification = isNotification,
+                Notification = notification,
+                Tweet = tweet,
+            };
+            await _bus.Publish(cacheNotificationConsumerDto);
         }
 
 
