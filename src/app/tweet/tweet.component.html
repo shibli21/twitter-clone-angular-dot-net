@@ -3,8 +3,8 @@
 </div>
 
 <div *ngIf="!notFound">
-  <div *ngIf="isLoading" class="py-10 flex justify-center">
-    <app-spinner></app-spinner>
+  <div *ngIf="isLoading">
+    <app-tweet-card-skeleton></app-tweet-card-skeleton>
   </div>
 
   <div *ngIf="tweet && !isLoading">

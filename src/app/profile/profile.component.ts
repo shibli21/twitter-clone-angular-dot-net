@@ -20,7 +20,9 @@ export class ProfileComponent implements OnInit, OnDestroy {
   profileUser: User | null = null;
   isCurrentUser: boolean = false;
   isLoading = false;
+  isBlocking = false;
   isProfileLoading = false;
+  isFollowUnFollowing = false;
   notFound = false;
 
   constructor(
@@ -94,18 +96,32 @@ export class ProfileComponent implements OnInit, OnDestroy {
   }
 
   followUnfollowUser() {
-    this.followService.followUnfollowUser(this.userId).subscribe((res: any) => {
-      this.toastr.success(res.message);
-      if (this.profileUser) {
-        this.profileUser.isFollowed = !this.profileUser.isFollowed;
-      }
+    this.isFollowUnFollowing = true;
+    this.followService.followUnfollowUser(this.userId).subscribe({
+      next: (res: any) => {
+        this.toastr.success(res.message);
+        if (this.profileUser) {
+          this.profileUser.isFollowed = !this.profileUser.isFollowed;
+        }
+        this.isFollowUnFollowing = false;
+      },
+      error: (err) => {
+        this.isFollowUnFollowing = false;
+      },
     });
   }
 
   blockUserByUser() {
-    this.blockService.blockUserByUser(this.userId).subscribe((res: any) => {
-      this.router.navigate(['/']);
-      this.toastr.success('User blocked successfully');
+    this.isBlocking = true;
+    this.blockService.blockUserByUser(this.userId).subscribe({
+      next: (res: any) => {
+        this.router.navigate(['/']);
+        this.toastr.success('User blocked successfully');
+        this.isBlocking = false;
+      },
+      error: (err) => {
+        this.isBlocking = false;
+      },
     });
   }
 

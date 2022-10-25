@@ -3,7 +3,7 @@
     Blocked users list
   </h3>
 
-  <div *ngIf="blockedUsers.users.length === 0">
+  <div *ngIf="blockedUsers.users.length === 0 && !isLoading">
     You have blocked {{ blockedUsers.users.length }} user.
   </div>
   <div
@@ -49,8 +49,16 @@
       </div>
     </ul>
   </div>
-  <div *ngIf="isLoading" class="py-10 flex justify-center">
-    <app-spinner></app-spinner>
+  <div *ngIf="isLoading" class="space-y-2">
+    <div>
+      <app-user-card-skeleton></app-user-card-skeleton>
+    </div>
+    <div>
+      <app-user-card-skeleton></app-user-card-skeleton>
+    </div>
+    <div>
+      <app-user-card-skeleton></app-user-card-skeleton>
+    </div>
   </div>
 
   <!-- <p

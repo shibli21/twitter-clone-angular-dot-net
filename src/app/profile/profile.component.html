@@ -3,9 +3,38 @@
 </div>
 
 <div *ngIf="!notFound">
-  <div *ngIf="isProfileLoading" class="py-10 flex justify-center">
-    <app-spinner></app-spinner>
+  <div *ngIf="isProfileLoading" class="p-4 border rounded-md mb-4">
+    <div class="flex items-center space-x-4">
+      <p-skeleton shape="circle" size="8rem" class="mr-2"></p-skeleton>
+      <div class="flex-1 justify-center">
+        <p-skeleton width="100%" styleClass="mb-2"></p-skeleton>
+        <p-skeleton width="60%" styleClass="mb-2"></p-skeleton>
+        <p-skeleton width="90%" styleClass="mb-2"></p-skeleton>
+        <p-skeleton width="20%"></p-skeleton>
+      </div>
+    </div>
+    <div class="space-y-2 mt-4">
+      <p-skeleton width="40%" height="14px" styleClass="mb-1"></p-skeleton>
+      <p-skeleton width="20%" height="12px" styleClass="mb-1"></p-skeleton>
+      <p-skeleton
+        width="100%"
+        height="12px"
+        styleClass="mb-1 mt-4"
+      ></p-skeleton>
+      <p-skeleton width="70%" height="12px" styleClass="mb-1"></p-skeleton>
+      <p-skeleton width="20%" height="12px" styleClass="mb-1"></p-skeleton>
+      <div class="flex gap-4 pt-4">
+        <div class="w-[20%]">
+          <p-skeleton width="100%" height="20px"></p-skeleton>
+        </div>
+        <div class="w-[20%]">
+          <p-skeleton width="100%" height="20px"></p-skeleton>
+        </div>
+      </div>
+    </div>
   </div>
+
+  <div *ngIf="isProfileLoading" class=""></div>
 
   <div class="" *ngIf="profileUser && !isProfileLoading">
     <div
@@ -43,10 +72,15 @@
             ></button>
 
             <div *ngIf="!isCurrentUser" class="flex gap-2">
-              <p-button (onClick)="blockUserByUser()" label="Block"></p-button>
+              <p-button
+                [loading]="isBlocking"
+                (onClick)="blockUserByUser()"
+                label="Block"
+              ></p-button>
               <p-button
                 [label]="!profileUser.isFollowed ? 'Follow' : 'Following'"
                 (onClick)="followUnfollowUser()"
+                [loading]="isFollowUnFollowing"
               ></p-button>
             </div>
           </div>
@@ -102,11 +136,19 @@
       </div>
     </div>
 
-    <div
-      *ngIf="isLoading && !isProfileLoading"
-      class="py-10 flex justify-center"
-    >
-      <app-spinner></app-spinner>
+    <div *ngIf="isLoading && !isProfileLoading" class="space-y-2">
+      <div class="mt-2">
+        <app-tweet-card-skeleton></app-tweet-card-skeleton>
+      </div>
+      <div>
+        <app-tweet-card-skeleton></app-tweet-card-skeleton>
+      </div>
+      <div>
+        <app-tweet-card-skeleton></app-tweet-card-skeleton>
+      </div>
+      <div>
+        <app-tweet-card-skeleton></app-tweet-card-skeleton>
+      </div>
     </div>
 
     <p

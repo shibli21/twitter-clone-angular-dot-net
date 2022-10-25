@@ -12,8 +12,19 @@
     </div>
   </div>
 
-  <div *ngIf="isLoading" class="py-10 flex justify-center">
-    <app-spinner></app-spinner>
+  <div *ngIf="isLoading" class="space-y-2">
+    <div class="mt-2">
+      <app-tweet-card-skeleton></app-tweet-card-skeleton>
+    </div>
+    <div>
+      <app-tweet-card-skeleton></app-tweet-card-skeleton>
+    </div>
+    <div>
+      <app-tweet-card-skeleton></app-tweet-card-skeleton>
+    </div>
+    <div>
+      <app-tweet-card-skeleton></app-tweet-card-skeleton>
+    </div>
   </div>
 
   <p

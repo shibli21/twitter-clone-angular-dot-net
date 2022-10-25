@@ -55,6 +55,7 @@ export class TweetComponent implements OnInit {
         size: 0,
       });
 
+      this.isLoading = true;
       this.tweetService.getTweet(this.tweetId).subscribe({
         next: (res) => {
           this.tweet = res;
@@ -70,7 +71,6 @@ export class TweetComponent implements OnInit {
       this.tweetService.tweet.subscribe((res) => {
         this.tweet = res;
         this.editTweet = res?.tweet ?? '';
-        this.isLoading = false;
       });
 
       this.commentService.isLoadingComment.subscribe((isLoading) => {
