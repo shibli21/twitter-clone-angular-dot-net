@@ -1,7 +1,9 @@
 
+using CacheService.Consumers;
 using Core.Extensions;
 using Infrastructure.Config;
 using JWTAuthenticationManager;
+using MassTransit;
 using MongoDB.Driver;
 using Serilog;
 using StackExchange.Redis;
@@ -37,10 +39,37 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerDocumentation();
 
 
+builder.Services.AddCors(p => p.AddPolicy("TwitterCloneCorsPolicy", builder =>
+   {
+       builder.AllowAnyMethod()
+              .AllowAnyHeader()
+              .AllowCredentials()
+              .WithOrigins("http://localhost:4200");
+   }));
+
+
+builder.Services.AddMassTransit(x =>
+{
+    x.AddConsumer<CacheConsumer>();
+    x.UsingRabbitMq((context, cfg) =>
+    {
+        cfg.Host(builder.Configuration.GetValue<string>("RabbitMQSettings:Host"), h =>
+        {
+            h.Username(builder.Configuration.GetValue<string>("RabbitMQSettings:UserName"));
+            h.Password(builder.Configuration.GetValue<string>("RabbitMQSettings:Password"));
+        });
+        cfg.ReceiveEndpoint("cache-queue", e =>
+        {
+            e.ConfigureConsumer<CacheConsumer>(context);
+        });
+    });
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 
+app.UseCors("TwitterCloneCorsPolicy");
 app.UseSwaggerDocumentation();
 
 app.UseAuthentication();

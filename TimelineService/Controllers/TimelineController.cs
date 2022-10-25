@@ -1,8 +1,11 @@
+using System.Security.Claims;
 using Core.Dtos;
 using Core.Interfaces;
 using Core.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
+using StackExchange.Redis;
 
 namespace TimelineService.Controllers
 {
@@ -14,12 +17,18 @@ namespace TimelineService.Controllers
         private readonly IUsersService _usersService;
         private readonly ILikeCommentService _iLikeCommentService;
         private readonly ITimeLineService _iTimeLineService;
-        public TimelineController(ITweetService tweetService, ILikeCommentService iLikeCommentService, IUsersService usersService, ITimeLineService iTimeLineService)
+        private readonly IConnectionMultiplexer _connectionMultiplexer;
+        private readonly IDatabase _database;
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        public TimelineController(IHttpContextAccessor httpContextAccessor, ITweetService tweetService, ILikeCommentService iLikeCommentService, IUsersService usersService, ITimeLineService iTimeLineService, IConnectionMultiplexer connectionMultiplexer)
         {
             _tweetService = tweetService;
             _iLikeCommentService = iLikeCommentService;
             _usersService = usersService;
             _iTimeLineService = iTimeLineService;
+            _connectionMultiplexer = connectionMultiplexer;
+            _database = _connectionMultiplexer.GetDatabase();
+            _httpContextAccessor = httpContextAccessor;
         }
         [HttpGet("user-timeline/{userId}"), Authorize]
         public async Task<ActionResult<PaginatedTweetResponseDto>> GetUserTweets(string userId, [FromQuery] int size = 20, [FromQuery] int page = 0)
@@ -29,9 +38,28 @@ namespace TimelineService.Controllers
             {
                 return NotFound(new { Message = "User Not Found" });
             }
+            PaginatedTweetResponseDto? tweets;
+            if (page == 0)
+            {
+                string? resJson = await _database.StringGetAsync("noobmasters_timeline_" + userId);
+                if (resJson != null)
+                {
+                    tweets = JsonConvert.DeserializeObject<PaginatedTweetResponseDto>(resJson);
+                    if (tweets != null)
+                    {
+                        if (tweets.Tweets != null)
+                        {
+                            tweets.Tweets = tweets.Tweets.Take(size).ToList();
+                        }
+                        return Ok(tweets);
+                    }
+                }
+            }
+
+
             TweetCommentUserResponseDto user = userModel.AsDtoTweetComment();
 
-            PaginatedTweetResponseDto tweets = await _iTimeLineService.GetUserTimeLine(userId, size, page);
+            tweets = await _iTimeLineService.GetUserTimeLine(userId, size, page);
             if (tweets.Tweets != null)
             {
                 foreach (TweetResponseDto tweet in tweets.Tweets)
@@ -52,9 +80,13 @@ namespace TimelineService.Controllers
                                 tweet.RefTweet.User = refUser.AsDtoTweetComment();
                             }
                         }
-
                     }
                 }
+            }
+            if (page == 0)
+            {
+                string resJson = JsonConvert.SerializeObject(tweets);
+                await _database.StringSetAsync("noobmasters_timeline_" + userId, resJson, TimeSpan.FromMinutes(60));
             }
             return Ok(tweets);
         }
@@ -62,7 +94,29 @@ namespace TimelineService.Controllers
         [HttpGet("news-feed"), Authorize]
         public async Task<ActionResult<PaginatedTweetResponseDto>> GetNewsFeed([FromQuery] int size = 20, [FromQuery] int page = 0)
         {
-            PaginatedTweetResponseDto tweets = await _iTimeLineService.GetNewsFeed(size, page);
+            var userId = _httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == null)
+            {
+                return Unauthorized();
+            }
+            PaginatedTweetResponseDto? tweets;
+            if (page == 0)
+            {
+                string? resJson = await _database.StringGetAsync("noobmasters_newsfeed_" + userId);
+                if (resJson != null)
+                {
+                    tweets = JsonConvert.DeserializeObject<PaginatedTweetResponseDto>(resJson);
+                    if (tweets != null)
+                    {
+                        if (tweets.Tweets != null)
+                        {
+                            tweets.Tweets = tweets.Tweets.Take(size).ToList();
+                        }
+                        return Ok(tweets);
+                    }
+                }
+            }
+            tweets = await _iTimeLineService.GetNewsFeed(userId, size, page);
             if (tweets.Tweets != null)
             {
                 foreach (TweetResponseDto tweet in tweets.Tweets)
@@ -85,6 +139,11 @@ namespace TimelineService.Controllers
                         }
                     }
                 }
+            }
+            if (page == 0)
+            {
+                string resJson = JsonConvert.SerializeObject(tweets);
+                await _database.StringSetAsync("noobmasters_newsfeed_" + userId, resJson, TimeSpan.FromMinutes(60));
             }
             return Ok(tweets);
         }
