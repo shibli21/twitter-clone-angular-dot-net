@@ -22,7 +22,7 @@ export class NotificationService {
 
   constructor(private http: HttpClient) {}
 
-  getNotifications(page = 0, size = 10) {
+  getNotifications(page = 0, size = 20) {
     this.isLoadingNotifications.next(true);
     return this.http
       .get<PaginatedNotifications>(
@@ -47,7 +47,7 @@ export class NotificationService {
   loadMoreNotifications() {
     const notifications = this.notifications.getValue();
     if (notifications && notifications.page < notifications.totalPages) {
-      this.getNotifications(notifications.page + 1, 10);
+      this.getNotifications(notifications.page + 1, 20);
     }
   }
 

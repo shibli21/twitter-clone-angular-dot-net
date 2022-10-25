@@ -16,7 +16,7 @@
         <li
           *ngFor="let notification of paginatedNotifications.notifications"
           class="cursor-pointer rounded-md hover:bg-indigo-50 p-3 sm:p-4 border"
-          [ngClass]="!notification.isRead ? 'bg-gray-200' : 'bg-white'"
+          [ngClass]="!notification.isRead ? 'bg-gray-100' : 'bg-white'"
           (click)="markAsRead(notification)"
         >
           <div class="flex items-center space-x-4">

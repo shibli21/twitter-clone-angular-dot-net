@@ -24,22 +24,29 @@ export class NotificationsComponent implements OnInit {
     this.route.data.subscribe((data) => {
       const prevNot = this.notificationService.notifications.getValue();
 
-      if (prevNot) {
-        this.notificationService.isLoadingNotifications.subscribe(
-          (isLoading) => {
-            this.isLoading = isLoading;
-          }
-        );
-        this.notificationService.notifications.subscribe(
-          (paginatedNotifications) => {
-            this.paginatedNotifications = paginatedNotifications;
-          }
-        );
-      } else {
-        this.notificationService.getNotifications(
-          this.paginatedNotifications?.page
-        );
-      }
+      this.notificationService.notifications.next({
+        notifications: [],
+        lastPage: 0,
+        page: 0,
+        size: 0,
+        totalElements: 0,
+        totalPages: 0,
+        totalUnread: prevNot.totalUnread,
+      });
+
+      this.notificationService.isLoadingNotifications.subscribe((isLoading) => {
+        this.isLoading = isLoading;
+      });
+
+      this.notificationService.notifications.subscribe(
+        (paginatedNotifications) => {
+          this.paginatedNotifications = paginatedNotifications;
+        }
+      );
+
+      this.notificationService.getNotifications(
+        this.paginatedNotifications?.page
+      );
     });
   }
 
@@ -48,8 +55,12 @@ export class NotificationsComponent implements OnInit {
   }
 
   markAsRead(notification: Notification) {
-    this.notificationService.markAsRead(notification.id).subscribe(() => {
-      this.router.navigate(['/tweet', notification.tweetId]);
+    this.notificationService.markAsRead(notification.id).subscribe((res) => {
+      if (notification.type === 'Follow') {
+        this.router.navigate(['/profile', notification.refUserId]);
+      } else {
+        this.router.navigate(['/tweet', notification.tweetId]);
+      }
     });
   }
 
