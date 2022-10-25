@@ -25,7 +25,7 @@
             {{ comment.createdAt | amTimeAgo }}
           </p>
         </div>
-        <div>
+        <div *ngIf="isCommentOwner">
           <button
             (click)="deleteComment()"
             class="p-button-sm p-button-text p-button-danger"
