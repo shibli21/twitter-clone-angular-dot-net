@@ -1,6 +1,6 @@
 import { LoginGuard } from './auth/login.guard';
 import { NgModule } from '@angular/core';
-import { RouterModule, Routes } from '@angular/router';
+import { RouterModule, Routes, PreloadAllModules } from '@angular/router';
 import { AuthGuard } from './auth/auth.guard';
 import { AdminLayoutComponent } from './layout/admin-layout/admin-layout.component';
 import { UserLayoutComponent } from './layout/user-layout/user-layout.component';
@@ -78,6 +78,7 @@ const routes: Routes = [
 @NgModule({
   imports: [
     RouterModule.forRoot(routes, {
+      preloadingStrategy: PreloadAllModules,
       scrollPositionRestoration: 'enabled',
     }),
   ],

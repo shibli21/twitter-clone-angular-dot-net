@@ -1,20 +1,16 @@
-import { LoginResponse } from './../core/models/user.model';
+import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { NotificationService } from './../core/services/notification.service';
 import {
   Notification,
   PaginatedNotifications,
 } from './../core/models/notification.model';
-import { Component, OnInit } from '@angular/core';
-import { HubConnection, HubConnectionBuilder } from '@microsoft/signalr';
+import { NotificationService } from './../core/services/notification.service';
 @Component({
   selector: 'app-notifications',
   templateUrl: './notifications.component.html',
   styleUrls: ['./notifications.component.scss'],
 })
 export class NotificationsComponent implements OnInit {
-  private _hubConnection!: HubConnection;
-
   paginatedNotifications!: PaginatedNotifications | null;
   isLoading = false;
 
@@ -28,29 +24,22 @@ export class NotificationsComponent implements OnInit {
     this.route.data.subscribe((data) => {
       const prevNot = this.notificationService.notifications.getValue();
 
-      this.notificationService.notifications.next({
-        notifications: [],
-        lastPage: 0,
-        page: 0,
-        size: 0,
-        totalElements: 0,
-        totalPages: 0,
-        totalUnread: prevNot.totalUnread,
-      });
-
-      this.notificationService.isLoadingNotifications.subscribe((isLoading) => {
-        this.isLoading = isLoading;
-      });
-
-      this.notificationService.notifications.subscribe(
-        (paginatedNotifications) => {
-          this.paginatedNotifications = paginatedNotifications;
-        }
-      );
-
-      this.notificationService.getNotifications(
-        this.paginatedNotifications?.page
-      );
+      if (prevNot) {
+        this.notificationService.isLoadingNotifications.subscribe(
+          (isLoading) => {
+            this.isLoading = isLoading;
+          }
+        );
+        this.notificationService.notifications.subscribe(
+          (paginatedNotifications) => {
+            this.paginatedNotifications = paginatedNotifications;
+          }
+        );
+      } else {
+        this.notificationService.getNotifications(
+          this.paginatedNotifications?.page
+        );
+      }
     });
   }
 
