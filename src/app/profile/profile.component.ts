@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { PaginatedTweets } from '../core/models/tweet.model';
@@ -14,10 +14,10 @@ import { UserService } from './user.service';
   templateUrl: './profile.component.html',
   styleUrls: ['./profile.component.scss'],
 })
-export class ProfileComponent implements OnInit {
-  usersTweets!: PaginatedTweets | null;
+export class ProfileComponent implements OnInit, OnDestroy {
+  usersTweets: PaginatedTweets | null = null;
   userId!: string;
-  profileUser!: User;
+  profileUser: User | null = null;
   isCurrentUser: boolean = false;
   isLoading = false;
   isProfileLoading = false;
@@ -33,11 +33,45 @@ export class ProfileComponent implements OnInit {
     private router: Router,
     private timelineService: TimelineService
   ) {}
+  ngOnDestroy(): void {
+    this.profileUser = null;
+  }
 
   ngOnInit(): void {
     this.route.params.subscribe((params) => {
       this.notFound = false;
       this.userId = params['userId'];
+
+      this.profileUser = null;
+
+      this.isProfileLoading = true;
+
+      if (this.userId === this.authService.userId()) {
+        this.authService.currentUser().subscribe({
+          next: (res) => {
+            this.profileUser = res;
+            this.isCurrentUser = true;
+            this.isProfileLoading = false;
+          },
+          error: (err) => {
+            this.isProfileLoading = false;
+            this.notFound = true;
+          },
+        });
+      } else {
+        this.userService.getUserById(this.userId).subscribe({
+          next: (user) => {
+            this.profileUser = user;
+            this.isCurrentUser = false;
+            this.isProfileLoading = false;
+          },
+          error: (err) => {
+            this.isCurrentUser = false;
+            this.isProfileLoading = false;
+            this.notFound = true;
+          },
+        });
+      }
 
       this.timelineService.userTimeline.next({
         tweets: [],
@@ -56,32 +90,15 @@ export class ProfileComponent implements OnInit {
         this.usersTweets = userTweets;
       });
       this.timelineService.getUserTimeline(this.userId, this.usersTweets?.page);
-
-      if (this.userId === this.authService.userId()) {
-        this.profileUser = this.authService.currentUserValue()!;
-        this.isCurrentUser = true;
-      } else {
-        this.isProfileLoading = true;
-        this.userService.getUserById(this.userId).subscribe({
-          next: (user) => {
-            this.profileUser = user;
-            this.isCurrentUser = false;
-            this.isProfileLoading = false;
-          },
-          error: (err) => {
-            this.isCurrentUser = false;
-            this.isProfileLoading = false;
-            this.notFound = true;
-          },
-        });
-      }
     });
   }
 
   followUnfollowUser() {
     this.followService.followUnfollowUser(this.userId).subscribe((res: any) => {
       this.toastr.success(res.message);
-      this.profileUser.isFollowed = !this.profileUser.isFollowed;
+      if (this.profileUser) {
+        this.profileUser.isFollowed = !this.profileUser.isFollowed;
+      }
     });
   }
 
