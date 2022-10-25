@@ -43,6 +43,11 @@ namespace Infrastructure.Services
 
         }
 
+        public async Task<Comments?> GetCommentById(string commentId)
+        {
+            return await _commentCollection.Find(x => x.Id == commentId).FirstOrDefaultAsync();
+        }
+
         public async Task<CommentResponseDto?> UpdateComment(string commentId, string comment)
         {
             CommentResponseDto? commentResponseDto = null;
@@ -63,27 +68,21 @@ namespace Infrastructure.Services
             }
             return commentResponseDto;
         }
-        public async Task<bool> DeleteComment(string commentId)
+        public async Task<bool> DeleteComment(Comments comment, Tweets tweet)
         {
             if (_httpContextAccessor.HttpContext != null)
             {
                 string? userId = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
                 if (userId != null)
                 {
-                    Comments commentRes = await _commentCollection.Find(x => x.Id == commentId && x.UserId == userId).FirstOrDefaultAsync();
-                    if (commentRes != null)
-                    {
-                        Tweets? tweet = await _tweetCollection.Find(x => x.Id == commentRes.TweetId).FirstOrDefaultAsync();
-                        if (tweet != null)
-                        {
-                            tweet.CommentCount -= 1;
-                            await _tweetCollection.ReplaceOneAsync(x => x.Id == commentRes.TweetId, tweet);
 
-                            await _commentCollection.DeleteOneAsync(x => x.Id == commentId);
-                            return true;
-                        }
-                    }
+                    tweet.CommentCount -= 1;
+                    await _tweetCollection.ReplaceOneAsync(x => x.Id == comment.TweetId, tweet);
+
+                    await _commentCollection.DeleteOneAsync(x => x.Id == comment.Id);
+                    return true;
                 }
+
             }
             return false;
         }

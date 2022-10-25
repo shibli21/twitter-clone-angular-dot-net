@@ -35,7 +35,7 @@ namespace Infrastructure.Services
             {
                 return msg;
             }
-            else if (follow == null)
+            if (follow == null)
             {
                 follow = new Follows
                 {
@@ -43,30 +43,14 @@ namespace Infrastructure.Services
                     FollowingId = followingId
                 };
                 await _followCollection.InsertOneAsync(follow);
-                msg = "User followed successfully";
-            }
-            else
-            {
-                await _followCollection.DeleteOneAsync(f => f.UserId == userId && f.FollowingId == followingId);
-                msg = "User unfollowed successfully";
-            }
-            if (follow == null)
-            {
-                follow = new Follows
-                {
-                    UserId = userId,
-                    FollowingId = followingId,
-
-                };
-                await _followCollection.InsertOneAsync(follow);
                 msg = "Followed";
-
             }
             else
             {
                 await _followCollection.DeleteOneAsync(f => f.UserId == userId && f.FollowingId == followingId);
                 msg = "Unfollowed";
             }
+            
             return msg;
 
 

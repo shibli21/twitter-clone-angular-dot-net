@@ -34,9 +34,10 @@ public class FollowController : ControllerBase
         var msg = await _followerService.FollowByUserId(userId, followingId);
         if (msg == "Followed")
         {
+            // Publish to RabbitMQ Start
             CacheNotificationConsumerDto cacheNotificationConsumerDto = new CacheNotificationConsumerDto
             {
-                Type = "Notification",
+                Type = "Follow",
                 IsNotification = true,
                 Notification = new NotificationCreateDto
                 {
@@ -47,12 +48,24 @@ public class FollowController : ControllerBase
             };
 
             await _bus.Publish(cacheNotificationConsumerDto);
-
+            // Publish to RabbitMQ End
 
             return Ok(new { message = "Followed successfully" });
         }
         else if (msg == "Unfollowed")
         {
+            // Publish to RabbitMQ Start
+            CacheNotificationConsumerDto cacheNotificationConsumerDto = new CacheNotificationConsumerDto
+            {
+                Type = "Unfollow",
+                IsNotification = false,
+                UserId = followingId,
+                RefUserId = userId,
+            };
+            await _bus.Publish(cacheNotificationConsumerDto);
+            // Publish to RabbitMQ End
+
+
             return Ok(new { message = "Unfollowed successfully" });
         }
         else
@@ -76,4 +89,5 @@ public class FollowController : ControllerBase
         PaginatedUserResponseDto following = await _followerService.GetFollowing(userId, size, page);
         return Ok(following);
     }
+
 }
