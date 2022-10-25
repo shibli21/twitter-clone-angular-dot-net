@@ -1,177 +1,13 @@
-<div *ngIf="isLoading" class="py-10 flex justify-center">
-  <app-spinner></app-spinner>
+<div *ngIf="notFound" class="p-4 text-center">
+  <p class="font-bold text-red-500">TWEET NOT FOUND</p>
 </div>
 
-<div *ngIf="tweet && !isLoading">
-  <div
-    class="hover:bg-gray-50 cursor-pointer border w-full transition rounded-md"
-  >
-    <div
-      class="border-b border-gray-300 px-2 md:px-4 py-2 items-center justify-between flex"
-    >
-      <app-name-and-time-header
-        [date]="tweet.createdAt"
-        [user]="tweet.user"
-      ></app-name-and-time-header>
-      <div *ngIf="currentUser.id === tweet.user.id">
-        <div
-          *ngIf="tweet.type === 'Tweet' || tweet.refTweet"
-          class="flex items-center text-gray-600"
-        >
-          <button
-            pButton
-            type="button "
-            icon="pi pi-pencil"
-            class="p-button-sm p-button-text"
-            (click)="display = true"
-          ></button>
-          <button
-            pButton
-            type="button"
-            icon="pi pi-trash"
-            class="p-button-danger p-button-sm p-button-text"
-            (click)="deleteTweet()"
-          ></button>
-        </div>
-      </div>
-    </div>
-    <div class="p-4">
-      <quill-view-html [content]="tweet.tweet" theme="bubble"></quill-view-html>
-
-      <div *ngIf="tweet.type === 'Retweet'">
-        <div *ngIf="tweet.refTweet">
-          <app-tweet-card [isRetweet]="true" [tweet]="tweet.refTweet">
-          </app-tweet-card>
-        </div>
-        <div *ngIf="!tweet.refTweet" class="">
-          <div
-            class="text-gray-500 text-sm border border-gray-300 px-2 md:px-4 py-2 items-center justify-between flex"
-          >
-            This tweet is no longer available.
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div
-      class="flex py-2 md:py-3 px-2 md:px-6 border-t border-gray-300 text-gray-600"
-      *ngIf="tweet.type === 'Tweet' || tweet.refTweet"
-    >
-      <button
-        pButton
-        type="button"
-        [icon]="tweet.isLiked ? 'pi pi-heart-fill' : 'pi pi-heart'"
-        [label]="tweet.likeCount.toString()"
-        class="p-button-danger p-button-text"
-        (click)="likeUnlike()"
-      ></button>
-      <button
-        [label]="tweet.commentCount.toString()"
-        pButton
-        type="button"
-        icon="pi pi-comment"
-        class="p-button-success p-button-text"
-      ></button>
-      <button
-        pButton
-        [label]="tweet.retweetCount.toString()"
-        type="button"
-        icon="pi pi-share-alt"
-        class="p-button-help p-button-text"
-        (click)="showRetweetDialog()"
-        [loading]="isRetweeting"
-      ></button>
-    </div>
+<div *ngIf="!notFound">
+  <div *ngIf="isLoading" class="py-10 flex justify-center">
+    <app-spinner></app-spinner>
   </div>
 
-  <app-new-comment [tweetId]="tweet.id"></app-new-comment>
-
-  <div *ngIf="tweetComments">
-    <div
-      class="search-results"
-      infinite-scroll
-      (scrolled)="loadMore()"
-      [immediateCheck]="true"
-    >
-      <div *ngFor="let comment of tweetComments.comments">
-        <app-tweet-comment [comment]="comment"></app-tweet-comment>
-      </div>
-    </div>
-  </div>
-
-  <p-dialog
-    [(visible)]="display"
-    [modal]="true"
-    [breakpoints]="{ '960px': '600px' }"
-    [style]="{ width: '600px' }"
-    [baseZIndex]="10000"
-    [draggable]="false"
-    [resizable]="false"
-    [dismissableMask]="true"
-  >
-    <ng-template pTemplate="header">
-      <app-name-and-time-header
-        [date]="tweet.createdAt"
-        [user]="tweet.user"
-      ></app-name-and-time-header>
-    </ng-template>
-
-    <quill-editor
-      class="w-full"
-      theme="snow"
-      placeholder="Retweet your reply..."
-      customToolbarPosition="bottom"
-      [(ngModel)]="editTweet"
-      name="retweetText"
-      [styles]="{
-        height: 'auto',
-        maxWidth: '600px',
-        flexDirection: 'column-reverse !important'
-      }"
-    >
-    </quill-editor>
-
-    <ng-template pTemplate="footer">
-      <p-button
-        icon="pi pi-save"
-        label="Save"
-        class="p-button-text -mr-2"
-        [loading]="isEditing"
-        (click)="onEditTweet()"
-      ></p-button>
-    </ng-template>
-  </p-dialog>
-  <!-- retweet dialog -->
-
-  <p-dialog
-    [(visible)]="retweetDisplay"
-    [modal]="true"
-    [breakpoints]="{ '960px': '600px' }"
-    [style]="{ width: '600px' }"
-    [baseZIndex]="10000"
-    [draggable]="false"
-    [resizable]="false"
-    [dismissableMask]="true"
-  >
-    <ng-template pTemplate="header">
-      <app-name-and-time-header [user]="currentUser"></app-name-and-time-header>
-    </ng-template>
-
-    <quill-editor
-      class="w-full"
-      theme="snow"
-      placeholder="Retweet your reply..."
-      customToolbarPosition="bottom"
-      [(ngModel)]="retweetText"
-      name="retweetText"
-      [styles]="{
-        height: 'auto',
-        maxWidth: '600px',
-        flexDirection: 'column-reverse !important'
-      }"
-    >
-    </quill-editor>
-
+  <div *ngIf="tweet && !isLoading">
     <div
       class="hover:bg-gray-50 cursor-pointer border w-full transition rounded-md"
     >
@@ -182,26 +18,200 @@
           [date]="tweet.createdAt"
           [user]="tweet.user"
         ></app-name-and-time-header>
+        <div *ngIf="currentUser.id === tweet.user.id">
+          <div
+            *ngIf="tweet.type === 'Tweet' || tweet.refTweet"
+            class="flex items-center text-gray-600"
+          >
+            <button
+              pButton
+              type="button "
+              icon="pi pi-pencil"
+              class="p-button-sm p-button-text"
+              (click)="display = true"
+            ></button>
+            <button
+              pButton
+              type="button"
+              icon="pi pi-trash"
+              class="p-button-danger p-button-sm p-button-text"
+              (click)="deleteTweet()"
+            ></button>
+          </div>
+        </div>
+      </div>
+      <div class="p-4">
+        <quill-view-html
+          [content]="tweet.tweet"
+          theme="bubble"
+        ></quill-view-html>
+
+        <div *ngIf="tweet.type === 'Retweet'">
+          <div *ngIf="tweet.refTweet">
+            <app-tweet-card [isRetweet]="true" [tweet]="tweet.refTweet">
+            </app-tweet-card>
+          </div>
+          <div *ngIf="!tweet.refTweet" class="">
+            <div
+              class="text-gray-500 text-sm border border-gray-300 px-2 md:px-4 py-2 items-center justify-between flex"
+            >
+              This tweet is no longer available.
+            </div>
+          </div>
+        </div>
       </div>
 
-      <div class="p-4" [routerLink]="['/tweet', tweet.id]">
-        <quill-view-html [content]="tweet.tweet"></quill-view-html>
+      <div
+        class="flex py-2 md:py-3 px-2 md:px-6 border-t border-gray-300 text-gray-600"
+      >
+        <button
+          pButton
+          type="button"
+          [icon]="tweet.isLiked ? 'pi pi-heart-fill' : 'pi pi-heart'"
+          [label]="tweet.likeCount.toString()"
+          class="p-button-danger p-button-text"
+          (click)="likeUnlike()"
+        ></button>
+        <button
+          [label]="tweet.commentCount.toString()"
+          pButton
+          type="button"
+          icon="pi pi-comment"
+          class="p-button-success p-button-text"
+        ></button>
+        <button
+          pButton
+          [label]="tweet.retweetCount.toString()"
+          type="button"
+          icon="pi pi-share-alt"
+          class="p-button-help p-button-text"
+          (click)="showRetweetDialog()"
+          [loading]="isRetweeting"
+        ></button>
       </div>
     </div>
-    <!-- <p class="px-4">
-    {{ tweet.tweet }}
-  </p> -->
 
-    <ng-template pTemplate="footer">
-      <p-button
-        icon="pi pi-share-alt"
-        (click)="retweet()"
-        label="Retweet"
-        [loading]="isRetweeting"
-        class="p-button-text -mr-2"
-      ></p-button>
-    </ng-template>
-  </p-dialog>
+    <app-new-comment [tweetId]="tweet.id"></app-new-comment>
 
-  <div *ngIf="!tweet">Tweet not found</div>
+    <div *ngIf="tweetComments">
+      <div
+        class="search-results"
+        infinite-scroll
+        (scrolled)="loadMore()"
+        [immediateCheck]="true"
+      >
+        <div *ngFor="let comment of tweetComments.comments">
+          <app-tweet-comment [comment]="comment"></app-tweet-comment>
+        </div>
+      </div>
+    </div>
+
+    <p-dialog
+      [(visible)]="display"
+      [modal]="true"
+      [breakpoints]="{ '960px': '600px' }"
+      [style]="{ width: '600px' }"
+      [baseZIndex]="10000"
+      [draggable]="false"
+      [resizable]="false"
+      [dismissableMask]="true"
+    >
+      <ng-template pTemplate="header">
+        <app-name-and-time-header
+          [date]="tweet.createdAt"
+          [user]="tweet.user"
+        ></app-name-and-time-header>
+      </ng-template>
+
+      <quill-editor
+        class="w-full"
+        theme="snow"
+        placeholder="Retweet your reply..."
+        customToolbarPosition="bottom"
+        [(ngModel)]="editTweet"
+        name="retweetText"
+        [styles]="{
+          height: 'auto',
+          maxWidth: '600px',
+          flexDirection: 'column-reverse !important'
+        }"
+      >
+      </quill-editor>
+
+      <ng-template pTemplate="footer">
+        <p-button
+          icon="pi pi-save"
+          label="Save"
+          class="p-button-text -mr-2"
+          [loading]="isEditing"
+          (click)="onEditTweet()"
+        ></p-button>
+      </ng-template>
+    </p-dialog>
+    <!-- retweet dialog -->
+
+    <p-dialog
+      [(visible)]="retweetDisplay"
+      [modal]="true"
+      [breakpoints]="{ '960px': '600px' }"
+      [style]="{ width: '600px' }"
+      [baseZIndex]="10000"
+      [draggable]="false"
+      [resizable]="false"
+      [dismissableMask]="true"
+    >
+      <ng-template pTemplate="header">
+        <app-name-and-time-header
+          [user]="currentUser"
+        ></app-name-and-time-header>
+      </ng-template>
+
+      <quill-editor
+        class="w-full"
+        theme="snow"
+        placeholder="Retweet your reply..."
+        customToolbarPosition="bottom"
+        [(ngModel)]="retweetText"
+        name="retweetText"
+        [styles]="{
+          height: 'auto',
+          maxWidth: '600px',
+          flexDirection: 'column-reverse !important'
+        }"
+      >
+      </quill-editor>
+
+      <div
+        class="hover:bg-gray-50 cursor-pointer border w-full transition rounded-md"
+      >
+        <div
+          class="border-b border-gray-300 px-2 md:px-4 py-2 items-center justify-between flex"
+        >
+          <app-name-and-time-header
+            [date]="tweet.createdAt"
+            [user]="tweet.user"
+          ></app-name-and-time-header>
+        </div>
+
+        <div class="p-4" [routerLink]="['/tweet', tweet.id]">
+          <quill-view-html [content]="tweet.tweet"></quill-view-html>
+        </div>
+      </div>
+      <!-- <p class="px-4">
+      {{ tweet.tweet }}
+    </p> -->
+
+      <ng-template pTemplate="footer">
+        <p-button
+          icon="pi pi-share-alt"
+          (click)="retweet()"
+          label="Retweet"
+          [loading]="isRetweeting"
+          class="p-button-text -mr-2"
+        ></p-button>
+      </ng-template>
+    </p-dialog>
+
+    <div *ngIf="!tweet">Tweet not found</div>
+  </div>
 </div>

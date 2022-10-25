@@ -21,6 +21,7 @@ export class ProfileComponent implements OnInit {
   isCurrentUser: boolean = false;
   isLoading = false;
   isProfileLoading = false;
+  notFound = false;
 
   constructor(
     private authService: AuthService,
@@ -35,6 +36,7 @@ export class ProfileComponent implements OnInit {
 
   ngOnInit(): void {
     this.route.params.subscribe((params) => {
+      this.notFound = false;
       this.userId = params['userId'];
 
       this.timelineService.userTimeline.next({
@@ -60,10 +62,17 @@ export class ProfileComponent implements OnInit {
         this.isCurrentUser = true;
       } else {
         this.isProfileLoading = true;
-        this.userService.getUserById(this.userId).subscribe((user) => {
-          this.profileUser = user;
-          this.isCurrentUser = false;
-          this.isProfileLoading = false;
+        this.userService.getUserById(this.userId).subscribe({
+          next: (user) => {
+            this.profileUser = user;
+            this.isCurrentUser = false;
+            this.isProfileLoading = false;
+          },
+          error: (err) => {
+            this.isCurrentUser = false;
+            this.isProfileLoading = false;
+            this.notFound = true;
+          },
         });
       }
     });

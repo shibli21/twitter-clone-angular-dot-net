@@ -27,6 +27,7 @@ export class TweetComponent implements OnInit {
   isEditing = false;
   isRetweeting = false;
   currentUser!: User;
+  notFound = false;
 
   tweetComments!: PaginatedComments | null;
 
@@ -54,7 +55,17 @@ export class TweetComponent implements OnInit {
         size: 0,
       });
 
-      this.tweetService.getTweet(this.tweetId).subscribe();
+      this.tweetService.getTweet(this.tweetId).subscribe({
+        next: (res) => {
+          this.tweet = res;
+          this.editTweet = res.tweet;
+          this.isLoading = false;
+        },
+        error: () => {
+          this.isLoading = false;
+          this.notFound = true;
+        },
+      });
 
       this.tweetService.tweet.subscribe((res) => {
         this.tweet = res;
@@ -78,7 +89,6 @@ export class TweetComponent implements OnInit {
         }
       });
     });
-    this.isLoading = true;
   }
 
   likeUnlike() {
