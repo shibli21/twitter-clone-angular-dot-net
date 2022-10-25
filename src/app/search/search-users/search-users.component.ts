@@ -16,25 +16,16 @@ export class SearchUsersComponent implements OnInit {
   constructor(private searchService: SearchService, private router: Router) {}
 
   ngOnInit(): void {
+    this.searchService.searchQuery.subscribe((query) => {
+      this.searchQuery = query;
+    });
+
     this.searchService.isSearchingUsers.subscribe((isLoading) => {
       this.isLoading = isLoading;
     });
 
     this.searchService.searchedUsers.subscribe((users) => {
       this.searchedUsers = users;
-    });
-
-    this.searchService.searchQuery.subscribe((query) => {
-      this.searchService.searchedUsers.next({
-        page: 0,
-        users: [],
-        lastPage: 0,
-        size: 0,
-        totalElements: 0,
-        totalPages: 0,
-      });
-      this.searchQuery = query;
-      this.searchService.getSearchUsers();
     });
   }
 

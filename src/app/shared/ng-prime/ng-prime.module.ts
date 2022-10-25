@@ -19,6 +19,7 @@ import { ProgressBarModule } from 'primeng/progressbar';
 import { TooltipModule } from 'primeng/tooltip';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { BadgeModule } from 'primeng/badge';
+import { SkeletonModule } from 'primeng/skeleton';
 
 @NgModule({
   declarations: [],
@@ -42,6 +43,7 @@ import { BadgeModule } from 'primeng/badge';
     TooltipModule,
     ProgressSpinnerModule,
     BadgeModule,
+    SkeletonModule,
   ],
 })
 export class NgPrimeModule {}

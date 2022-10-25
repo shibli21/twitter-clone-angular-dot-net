@@ -33,7 +33,7 @@ export class SearchService {
 
   constructor(private http: HttpClient) {}
 
-  getSearchUsers = (page = 0, size = 5) => {
+  getSearchUsers = (page = 0, size = 20) => {
     this.isSearchingUsers.next(true);
 
     if (this.searchQuery.value === '') {
@@ -67,9 +67,10 @@ export class SearchService {
       this.getSearchUsers(users.page + 1);
     }
   }
-  getSearchTweets = (page = 0, size = 2) => {
+  getSearchTweets = (page = 0, size = 20) => {
     //remove # from search query
     const searchQueryWithOutHash = this.tweetSearchQuery.value.replace('#', '');
+
     this.isSearchingTweets.next(true);
 
     if (searchQueryWithOutHash === '') {
@@ -94,7 +95,11 @@ export class SearchService {
           this.isSearchingTweets.next(false);
         })
       )
-      .subscribe();
+      .subscribe({
+        error: (err) => {
+          this.isSearchingTweets.next(false);
+        },
+      });
   };
 
   loadMoreSearchedTweets() {

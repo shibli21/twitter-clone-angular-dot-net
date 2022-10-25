@@ -12,6 +12,8 @@ import { SpinnerComponent } from './spinner/spinner.component';
 import { UserCardComponent } from './user-card/user-card.component';
 import { NameAndTimeHeaderComponent } from './name-and-time-header/name-and-time-header.component';
 import { MomentModule } from 'ngx-moment';
+import { TweetCardSkeletonComponent } from './tweet-card-skeleton/tweet-card-skeleton.component';
+import { UserCardSkeletonComponent } from './user-card-skeleton/user-card-skeleton.component';
 
 @NgModule({
   declarations: [
@@ -22,6 +24,8 @@ import { MomentModule } from 'ngx-moment';
     SpinnerComponent,
     UserCardComponent,
     NameAndTimeHeaderComponent,
+    TweetCardSkeletonComponent,
+    UserCardSkeletonComponent,
   ],
   imports: [
     CommonModule,
@@ -55,6 +59,8 @@ import { MomentModule } from 'ngx-moment';
     SpinnerComponent,
     UserCardComponent,
     NameAndTimeHeaderComponent,
+    TweetCardSkeletonComponent,
+    UserCardSkeletonComponent,
   ],
 })
 export class SharedModule {}

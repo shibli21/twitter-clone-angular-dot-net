@@ -113,17 +113,39 @@ export class NavComponent implements OnInit {
 
   onSubmit() {
     this.display = false;
+
     if (this.searchQuery.startsWith('#')) {
+      this.searchService.searchedTweets.next({
+        page: 0,
+        tweets: [],
+        lastPage: 0,
+        size: 0,
+        totalElements: 0,
+        totalPages: 0,
+      });
+
       this.searchService.tweetSearchQuery.next(this.searchQuery);
       if (this.router.url !== '/search/search-tweets') {
         this.router.navigate(['/search/search-tweets']);
       }
+      this.searchService.getSearchTweets();
     } else {
+      this.searchService.searchedUsers.next({
+        page: 0,
+        users: [],
+        lastPage: 0,
+        size: 0,
+        totalElements: 0,
+        totalPages: 0,
+      });
+
       this.searchService.searchQuery.next(this.searchQuery);
       if (this.router.url !== '/search/search-users') {
         this.router.navigate(['/search/search-users']);
       }
+      this.searchService.getSearchUsers();
     }
+
     this.searchQuery = '';
   }
 }

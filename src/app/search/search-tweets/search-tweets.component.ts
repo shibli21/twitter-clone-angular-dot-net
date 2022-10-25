@@ -16,21 +16,12 @@ export class SearchTweetsComponent implements OnInit {
   constructor(private searchService: SearchService) {}
 
   ngOnInit(): void {
-    this.searchService.isSearchingTweets.subscribe((isLoading) => {
-      this.isLoading = isLoading;
+    this.searchService.tweetSearchQuery.subscribe((query) => {
+      this.tweetSearchQuery = query;
     });
 
-    this.searchService.tweetSearchQuery.subscribe((query) => {
-      this.searchService.searchedTweets.next({
-        page: 0,
-        tweets: [],
-        lastPage: 0,
-        size: 0,
-        totalElements: 0,
-        totalPages: 0,
-      });
-      this.tweetSearchQuery = query;
-      this.searchService.getSearchTweets();
+    this.searchService.isSearchingTweets.subscribe((isLoading) => {
+      this.isLoading = isLoading;
     });
 
     this.searchService.searchedTweets.subscribe((tweets) => {
