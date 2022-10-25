@@ -1,3 +1,4 @@
+import { ToastrService } from 'ngx-toastr';
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { HubConnection, HubConnectionBuilder } from '@microsoft/signalr';
@@ -68,7 +69,8 @@ export class NavComponent implements OnInit {
     private authService: AuthService,
     private searchService: SearchService,
     private router: Router,
-    private notificationService: NotificationService
+    private notificationService: NotificationService,
+    private toastr: ToastrService
   ) {}
 
   ngOnInit() {
@@ -91,12 +93,25 @@ export class NavComponent implements OnInit {
     this._hubConnection.on(
       'ReceiveNotification',
       (notification: Notification) => {
+        let audio: HTMLAudioElement = new Audio('/assets/toast_sound.mp3');
+        audio.play();
         const prevNotifications = this.notificationService.notifications.value;
         this.notificationService.notifications.next({
           ...prevNotifications,
           notifications: [notification, ...prevNotifications.notifications],
           totalUnread: prevNotifications.totalUnread + 1,
         });
+        this.toastr
+          .success(notification.message, 'New notification', {
+            timeOut: 8000,
+          })
+          .onTap.subscribe(() => {
+            if (notification.type === 'Follow') {
+              this.router.navigate(['/profile', notification.refUserId]);
+            } else {
+              this.router.navigate(['/tweet', notification.tweetId]);
+            }
+          });
       }
     );
 
