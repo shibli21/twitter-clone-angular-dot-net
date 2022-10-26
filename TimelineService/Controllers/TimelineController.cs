@@ -50,8 +50,9 @@ namespace TimelineService.Controllers
                         if (tweets.Tweets != null)
                         {
                             tweets.Tweets = tweets.Tweets.Take(size).ToList();
+                            return Ok(tweets);
                         }
-                        return Ok(tweets);
+                        
                     }
                 }
             }
@@ -111,8 +112,9 @@ namespace TimelineService.Controllers
                         if (tweets.Tweets != null)
                         {
                             tweets.Tweets = tweets.Tweets.Take(size).ToList();
+                            return Ok(tweets);
                         }
-                        return Ok(tweets);
+                        
                     }
                 }
             }

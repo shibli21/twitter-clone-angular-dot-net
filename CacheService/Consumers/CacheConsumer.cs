@@ -1,4 +1,5 @@
 using Core.Dtos;
+using Core.Interfaces;
 using Core.Models;
 using Infrastructure.Config;
 using MassTransit;
@@ -11,21 +12,30 @@ namespace CacheService.Consumers
 {
     public class CacheConsumer : IConsumer<CacheNotificationConsumerDto>
     {
+
+        private readonly ITimeLineService _iTimeLineService;
+        private readonly ITweetService _tweetService;
+        private readonly IUsersService _usersService;
         private readonly IMongoCollection<User> _usersCollection;
         private readonly IMongoCollection<Follows> _followCollection;
         private readonly IMongoCollection<Tweets> _tweetCollection;
+        private readonly IMongoCollection<LikeRetweets> _likeRetweetCollection;
         private readonly IConnectionMultiplexer _connectionMultiplexer;
         private readonly IDatabase _database;
         private readonly TwitterCloneRedisConfig _redisConfig;
         private int cacheTime = 60;
-        public CacheConsumer(IOptions<TwitterCloneDbConfig> twitterCloneDbConfig, IMongoClient mongoClient, IOptions<TwitterCloneRedisConfig> twitterCloneRedisSettings, IConnectionMultiplexer connectionMultiplexer)
+        public CacheConsumer(IOptions<TwitterCloneDbConfig> twitterCloneDbConfig, IMongoClient mongoClient, IOptions<TwitterCloneRedisConfig> twitterCloneRedisSettings, IConnectionMultiplexer connectionMultiplexer, ITimeLineService iTimeLineService, ITweetService tweetService, IUsersService usersService)
         {
             var mongoDatabase = mongoClient.GetDatabase(twitterCloneDbConfig.Value.DatabaseName);
             _usersCollection = mongoDatabase.GetCollection<User>(twitterCloneDbConfig.Value.UserCollectionName);
             _followCollection = mongoDatabase.GetCollection<Follows>(twitterCloneDbConfig.Value.FollowerCollectionName);
             _tweetCollection = mongoDatabase.GetCollection<Tweets>(twitterCloneDbConfig.Value.TweetCollectionName); _connectionMultiplexer = connectionMultiplexer;
+            _likeRetweetCollection = mongoDatabase.GetCollection<LikeRetweets>(twitterCloneDbConfig.Value.LikeRetweetCollectionName);
             _database = _connectionMultiplexer.GetDatabase();
             _redisConfig = twitterCloneRedisSettings.Value;
+            _iTimeLineService = iTimeLineService;
+            _tweetService = tweetService;
+            _usersService = usersService;
 
         }
         public async Task Consume(ConsumeContext<CacheNotificationConsumerDto> context)
@@ -48,6 +58,10 @@ namespace CacheService.Consumers
                 BlockByAdmin(cacheNotificationConsumerDto);
             else if (cacheNotificationConsumerDto.Type == "Unfollow")
                 Unfollow(cacheNotificationConsumerDto);
+            else if (cacheNotificationConsumerDto.Type == "Follow")
+                Follow(cacheNotificationConsumerDto);
+            else if (cacheNotificationConsumerDto.Type == "Edit Profile")
+                EditProfile(cacheNotificationConsumerDto);
 
             await Task.CompletedTask;
         }
@@ -430,6 +444,131 @@ namespace CacheService.Consumers
                 }
             }
         }
+
+        private async void Follow(CacheNotificationConsumerDto cacheNotificationConsumerDto)
+        {
+            if (cacheNotificationConsumerDto.UserId != null && cacheNotificationConsumerDto.RefUserId != null)
+            {
+                // Updating NewsFeed of following user
+                string? resJson = await _database.StringGetAsync("noobmasters_newsfeed_" + cacheNotificationConsumerDto.RefUserId);
+                if (resJson != null)
+                {
+                    PaginatedTweetResponseDto? newsfeed = JsonConvert.DeserializeObject<PaginatedTweetResponseDto>(resJson);
+                    if (newsfeed != null)
+                    {
+                        TweetCommentUserResponseDto? user = (await _usersService.GetUserAsync(cacheNotificationConsumerDto.RefUserId))?.AsDtoTweetComment();
+                        if (user != null)
+                        {
+                            newsfeed = await _iTimeLineService.GetUserTimeLine(cacheNotificationConsumerDto.RefUserId, newsfeed.Size, newsfeed.Page);
+                            if (newsfeed.Tweets != null)
+                            {
+                                foreach (TweetResponseDto tweet in newsfeed.Tweets)
+                                {
+                                    tweet.User = (await _usersService.GetUserAsync(tweet.UserId))?.AsDtoTweetComment();
+                                    LikedOrRetweetedDto likedOrRetweet = await IsLikedOrRetweeted(cacheNotificationConsumerDto.RefUserId, tweet.Id);
+                                    tweet.IsLiked = likedOrRetweet.IsLiked;
+                                    tweet.IsRetweeted = likedOrRetweet.IsRetweeted;
+                                    if (tweet.Type == "Retweet" && tweet.RetweetRefId != null)
+                                    {
+                                        Tweets? refTweet = await _tweetService.GetTweetById(tweet.RetweetRefId);
+                                        if (refTweet != null)
+                                        {
+                                            User? refUser = await _usersService.GetUserAsync(refTweet.UserId);
+                                            if (refUser != null && refUser.DeletedAt == null && refUser.BlockedAt == null)
+                                            {
+                                                tweet.RefTweet = refTweet.AsDto();
+                                                tweet.RefTweet.User = refUser.AsDtoTweetComment();
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                    }
+                }
+            }
+        }
+
+
+
+        private async void EditProfile(CacheNotificationConsumerDto cacheNotificationConsumerDto)
+        {
+            if (cacheNotificationConsumerDto.RefUserId != null)
+            {
+
+                User? user = await _usersService.GetUserAsync(cacheNotificationConsumerDto.RefUserId);
+                if (user != null)
+                {
+                    // / updating timeline of user
+                    string? timelineJson = await _database.StringGetAsync("noobmasters_timeline_" + cacheNotificationConsumerDto.RefUserId);
+                    if (timelineJson != null)
+                    {
+                        PaginatedTweetResponseDto? timeline = JsonConvert.DeserializeObject<PaginatedTweetResponseDto>(timelineJson);
+                        if (timeline != null && timeline.Tweets != null)
+                        {
+                            foreach (var tweet in timeline.Tweets)
+                            {
+                                tweet.User = user.AsDtoTweetComment();
+                                if (tweet.Type == "Retweet" && tweet.RefTweet != null)
+                                {
+                                    tweet.RefTweet.User = user.AsDtoTweetComment();
+                                }
+                            }
+                            await _database.StringSetAsync("noobmasters_timeline_" + cacheNotificationConsumerDto.RefUserId, JsonConvert.SerializeObject(timeline), TimeSpan.FromMinutes(cacheTime));
+                        }
+                    }
+                    // updating newsfeed of followers
+                    var followers = await _followCollection.Find(f => f.FollowingId == user.Id).ToListAsync();
+                    if (followers != null)
+                    {
+                        foreach (var follower in followers)
+                        {
+                            string? newsfeedJson = await _database.StringGetAsync("noobmasters_newsfeed_" + follower.UserId);
+                            if (newsfeedJson != null)
+                            {
+                                PaginatedTweetResponseDto? newsfeed = JsonConvert.DeserializeObject<PaginatedTweetResponseDto>(newsfeedJson);
+                                if (newsfeed != null && newsfeed.Tweets != null)
+                                {
+                                    foreach (var tweet in newsfeed.Tweets)
+                                    {
+                                        if (tweet.UserId == user.Id)
+                                        {
+                                            tweet.User = user.AsDtoTweetComment();
+                                        }
+                                        if (tweet.Type == "Retweet" && tweet.RefTweet != null && tweet.RefTweet.UserId == user.Id)
+                                        {
+                                            tweet.RefTweet.User = user.AsDtoTweetComment();
+                                        }
+                                    }
+                                    await _database.StringSetAsync("noobmasters_newsfeed_" + follower.UserId, JsonConvert.SerializeObject(newsfeed), TimeSpan.FromMinutes(cacheTime));
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+
+
+
+        private async Task<LikedOrRetweetedDto> IsLikedOrRetweeted(string userId, string tweetId)
+        {
+            LikedOrRetweetedDto likeRetweetResponse = new LikedOrRetweetedDto();
+
+            LikeRetweets? likeRetweet = await _likeRetweetCollection.Find(x => x.UserId == userId && x.TweetId == tweetId).FirstOrDefaultAsync();
+            if (likeRetweet != null)
+            {
+                likeRetweetResponse = new LikedOrRetweetedDto
+                {
+                    IsLiked = likeRetweet.IsLiked,
+                    IsRetweeted = likeRetweet.IsRetweeted
+                };
+            }
+            return likeRetweetResponse;
+        }
+
 
 
     }

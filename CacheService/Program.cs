@@ -1,7 +1,9 @@
 
 using CacheService.Consumers;
 using Core.Extensions;
+using Core.Interfaces;
 using Infrastructure.Config;
+using Infrastructure.Services;
 using JWTAuthenticationManager;
 using MassTransit;
 using MongoDB.Driver;
@@ -27,6 +29,7 @@ builder.Services.AddSingleton<IMongoClient>(sp =>
 builder.Services.AddSingleton<IConnectionMultiplexer>(x => ConnectionMultiplexer.Connect(builder.Configuration.GetValue<string>("RedisSettings:Host") + ",password=" + builder.Configuration.GetValue<string>("RedisSettings:Password")));
 
 
+builder.Services.AddSingleton<ITweetService, TweetService>();
 
 builder.Services.AddControllers();
 

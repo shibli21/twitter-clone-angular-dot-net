@@ -2,6 +2,7 @@
 using Core.Dtos;
 using Core.Interfaces;
 using Core.Models;
+using MassTransit;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -15,15 +16,17 @@ public class UsersController : ControllerBase
 
     private readonly IFollowerService _followerService;
     private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly IBus _bus;
 
-    public UsersController(IUsersService usersService, IHttpContextAccessor httpContextAccessor,IFollowerService followerService)
+    public UsersController(IUsersService usersService, IHttpContextAccessor httpContextAccessor, IFollowerService followerService, IBus bus)
     {
         _usersService = usersService;
         _httpContextAccessor = httpContextAccessor;
         _followerService = followerService;
+        _bus = bus;
     }
 
-    [HttpGet("{id}"),Authorize]
+    [HttpGet("{id}"), Authorize]
     public async Task<ActionResult<SearchedUserResponseDto?>> GetUserById(string id)
     {
         var userId = _httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -43,7 +46,7 @@ public class UsersController : ControllerBase
     }
 
     [HttpGet, Authorize(Roles = "admin")]
-    public async Task<ActionResult<PaginatedUserResponseDto>> GetPaginatedUsers([FromQuery] int size = 20, [FromQuery] int page =0)
+    public async Task<ActionResult<PaginatedUserResponseDto>> GetPaginatedUsers([FromQuery] int size = 20, [FromQuery] int page = 0)
     {
         return Ok(await _usersService.GetPaginatedUsers(size, page));
     }
@@ -71,6 +74,19 @@ public class UsersController : ControllerBase
             {
                 return Unauthorized();
             }
+            // RabbitMQ Publish Check start
+            CacheNotificationConsumerDto? cacheNotificationConsumerDto = null;
+            if( user.UserName != userEditDto.UserName || user.FirstName != userEditDto.FirstName || user.LastName != userEditDto.LastName || user.ProfilePictureUrl != userEditDto.ProfilePictureUrl || user.CoverPictureUrl != userEditDto.CoverPictureUrl)
+            {
+                cacheNotificationConsumerDto = new CacheNotificationConsumerDto
+                {
+                    Type = "Edit Profile",
+                    IsNotification = false,
+                    RefUserId = user.Id,
+                };
+            }
+            // RabbitMQ Publish Check end
+
             user.UserName = userEditDto.UserName;
             user.Email = userEditDto.Email;
             user.FirstName = userEditDto.FirstName;
@@ -84,6 +100,12 @@ public class UsersController : ControllerBase
             user.Address = userEditDto.Address;
 
             await _usersService.UpdateGetUserAsync(user.Id, user);
+            // RabbitMQ Publish start
+            if(cacheNotificationConsumerDto != null)
+            {
+                await _bus.Publish(cacheNotificationConsumerDto);
+            }
+            // RabbitMQ Publish end
             return Ok(user.AsDto());
         }
         else

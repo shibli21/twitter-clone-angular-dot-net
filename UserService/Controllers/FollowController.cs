@@ -44,7 +44,9 @@ public class FollowController : ControllerBase
                     UserId = followingId,
                     RefUserId = userId,
                     Type = "Follow",
-                }
+                },
+                UserId = followingId,
+                RefUserId = userId,
             };
 
             await _bus.Publish(cacheNotificationConsumerDto);
