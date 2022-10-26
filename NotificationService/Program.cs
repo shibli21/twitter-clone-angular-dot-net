@@ -1,14 +1,14 @@
-
 using Core.Extensions;
 using Core.Interfaces;
 using Infrastructure.Config;
 using Infrastructure.Services;
+using JWTAuthenticationManager;
+using MassTransit;
+using Microsoft.AspNetCore.Http.Connections;
+using MongoDB.Driver;
 using NotificationService.Consumers;
 using NotificationService.Hubs;
-using JWTAuthenticationManager;
-using MongoDB.Driver;
 using Serilog;
-using MassTransit;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -43,8 +43,10 @@ builder.Services.AddCors(p => p.AddPolicy("TwitterCloneCorsPolicy", builder =>
        builder.AllowAnyMethod()
               .AllowAnyHeader()
               .AllowCredentials()
-              .WithOrigins("http://localhost:4200");
+              .WithOrigins("http://localhost:4200", "http://noobmasters.learnathon.net/web");
    }));
+
+
 
 
 builder.Services.AddSignalR();
@@ -84,7 +86,10 @@ app.UseAuthentication();
 
 app.UseAuthorization();
 
-app.MapHub<NotificationHub>("/live-notification");
+app.MapHub<NotificationHub>("/live-notification", (option) =>
+{
+    option.Transports = HttpTransportType.LongPolling;
+});
 
 app.MapControllers();
 
