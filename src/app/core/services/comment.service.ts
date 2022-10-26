@@ -76,6 +76,9 @@ export class CommentService {
               lastName: user!.lastName,
               profilePictureUrl: user!.profilePictureUrl,
               coverPictureUrl: user!.coverPictureUrl,
+              address: user!.address,
+              bio: user!.bio,
+              dateOfBirth: user!.dateOfBirth,
             },
           };
 

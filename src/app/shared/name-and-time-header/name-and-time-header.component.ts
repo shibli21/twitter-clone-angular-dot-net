@@ -1,5 +1,5 @@
-import { User } from './../../core/models/tweet.model';
 import { Component, Input, OnInit } from '@angular/core';
+import { User } from './../../core/models/tweet.model';
 
 @Component({
   selector: 'app-name-and-time-header',
@@ -9,6 +9,9 @@ import { Component, Input, OnInit } from '@angular/core';
 export class NameAndTimeHeaderComponent implements OnInit {
   @Input() user!: User;
   @Input() date: Date | undefined;
+  @Input() overlay = false;
+
+  constructor() {}
 
   ngOnInit(): void {}
 }

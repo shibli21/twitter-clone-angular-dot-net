@@ -31,6 +31,9 @@ export interface User {
   lastName: string;
   profilePictureUrl: string;
   coverPictureUrl: string;
+  dateOfBirth: Date;
+  address: string;
+  bio: string;
 }
 
 export interface PaginatedComments {

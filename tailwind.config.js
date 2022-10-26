@@ -15,5 +15,5 @@ module.exports = {
       ...defaultTheme.screens,
     },
   },
-  plugins: [],
+  plugins: [require("@tailwindcss/line-clamp")],
 };

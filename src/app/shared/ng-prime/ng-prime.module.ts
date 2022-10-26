@@ -20,6 +20,7 @@ import { TooltipModule } from 'primeng/tooltip';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { BadgeModule } from 'primeng/badge';
 import { SkeletonModule } from 'primeng/skeleton';
+import { OverlayPanelModule } from 'primeng/overlaypanel';
 
 @NgModule({
   declarations: [],
@@ -44,6 +45,7 @@ import { SkeletonModule } from 'primeng/skeleton';
     ProgressSpinnerModule,
     BadgeModule,
     SkeletonModule,
+    OverlayPanelModule,
   ],
 })
 export class NgPrimeModule {}
