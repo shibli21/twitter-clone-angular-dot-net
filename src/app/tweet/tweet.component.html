@@ -1,5 +1,9 @@
 <div *ngIf="notFound" class="p-4 text-center">
-  <p class="font-bold text-red-500">TWEET NOT FOUND</p>
+  <div
+    class="text-gray-500 text-center border border-gray-300 px-2 md:px-4 py-2"
+  >
+    This tweet is no longer available.
+  </div>
 </div>
 
 <div *ngIf="!notFound">
