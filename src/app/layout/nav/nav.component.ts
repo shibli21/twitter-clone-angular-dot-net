@@ -1,6 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { HubConnection, HubConnectionBuilder } from '@microsoft/signalr';
+import {
+  HttpTransportType,
+  HubConnection,
+  HubConnectionBuilder,
+} from '@microsoft/signalr';
 import { ToastrService } from 'ngx-toastr';
 import { MenuItem } from 'primeng/api';
 import { Notification } from 'src/app/core/models/notification.model';
@@ -92,9 +96,13 @@ export class NavComponent implements OnInit {
     const { jwtToken } = JSON.parse(userAuthData) as LoginResponse;
 
     this._hubConnection = new HubConnectionBuilder()
-      .withUrl(environment.notificationHubUrl, {
-        accessTokenFactory: () => jwtToken,
-      })
+      .withUrl(
+        `${environment.notificationHubUrl}?userId=${this.authService.userId()}`,
+        {
+          accessTokenFactory: () => jwtToken,
+          transport: HttpTransportType.LongPolling,
+        }
+      )
       .build();
 
     this._hubConnection
