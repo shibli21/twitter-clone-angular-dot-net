@@ -15,12 +15,13 @@ namespace TimelineService.Controllers
     {
         private readonly ITweetService _tweetService;
         private readonly IUsersService _usersService;
+        private readonly IBlockService _blockService;
         private readonly ILikeCommentService _iLikeCommentService;
         private readonly ITimeLineService _iTimeLineService;
         private readonly IConnectionMultiplexer _connectionMultiplexer;
         private readonly IDatabase _database;
         private readonly IHttpContextAccessor _httpContextAccessor;
-        public TimelineController(IHttpContextAccessor httpContextAccessor, ITweetService tweetService, ILikeCommentService iLikeCommentService, IUsersService usersService, ITimeLineService iTimeLineService, IConnectionMultiplexer connectionMultiplexer)
+        public TimelineController(IHttpContextAccessor httpContextAccessor, ITweetService tweetService, ILikeCommentService iLikeCommentService, IUsersService usersService, ITimeLineService iTimeLineService, IConnectionMultiplexer connectionMultiplexer, IBlockService blockService)
         {
             _tweetService = tweetService;
             _iLikeCommentService = iLikeCommentService;
@@ -29,6 +30,7 @@ namespace TimelineService.Controllers
             _connectionMultiplexer = connectionMultiplexer;
             _database = _connectionMultiplexer.GetDatabase();
             _httpContextAccessor = httpContextAccessor;
+            _blockService = blockService;
         }
         [HttpGet("user-timeline/{userId}"), Authorize]
         public async Task<ActionResult<PaginatedTweetResponseDto>> GetUserTweets(string userId, [FromQuery] int size = 20, [FromQuery] int page = 0)
@@ -47,12 +49,12 @@ namespace TimelineService.Controllers
                     tweets = JsonConvert.DeserializeObject<PaginatedTweetResponseDto>(resJson);
                     if (tweets != null)
                     {
-                        if (tweets.Tweets != null)
+                        if (tweets.Tweets != null && tweets.Tweets.Count > 0)
                         {
                             tweets.Tweets = tweets.Tweets.Take(size).ToList();
                             return Ok(tweets);
                         }
-                        
+
                     }
                 }
             }
@@ -109,18 +111,22 @@ namespace TimelineService.Controllers
                     tweets = JsonConvert.DeserializeObject<PaginatedTweetResponseDto>(resJson);
                     if (tweets != null)
                     {
-                        if (tweets.Tweets != null)
+                        if (tweets.Tweets != null && tweets.Tweets.Count > 0)
                         {
                             tweets.Tweets = tweets.Tweets.Take(size).ToList();
                             return Ok(tweets);
                         }
-                        
+
                     }
                 }
             }
             tweets = await _iTimeLineService.GetNewsFeed(userId, size, page);
             if (tweets.Tweets != null)
             {
+
+
+                string[] blockedIds = await _blockService.GetBlockedUsersIds(userId);
+
                 foreach (TweetResponseDto tweet in tweets.Tweets)
                 {
                     tweet.User = (await _usersService.GetUserAsync(tweet.UserId))?.AsDtoTweetComment();
@@ -133,7 +139,7 @@ namespace TimelineService.Controllers
                         if (refTweet != null)
                         {
                             User? refUser = await _usersService.GetUserAsync(refTweet.UserId);
-                            if (refUser != null && refUser.DeletedAt == null && refUser.BlockedAt == null)
+                            if (refUser != null && refUser.DeletedAt == null && refUser.BlockedAt == null && !blockedIds.Contains(refUser.Id))
                             {
                                 tweet.RefTweet = refTweet.AsDto();
                                 tweet.RefTweet.User = refUser.AsDtoTweetComment();

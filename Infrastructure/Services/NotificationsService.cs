@@ -13,6 +13,7 @@ namespace Infrastructure.Services
     {
 
         private readonly IMongoCollection<User> _user;
+        private readonly IMongoCollection<Blocks> _blockCollection;
 
         private readonly IMongoCollection<Notifications> _notificationCollection;
 
@@ -21,6 +22,7 @@ namespace Infrastructure.Services
         {
             var mongoDatabase = mongoClient.GetDatabase(twitterCloneDbConfig.Value.DatabaseName);
             _user = mongoDatabase.GetCollection<User>(twitterCloneDbConfig.Value.UserCollectionName);
+            _blockCollection = mongoDatabase.GetCollection<Blocks>(twitterCloneDbConfig.Value.BlockCollectionName);
             _notificationCollection = mongoDatabase.GetCollection<Notifications>(twitterCloneDbConfig.Value.NotificationCollectionName);
             _httpContextAccessor = httpContextAccessor;
         }
@@ -41,7 +43,13 @@ namespace Infrastructure.Services
         public async Task<PaginatedNotificationResponseDto> GetNotifications(int page, int size)
         {
             var userId = _httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var filter = _notificationCollection.Find(x => x.UserId == userId);
+
+            var blocked = await _blockCollection.Find(block => block.UserId == userId || block.BlockedUserId == userId).ToListAsync();
+            var blockedMeIds = blocked.Where(block => block.BlockedUserId == userId).Select(block => block.UserId).ToList();
+            var myBlockedIds = blocked.Where(block => block.UserId == userId).Select(block => block.BlockedUserId).ToList();
+            var blockedIds = blockedMeIds.Concat(myBlockedIds).ToList();
+
+            var filter = _notificationCollection.Find(x => x.UserId == userId && !blockedIds.Contains(x.RefUserId));
             long TotalElements = await filter.CountDocumentsAsync();
             int LastPage = (int)Math.Ceiling((double)TotalElements / size) - 1;
             LastPage = LastPage < 0 ? 0 : LastPage;

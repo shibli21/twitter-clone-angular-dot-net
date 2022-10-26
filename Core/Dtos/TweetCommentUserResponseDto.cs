@@ -1,4 +1,4 @@
-using Core.Models;
+
 
 namespace Core.Dtos;
 
@@ -11,4 +11,7 @@ public class TweetCommentUserResponseDto
     public string LastName { get; set; } = string.Empty;
     public string ProfilePictureUrl { get; set; } = string.Empty;
     public string CoverPictureUrl { get; set; } = string.Empty;
+    public DateTime DateOfBirth { get; set; } = DateTime.Now;
+    public string Address { get; set; } = string.Empty;
+    public string Bio { get; set; } = string.Empty;
 }

@@ -16,17 +16,19 @@ namespace Core.Controllers
     {
         private readonly ITweetService _tweetService;
         private readonly IUsersService _usersService;
+        private readonly IBlockService _blockService;
         private readonly ILikeCommentService _iLikeCommentService;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IBus _bus;
 
-        public TweetController(ITweetService tweetService, ILikeCommentService iLikeCommentService, IUsersService usersService, IHttpContextAccessor httpContextAccessor, IBus bus)
+        public TweetController(ITweetService tweetService, ILikeCommentService iLikeCommentService, IUsersService usersService, IHttpContextAccessor httpContextAccessor, IBus bus, IBlockService blockService)
         {
             _tweetService = tweetService;
             _iLikeCommentService = iLikeCommentService;
             _usersService = usersService;
             _httpContextAccessor = httpContextAccessor;
             _bus = bus;
+            _blockService = blockService;
         }
         [HttpPost("create"), Authorize]
         public async Task<ActionResult<TweetResponseDto>> CreateTweet(TweetRequestDto tweetRequest)
@@ -106,6 +108,11 @@ namespace Core.Controllers
         [HttpGet("{id}"), Authorize]
         public async Task<ActionResult<TweetResponseDto>> GetTweetById(string id)
         {
+            var userId = _httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == null)
+            {
+                return Unauthorized();
+            }
             Tweets? tweet = await _tweetService.GetTweetById(id);
             if (tweet == null)
             {
@@ -114,6 +121,16 @@ namespace Core.Controllers
                     Message = "Tweet Not Found",
                 });
             }
+            string[] blockedIds = await _blockService.GetBlockedUsersIds(userId);
+
+            if (blockedIds.Contains(tweet.UserId))
+            {
+                return NotFound(new
+                {
+                    Message = "Tweet Not Found",
+                });
+            }
+
             TweetResponseDto tweetResponse = tweet.AsDto();
             User? userModel = await _usersService.GetUserAsync(tweet.UserId);
             if (userModel == null || userModel.DeletedAt != null || userModel.BlockedAt != null)
@@ -131,7 +148,7 @@ namespace Core.Controllers
                 if (refTweet != null)
                 {
                     User? refUser = await _usersService.GetUserAsync(refTweet.UserId);
-                    if (refUser != null && refUser.DeletedAt == null && refUser.BlockedAt == null)
+                    if (refUser != null && refUser.DeletedAt == null && refUser.BlockedAt == null && !blockedIds.Contains(refUser.Id))
                     {
                         tweetResponse.RefTweet = refTweet.AsDto();
                         tweetResponse.RefTweet.User = refUser.AsDtoTweetComment();
@@ -381,7 +398,7 @@ namespace Core.Controllers
             Tweets? tweet = await _tweetService.GetTweetById(comment.TweetId);
             if (tweet != null && tweet.DeletedAt == null)
             {
-                bool isDeleted = await _iLikeCommentService.DeleteComment(comment,tweet);
+                bool isDeleted = await _iLikeCommentService.DeleteComment(comment, tweet);
                 if (isDeleted)
                 {
                     // publish to RabbitMQ start

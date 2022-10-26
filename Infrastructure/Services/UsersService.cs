@@ -95,8 +95,10 @@ public class UsersService : IUsersService
             {
                 var following = await _followCollection.Find(follow => follow.UserId == id).ToListAsync();
                 var followingIds = following.Select(follow => follow.FollowingId).ToList();
-                var blocked = await _blockCollection.Find(block => block.UserId == id).ToListAsync();
-                var blockedIds = blocked.Select(block => block.BlockedUserId).ToList();
+                var blocked = await _blockCollection.Find(block => block.UserId == id || block.BlockedUserId == id).ToListAsync();
+                var blockedMeIds = blocked.Where(block => block.BlockedUserId == id).Select(block => block.UserId).ToList();
+                var myBlockedIds = blocked.Where(block => block.UserId == id).Select(block => block.BlockedUserId).ToList();
+                var blockedIds = blockedMeIds.Concat(myBlockedIds).ToList();
                 var mergeIds = followingIds.Union(blockedIds).ToArray();
                 Console.WriteLine("mergeIds");
                 users = (await _usersCollection.Find(user => !mergeIds.Contains(user.Id) && user.Id != id && user.DeletedAt == null && user.BlockedAt == null)
