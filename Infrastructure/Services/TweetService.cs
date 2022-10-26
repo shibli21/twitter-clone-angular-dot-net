@@ -46,17 +46,7 @@ namespace Infrastructure.Services
 
         public async Task<Tweets?> GetTweetById(string id)
         {
-            Tweets? tweet = null;
-            if (_httpContextAccessor.HttpContext != null)
-            {
-                string? userId = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-                if (userId != null)
-                {
-                    tweet = await _tweetCollection.Find(tweet => tweet.Id == id && tweet.DeletedAt == null).FirstOrDefaultAsync();
-                }
-            }
-            return tweet;
-
+            return  await _tweetCollection.Find(tweet => tweet.Id == id && tweet.DeletedAt == null).FirstOrDefaultAsync();
         }
 
         public async Task<Tweets> UpdateTweet(Tweets tweet, TweetRequestDto tweetRequest)
