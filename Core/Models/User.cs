@@ -53,12 +53,14 @@ public class User
 
 
     [BsonElement("updatedAt")]
-    [DataType(DataType.Date)]
-    public DateTime UpdatedAt { get; set; } = DateTime.Now;
+    [DataType(DataType.DateTime)]
+    public DateTime? UpdatedAt { get; set; }
 
     [BsonElement("deleted_at")]
+    [DataType(DataType.DateTime)]
     public DateTime? DeletedAt { get; set; }
 
     [BsonElement("blocked_at")]
+    [DataType(DataType.DateTime)]
     public DateTime? BlockedAt { get; set; }
 }

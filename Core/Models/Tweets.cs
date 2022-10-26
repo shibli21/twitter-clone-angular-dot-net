@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
@@ -36,12 +37,15 @@ namespace Core.Models
         public string[] History { get; set; } = new string[0];
 
         [BsonElement("created_at")]
+        [DataType(DataType.DateTime)]
         public DateTime CreatedAt { get; set; } = DateTime.Now;
 
         [BsonElement("updated_at")]
+        [DataType(DataType.DateTime)]
         public DateTime? UpdatedAt { get; set; } = null;
 
         [BsonElement("deleted_at")]
+        [DataType(DataType.DateTime)]
         public DateTime? DeletedAt { get; set; } = null;
 
     }
