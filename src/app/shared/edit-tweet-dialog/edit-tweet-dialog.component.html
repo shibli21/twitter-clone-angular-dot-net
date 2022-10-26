@@ -31,6 +31,24 @@
   >
   </quill-editor>
 
+  <div
+    *ngIf="tweet.type === 'Retweet' && tweet.refTweet"
+    class="hover:bg-gray-50 cursor-pointer border w-full transition rounded-md"
+  >
+    <div
+      class="border-b border-gray-300 px-2 md:px-4 py-2 items-center justify-between flex"
+    >
+      <app-name-and-time-header
+        [date]="tweet.refTweet.createdAt"
+        [user]="tweet.refTweet.user"
+      ></app-name-and-time-header>
+    </div>
+
+    <div class="p-4" [routerLink]="['/tweet', tweet.refTweet.id]">
+      <quill-view-html [content]="tweet.refTweet.tweet"></quill-view-html>
+    </div>
+  </div>
+
   <ng-template pTemplate="footer">
     <p-button
       icon="pi pi-save"

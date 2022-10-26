@@ -1,8 +1,8 @@
-import { TimelineService } from './../../core/services/timeline.service';
-import { Router } from '@angular/router';
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Router } from '@angular/router';
 import { Tweet } from './../../core/models/tweet.model';
 import { User } from './../../core/models/user.model';
+import { TimelineService } from './../../core/services/timeline.service';
 import { TweetService } from './../../core/services/tweet.service';
 
 @Component({
