@@ -1,3 +1,4 @@
+import { TimelineService } from './../../../core/services/timeline.service';
 import { User } from './../../../core/models/user.model';
 import { Component, Input, OnInit } from '@angular/core';
 import { ToastrService } from 'ngx-toastr';
@@ -32,7 +33,8 @@ export class TweetCardComponent implements OnInit {
     private commentService: CommentService,
     private toastr: ToastrService,
     private retweetService: RetweetService,
-    private authService: AuthService
+    private authService: AuthService,
+    private timelineService: TimelineService
   ) {}
 
   ngOnInit() {
@@ -110,6 +112,7 @@ export class TweetCardComponent implements OnInit {
     this.tweetService.deleteTweet(this.tweet.id).subscribe({
       next: (res) => {
         this.toastr.success('Tweet deleted successfully');
+        this.timelineService.updateProfileTimelineAfterDelete(this.tweet.id);
       },
     });
   }

@@ -46,35 +46,16 @@
     </div>
   </div>
 
-  <div
+  <app-like-reply-retweet-button
+    (onLikeEvent)="likeUnlike()"
+    (onCommentEvent)="showDialog()"
+    (onRetweetEvent)="showRetweetDialog()"
+    [isLiked]="tweet.isLiked"
+    [likeCount]="tweet.likeCount"
+    [commentCount]="tweet.commentCount"
+    [retweetCount]="tweet.retweetCount"
     *ngIf="!isRetweet"
-    class="flex py-2 md:py-3 px-2 md:px-6 border-t border-gray-300 text-gray-600"
-  >
-    <button
-      pButton
-      type="button"
-      [icon]="tweet.isLiked ? 'pi pi-heart-fill' : 'pi pi-heart'"
-      (click)="likeUnlike()"
-      [label]="tweet.likeCount.toString()"
-      class="p-button-danger p-button-text"
-    ></button>
-    <button
-      pButton
-      [label]="tweet.commentCount.toString()"
-      type="button"
-      icon="pi pi-comment"
-      class="p-button-success p-button-text"
-      (click)="showDialog()"
-    ></button>
-    <button
-      pButton
-      [label]="tweet.retweetCount.toString()"
-      type="button"
-      icon="pi pi-share-alt"
-      class="p-button-help p-button-text"
-      (click)="showRetweetDialog()"
-    ></button>
-  </div>
+  ></app-like-reply-retweet-button>
 </div>
 
 <p-dialog
@@ -119,104 +100,21 @@
   </ng-template>
 </p-dialog>
 
-<p-dialog
-  [(visible)]="displayEditDialog"
-  [modal]="true"
-  [breakpoints]="{ '960px': '600px' }"
-  [style]="{ width: '600px' }"
-  [baseZIndex]="10000"
-  [draggable]="false"
-  [resizable]="false"
-  [dismissableMask]="true"
+<!-- edit tweet dialog -->
+
+<app-edit-tweet-dialog
+  [tweet]="tweet"
+  [currentUser]="currentUser"
+  [visible]="displayEditDialog"
+  (onCloseEvent)="displayEditDialog = false"
 >
-  <ng-template pTemplate="header">
-    <app-name-and-time-header
-      [date]="tweet.createdAt"
-      [user]="tweet.user"
-    ></app-name-and-time-header>
-  </ng-template>
-
-  <quill-editor
-    class="w-full"
-    theme="snow"
-    placeholder="Retweet your reply..."
-    customToolbarPosition="bottom"
-    [(ngModel)]="editTweet"
-    name="retweetText"
-    [styles]="{
-      height: 'auto',
-      maxWidth: '600px',
-      flexDirection: 'column-reverse !important'
-    }"
-  >
-  </quill-editor>
-
-  <ng-template pTemplate="footer">
-    <p-button
-      icon="pi pi-save"
-      (click)="onEditTweet()"
-      label="Save"
-      [loading]="isEditing"
-      class="p-button-text -mr-2"
-    ></p-button>
-  </ng-template>
-</p-dialog>
+</app-edit-tweet-dialog>
 
 <!-- retweet dialog -->
 
-<p-dialog
-  [(visible)]="retweetDisplay"
-  [modal]="true"
-  [breakpoints]="{ '960px': '600px' }"
-  [style]="{ width: '600px' }"
-  [baseZIndex]="10000"
-  [draggable]="false"
-  [resizable]="false"
-  [dismissableMask]="true"
->
-  <ng-template pTemplate="header">
-    <app-name-and-time-header [user]="currentUser"></app-name-and-time-header>
-  </ng-template>
-
-  <quill-editor
-    class="w-full"
-    theme="snow"
-    placeholder="Retweet your reply..."
-    customToolbarPosition="bottom"
-    [(ngModel)]="retweetText"
-    name="retweetText"
-    [styles]="{
-      height: 'auto',
-      maxWidth: '600px',
-      flexDirection: 'column-reverse !important'
-    }"
-  >
-  </quill-editor>
-
-  <div
-    class="hover:bg-gray-50 cursor-pointer border w-full transition rounded-md"
-  >
-    <div
-      class="border-b border-gray-300 px-2 md:px-4 py-2 items-center justify-between flex"
-    >
-      <app-name-and-time-header
-        [date]="tweet.createdAt"
-        [user]="tweet.user"
-      ></app-name-and-time-header>
-    </div>
-
-    <div class="p-4" [routerLink]="['/tweet', tweet.id]">
-      <quill-view-html [content]="tweet.tweet"></quill-view-html>
-    </div>
-  </div>
-
-  <ng-template pTemplate="footer">
-    <p-button
-      icon="pi pi-share-alt"
-      (click)="retweet()"
-      label="Retweet"
-      [loading]="isRetweeting"
-      class="p-button-text -mr-2"
-    ></p-button>
-  </ng-template>
-</p-dialog>
+<app-retweet-dialog
+  [tweet]="tweet"
+  [currentUser]="currentUser"
+  [visible]="retweetDisplay"
+  (onCloseEvent)="retweetDisplay = false"
+></app-retweet-dialog>

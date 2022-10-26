@@ -1,0 +1,43 @@
+<p-dialog
+  [(visible)]="visible"
+  [modal]="true"
+  [breakpoints]="{ '960px': '600px' }"
+  [style]="{ width: '600px' }"
+  [baseZIndex]="10000"
+  [draggable]="false"
+  [resizable]="false"
+  [dismissableMask]="true"
+  (onHide)="onHide()"
+>
+  <ng-template pTemplate="header">
+    <app-name-and-time-header
+      [date]="tweet.createdAt"
+      [user]="tweet.user"
+    ></app-name-and-time-header>
+  </ng-template>
+
+  <quill-editor
+    class="w-full"
+    theme="snow"
+    placeholder="Retweet your reply..."
+    customToolbarPosition="bottom"
+    [(ngModel)]="editTweet"
+    name="retweetText"
+    [styles]="{
+      height: 'auto',
+      maxWidth: '600px',
+      flexDirection: 'column-reverse !important'
+    }"
+  >
+  </quill-editor>
+
+  <ng-template pTemplate="footer">
+    <p-button
+      icon="pi pi-save"
+      label="Save"
+      class="p-button-text -mr-2"
+      [loading]="isEditing"
+      (click)="onEditTweet()"
+    ></p-button>
+  </ng-template>
+</p-dialog>

@@ -6,7 +6,7 @@ import { BehaviorSubject, tap } from 'rxjs';
 
 import { environment } from 'src/environments/environment';
 
-import { PaginatedTweets } from './../models/tweet.model';
+import { PaginatedTweets, Tweet } from './../models/tweet.model';
 
 @Injectable({
   providedIn: 'root',
@@ -91,6 +91,28 @@ export class TimelineService {
     const userTimeline = this.userTimeline.getValue();
     if (userTimeline && userTimeline.page < userTimeline.totalPages) {
       this.getUserTimeline(userId, userTimeline.page + 1, 5);
+    }
+  }
+
+  updateProfileTimeline(tweet: Tweet) {
+    const userTimeline = this.userTimeline.getValue();
+    if (userTimeline) {
+      const index = userTimeline.tweets.findIndex((t) => t.id === tweet.id);
+      if (index !== -1) {
+        userTimeline.tweets[index] = tweet;
+      }
+      this.userTimeline.next(userTimeline);
+    }
+  }
+
+  updateProfileTimelineAfterDelete(tweetId: string) {
+    const userTimeline = this.userTimeline.getValue();
+    if (userTimeline) {
+      const index = userTimeline.tweets.findIndex((t) => t.id === tweetId);
+      if (index !== -1) {
+        userTimeline.tweets.splice(index, 1);
+      }
+      this.userTimeline.next(userTimeline);
     }
   }
 }

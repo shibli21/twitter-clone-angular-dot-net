@@ -18,14 +18,10 @@ export class TweetComponent implements OnInit {
   display = false;
   retweetDisplay = false;
   tweet!: Tweet | null;
-  editTweet: string = '';
   comment = '';
   tweetId = '';
-  retweetText = '';
   isCommenting = false;
   isLoading = false;
-  isEditing = false;
-  isRetweeting = false;
   currentUser!: User;
   notFound = false;
 
@@ -36,7 +32,6 @@ export class TweetComponent implements OnInit {
     private router: Router,
     private route: ActivatedRoute,
     private commentService: CommentService,
-    private retweetService: RetweetService,
     private authService: AuthService,
     private toastr: ToastrService
   ) {}
@@ -59,7 +54,6 @@ export class TweetComponent implements OnInit {
       this.tweetService.getTweet(this.tweetId).subscribe({
         next: (res) => {
           this.tweet = res;
-          this.editTweet = res.tweet;
           this.isLoading = false;
         },
         error: () => {
@@ -70,7 +64,6 @@ export class TweetComponent implements OnInit {
 
       this.tweetService.tweet.subscribe((res) => {
         this.tweet = res;
-        this.editTweet = res?.tweet ?? '';
       });
 
       this.commentService.isLoadingComment.subscribe((isLoading) => {
@@ -101,27 +94,6 @@ export class TweetComponent implements OnInit {
     }
   }
 
-  onEditTweet() {
-    this.isEditing = true;
-    if (this.tweet?.type === 'Retweet') {
-      this.tweetService.editRetweet(this.tweetId, this.editTweet).subscribe({
-        next: (res) => {
-          this.isEditing = false;
-          this.display = false;
-        },
-      });
-    } else {
-      this.tweetService.editTweet(this.tweetId, this.editTweet).subscribe({
-        next: (res) => {
-          this.tweetService.getTweet(this.tweetId).subscribe((res) => {
-            this.isEditing = false;
-            this.display = false;
-          });
-        },
-      });
-    }
-  }
-
   showRetweetDialog() {
     this.retweetDisplay = true;
   }
@@ -129,7 +101,7 @@ export class TweetComponent implements OnInit {
   deleteTweet() {
     this.tweetService.deleteTweet(this.tweetId).subscribe({
       next: (res) => {
-        this.router.navigate(['/profile']);
+        this.router.navigate(['/profile', this.currentUser.id]);
         this.toastr.success('Tweet deleted successfully');
       },
     });
@@ -139,16 +111,5 @@ export class TweetComponent implements OnInit {
     if (this.tweetComments) {
       this.commentService.loadMoreComments(this.tweetId);
     }
-  }
-
-  retweet() {
-    this.isRetweeting = true;
-    this.retweetService.retweet(this.tweetId, this.retweetText).subscribe({
-      next: (res) => {
-        this.retweetDisplay = false;
-        this.toastr.success('Retweeted successfully');
-        this.isRetweeting = false;
-      },
-    });
   }
 }

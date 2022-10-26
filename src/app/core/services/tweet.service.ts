@@ -24,7 +24,7 @@ export class TweetService {
       })
       .pipe(
         catchError((err) => {
-          return throwError(err);
+          return throwError(() => err);
         })
       );
   }
@@ -35,7 +35,7 @@ export class TweetService {
         this.tweet.next(tweet);
       }),
       catchError((err) => {
-        return throwError(err);
+        return throwError(() => err);
       })
     );
   }
@@ -45,7 +45,7 @@ export class TweetService {
       .get<Tweet[]>(this.baseUrl + 'tweet/user-tweets/' + userId)
       .pipe(
         catchError((err) => {
-          return throwError(err);
+          return throwError(() => err);
         })
       );
   }
@@ -53,7 +53,7 @@ export class TweetService {
   likeTweet(tweetId: string) {
     return this.http.post(this.baseUrl + 'tweet/like/' + tweetId, {}).pipe(
       catchError((err) => {
-        return throwError(err);
+        return throwError(() => err);
       })
     );
   }
@@ -68,7 +68,7 @@ export class TweetService {
       })
       .pipe(
         catchError((err) => {
-          return throwError(err);
+          return throwError(() => err);
         })
       );
   }
@@ -76,7 +76,7 @@ export class TweetService {
   deleteTweet(tweetId: string) {
     return this.http.delete(this.baseUrl + 'tweet/' + tweetId).pipe(
       catchError((err) => {
-        return throwError(err);
+        return throwError(() => err);
       })
     );
   }
@@ -91,8 +91,12 @@ export class TweetService {
       })
       .pipe(
         catchError((err) => {
-          return throwError(err);
+          return throwError(() => err);
         })
       );
+  }
+
+  updateTweet(tweet: Tweet) {
+    this.tweet.next(tweet);
   }
 }

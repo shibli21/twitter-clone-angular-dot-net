@@ -14,6 +14,9 @@ import { NameAndTimeHeaderComponent } from './name-and-time-header/name-and-time
 import { MomentModule } from 'ngx-moment';
 import { TweetCardSkeletonComponent } from './tweet-card-skeleton/tweet-card-skeleton.component';
 import { UserCardSkeletonComponent } from './user-card-skeleton/user-card-skeleton.component';
+import { LikeReplyRetweetButtonComponent } from './like-reply-retweet-button/like-reply-retweet-button.component';
+import { RetweetDialogComponent } from './retweet-dialog/retweet-dialog.component';
+import { EditTweetDialogComponent } from './edit-tweet-dialog/edit-tweet-dialog.component';
 
 @NgModule({
   declarations: [
@@ -26,6 +29,9 @@ import { UserCardSkeletonComponent } from './user-card-skeleton/user-card-skelet
     NameAndTimeHeaderComponent,
     TweetCardSkeletonComponent,
     UserCardSkeletonComponent,
+    LikeReplyRetweetButtonComponent,
+    RetweetDialogComponent,
+    EditTweetDialogComponent,
   ],
   imports: [
     CommonModule,
@@ -61,6 +67,9 @@ import { UserCardSkeletonComponent } from './user-card-skeleton/user-card-skelet
     NameAndTimeHeaderComponent,
     TweetCardSkeletonComponent,
     UserCardSkeletonComponent,
+    LikeReplyRetweetButtonComponent,
+    RetweetDialogComponent,
+    EditTweetDialogComponent,
   ],
 })
 export class SharedModule {}
