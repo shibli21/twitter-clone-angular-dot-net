@@ -26,6 +26,7 @@ builder.Services.AddSingleton<IConnectionMultiplexer>(x => ConnectionMultiplexer
 
 builder.Services.AddSingleton<ITweetService, TweetService>();
 builder.Services.AddSingleton<ILikeCommentService, LikeCommentService>();
+builder.Services.AddSingleton<IBlockService, BlockService>();
 builder.Services.AddSingleton<IUsersService, UsersService>();
 builder.Services.AddSingleton<ITimeLineService, TimeLineService>();
 

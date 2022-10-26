@@ -13,28 +13,40 @@ namespace UserService.Controllers;
 public class UsersController : ControllerBase
 {
     private readonly IUsersService _usersService;
-
+    private readonly IBlockService _blockService;
     private readonly IFollowerService _followerService;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IBus _bus;
 
-    public UsersController(IUsersService usersService, IHttpContextAccessor httpContextAccessor, IFollowerService followerService, IBus bus)
+    public UsersController(IUsersService usersService, IHttpContextAccessor httpContextAccessor, IFollowerService followerService, IBus bus, IBlockService blockService)
     {
         _usersService = usersService;
         _httpContextAccessor = httpContextAccessor;
         _followerService = followerService;
         _bus = bus;
+        _blockService = blockService;
     }
 
     [HttpGet("{id}"), Authorize]
     public async Task<ActionResult<SearchedUserResponseDto?>> GetUserById(string id)
     {
         var userId = _httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if(userId == null)
+        {
+            return Unauthorized();
+        }
         User? user = await _usersService.GetUserAsync(id);
         if (user == null || user.DeletedAt != null || user.BlockedAt != null)
         {
             return NotFound();
         }
+        var blocked = await _blockService.IsBlocked(userId, id);
+        Console.WriteLine(blocked);
+        if (blocked)
+        {
+            return NotFound();
+        }
+
         SearchedUserResponseDto userResponseDto = user.AsDtoSearchedUser();
         userResponseDto.Followers = await _usersService.GetFollowerCount(id);
         userResponseDto.Following = await _usersService.GetFollowingCount(id);

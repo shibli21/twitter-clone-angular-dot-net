@@ -19,9 +19,9 @@ namespace Infrastructure.Services
         private IHttpContextAccessor _httpContextAccessor;
 
         public SearchingService(IOptions<TwitterCloneDbConfig> twitterCloneDatabaseSettings,
-        IMongoClient mongoClient,IHttpContextAccessor httpContextAccessor)
+        IMongoClient mongoClient, IHttpContextAccessor httpContextAccessor)
         {
-             var mongoDatabase = mongoClient.GetDatabase(twitterCloneDatabaseSettings.Value.DatabaseName);
+            var mongoDatabase = mongoClient.GetDatabase(twitterCloneDatabaseSettings.Value.DatabaseName);
             _usersCollection = mongoDatabase.GetCollection<User>(twitterCloneDatabaseSettings.Value.UserCollectionName);
             _followCollection = mongoDatabase.GetCollection<Follows>(twitterCloneDatabaseSettings.Value.FollowerCollectionName);
             _blockCollection = mongoDatabase.GetCollection<Blocks>(twitterCloneDatabaseSettings.Value.BlockCollectionName);
@@ -31,7 +31,7 @@ namespace Infrastructure.Services
         }
         public async Task<PaginatedTweetResponseDto> SearchTweetAsync(string searchQuery, int page, int limit)
         {
-             if (_httpContextAccessor.HttpContext != null)
+            if (_httpContextAccessor.HttpContext != null)
             {
                 string? userId = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
                 if (userId != null)
@@ -39,9 +39,12 @@ namespace Infrastructure.Services
                     var filter = _hashTagCollection.Find(x => x.HashTag.Contains(searchQuery));
                     var tweetIds = (await filter.Skip((page) * limit)
                         .Limit(limit).ToListAsync()).Select(x => x.TweetId).Distinct().ToArray();
- 
-                    var blocked = await _blockCollection.Find(block => block.UserId == userId).ToListAsync();
-                    var blockedIds = blocked.Select(block => block.BlockedUserId).ToList();
+
+                    var blocked = await _blockCollection.Find(block => block.UserId == userId || block.BlockedUserId == userId).ToListAsync();
+                    var blockedMeIds = blocked.Where(block => block.BlockedUserId == userId).Select(block => block.UserId).ToList();
+                    var myBlockedIds = blocked.Where(block => block.UserId == userId).Select(block => block.BlockedUserId).ToList();
+                    var blockedIds = blockedMeIds.Concat(myBlockedIds).ToList();
+
                     var tweets = await _tweetCollection.Find(tweet => tweetIds.Contains(tweet.Id) && tweet.DeletedAt == null && !blockedIds.Contains(tweet.UserId)).ToListAsync();
                     int LastPage = (int)Math.Ceiling((double)await filter.CountDocumentsAsync() / limit) - 1;
                     LastPage = LastPage < 0 ? 0 : LastPage;
@@ -68,9 +71,11 @@ namespace Infrastructure.Services
                 {
                     var following = await _followCollection.Find(follow => follow.UserId == id).ToListAsync();
                     var followingIds = following.Select(follow => follow.FollowingId).ToList();
-                    var blocked = await _blockCollection.Find(block => block.UserId == id).ToListAsync();
-                    var blockedIds = blocked.Select(block => block.BlockedUserId).ToList();
-                    var filter = _usersCollection.Find( user => (user.UserName.Contains(searchQuery) || user.FirstName.Contains(searchQuery) || user.LastName.Contains(searchQuery)) && user.Id != id && !blockedIds.Contains(user.Id) && user.DeletedAt == null && user.BlockedAt == null);
+                    var blocked = await _blockCollection.Find(block => block.UserId == id || block.BlockedUserId == id).ToListAsync();
+                    var blockedMeIds = blocked.Where(block => block.BlockedUserId == id).Select(block => block.UserId).ToList();
+                    var myBlockedIds = blocked.Where(block => block.UserId == id).Select(block => block.BlockedUserId).ToList();
+                    var blockedIds = blockedMeIds.Concat(myBlockedIds).ToList();
+                    var filter = _usersCollection.Find(user => (user.UserName.Contains(searchQuery) || user.FirstName.Contains(searchQuery) || user.LastName.Contains(searchQuery)) && user.Id != id && !blockedIds.Contains(user.Id) && user.DeletedAt == null && user.BlockedAt == null);
                     int lastPage = (int)Math.Ceiling((double)await filter.CountDocumentsAsync() / limit) - 1;
                     lastPage = lastPage < 0 ? 0 : lastPage;
                     long totalElements = await filter.CountDocumentsAsync();

@@ -14,6 +14,7 @@ namespace Infrastructure.Services
 
         private readonly IMongoCollection<LikeRetweets> _likeRetweetCollection;
         private readonly IMongoCollection<Comments> _commentCollection;
+        private readonly IMongoCollection<Blocks> _blockCollection;
         private readonly IMongoCollection<User> _user;
         private readonly IMongoCollection<Tweets> _tweetCollection;
         private readonly IHttpContextAccessor _httpContextAccessor;
@@ -25,6 +26,7 @@ namespace Infrastructure.Services
             _commentCollection = database.GetCollection<Comments>(twitterCloneDbConfig.Value.CommentCollectionName);
             _user = database.GetCollection<User>(twitterCloneDbConfig.Value.UserCollectionName);
             _tweetCollection = database.GetCollection<Tweets>(twitterCloneDbConfig.Value.TweetCollectionName);
+            _blockCollection = database.GetCollection<Blocks>(twitterCloneDbConfig.Value.BlockCollectionName);
         }
 
         public async Task<CommentResponseDto?> Comment(string userId, Tweets tweet, string comment)
@@ -90,9 +92,18 @@ namespace Infrastructure.Services
 
         public async Task<PaginatedCommentResponseDto> GetComments(int max, int page, string tweetId)
         {
-            var filter = _commentCollection.Find(x => x.TweetId == tweetId);
+            var userId = _httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var blocked = await _blockCollection.Find(block => block.UserId == userId || block.BlockedUserId == userId).ToListAsync();
+            var blockedMeIds = blocked.Where(block => block.BlockedUserId == userId).Select(block => block.UserId).ToList();
+            var myBlockedIds = blocked.Where(block => block.UserId == userId).Select(block => block.BlockedUserId).ToList();
+            var blockedIds = blockedMeIds.Concat(myBlockedIds).ToList();
+
+
+            var filter = _commentCollection.Find(x => x.TweetId == tweetId && !blockedIds.Contains(x.UserId));
             int LastPage = (int)Math.Ceiling((double)await filter.CountDocumentsAsync() / max) - 1;
             LastPage = LastPage < 0 ? 0 : LastPage;
+
             PaginatedCommentResponseDto commentResponse = new PaginatedCommentResponseDto()
             {
                 TotalElements = await filter.CountDocumentsAsync(),

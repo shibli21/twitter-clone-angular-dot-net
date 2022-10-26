@@ -13,6 +13,9 @@ public static class TweetCommentUserResponseExtensions
             LastName = user.LastName,
             ProfilePictureUrl = user.ProfilePictureUrl,
             CoverPictureUrl = user.CoverPictureUrl,
+            DateOfBirth = user.DateOfBirth,
+            Address = user.Address,
+            Bio = user.Bio
         };
     }
 

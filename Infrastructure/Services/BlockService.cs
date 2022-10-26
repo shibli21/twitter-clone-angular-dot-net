@@ -49,6 +49,7 @@ namespace Infrastructure.Services
                             };
                             await _blockCollection.InsertOneAsync(block);
                             await _followCollection.DeleteOneAsync(follow => follow.UserId == userId && follow.FollowingId == blockingId);
+                            await _followCollection.DeleteOneAsync(follow => follow.UserId == blockingId && follow.FollowingId == userId);
                             msg = "User blocked successfully";
                         }
                         else
@@ -65,7 +66,7 @@ namespace Infrastructure.Services
 
         public async Task<PaginatedUserResponseDto> GetAdminBlockedUsers(int size, int page)
         {
-            var filter = _usersCollection.Find(user =>  user.BlockedAt != null && user.DeletedAt == null);
+            var filter = _usersCollection.Find(user => user.BlockedAt != null && user.DeletedAt == null);
             int LastPage = (int)Math.Ceiling((double)await filter.CountDocumentsAsync() / size) - 1;
             LastPage = LastPage < 0 ? 0 : LastPage;
             return new PaginatedUserResponseDto()
@@ -122,6 +123,21 @@ namespace Infrastructure.Services
 
             }
             return paginatedUserResponseDto;
+        }
+
+        public Task<bool> IsBlocked(string userId, string blockedUserId)
+        {
+            return _blockCollection.Find(block => (block.UserId == userId && block.BlockedUserId == blockedUserId) || (block.UserId == blockedUserId && block.BlockedUserId == userId)).AnyAsync();
+        }
+
+        public async Task<string[]> GetBlockedUsersIds(string userId)
+        {
+            var blocked = await _blockCollection.Find(block => block.UserId == userId || block.BlockedUserId == userId).ToListAsync();
+            var blockedMeIds = blocked.Where(block => block.BlockedUserId == userId).Select(block => block.UserId).ToList();
+            var myBlockedIds = blocked.Where(block => block.UserId == userId).Select(block => block.BlockedUserId).ToList();
+            var blockedIds = blockedMeIds.Concat(myBlockedIds).ToArray();
+            return blockedIds;
+
         }
     }
 }
