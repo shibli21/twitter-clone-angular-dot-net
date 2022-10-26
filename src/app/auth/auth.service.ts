@@ -93,6 +93,10 @@ export class AuthService {
     return this.http.get<User>(this.baseUrl + 'users/current-user').pipe(
       tap((user) => {
         this.user.next(user);
+      }),
+      catchError((err) => {
+        this.getRefreshToken().subscribe();
+        return throwError(() => err);
       })
     );
   }
@@ -113,7 +117,7 @@ export class AuthService {
         }),
         catchError((error) => {
           this.logout();
-          return throwError(error);
+          return throwError(() => error);
         })
       );
   }
