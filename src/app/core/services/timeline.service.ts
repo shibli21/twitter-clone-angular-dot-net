@@ -115,4 +115,37 @@ export class TimelineService {
       this.userTimeline.next(userTimeline);
     }
   }
+
+  updateNewsFeed(tweet: Tweet) {
+    const newsFeed = this.newsFeed.getValue();
+    if (newsFeed) {
+      const index = newsFeed.tweets.findIndex((t) => t.id === tweet.id);
+      if (index !== -1) {
+        newsFeed.tweets[index] = tweet;
+      }
+      this.newsFeed.next(newsFeed);
+    }
+  }
+
+  updateNewsFeedRetweetCount(tweetId: string) {
+    const newsFeed = this.newsFeed.getValue();
+    if (newsFeed) {
+      const index = newsFeed.tweets.findIndex((t) => t.id === tweetId);
+      if (index !== -1) {
+        newsFeed.tweets[index].retweetCount++;
+      }
+      this.newsFeed.next(newsFeed);
+    }
+  }
+
+  updateUserTimelineRetweetCount(tweetId: string) {
+    const userTimeline = this.userTimeline.getValue();
+    if (userTimeline) {
+      const index = userTimeline.tweets.findIndex((t) => t.id === tweetId);
+      if (index !== -1) {
+        userTimeline.tweets[index].retweetCount++;
+      }
+      this.userTimeline.next(userTimeline);
+    }
+  }
 }

@@ -1,3 +1,6 @@
+import { Router } from '@angular/router';
+import { TweetService } from './../../core/services/tweet.service';
+import { TimelineService } from './../../core/services/timeline.service';
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { ToastrService } from 'ngx-toastr';
 import { Tweet } from './../../core/models/tweet.model';
@@ -19,8 +22,11 @@ export class RetweetDialogComponent implements OnInit {
   isRetweeting = false;
 
   constructor(
+    private router: Router,
     private retweetService: RetweetService,
-    private toastr: ToastrService
+    private toastr: ToastrService,
+    private timelineService: TimelineService,
+    private tweetService: TweetService
   ) {}
 
   ngOnInit(): void {}
@@ -36,6 +42,14 @@ export class RetweetDialogComponent implements OnInit {
         this.visible = false;
         this.toastr.success('Retweeted successfully');
         this.isRetweeting = false;
+        if (this.router.url === '/home') {
+          this.timelineService.updateNewsFeedRetweetCount(this.tweet.id);
+          console.log('update news feed');
+        } else if (this.router.url.startsWith('/profile')) {
+          this.timelineService.updateUserTimelineRetweetCount(this.tweet.id);
+        } else {
+          this.tweetService.updateTweet(res);
+        }
       },
       error: (err) => {
         this.toastr.error(err.error.message);
