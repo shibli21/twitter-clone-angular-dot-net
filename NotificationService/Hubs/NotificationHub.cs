@@ -1,9 +1,7 @@
-using System.Security.Claims;
 using Core.Dtos;
 using Core.Models;
 using Infrastructure.Config;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
@@ -41,12 +39,15 @@ namespace NotificationService.Hubs
         public override async Task OnConnectedAsync()
         {
 
-            var userId = _httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            string? userId = Context?.GetHttpContext()?.Request.Query["userId"];
+
+
             if (userId != null)
             {
                 var connection = new SignalrConnections
                 {
-                    ConnectionId = Context.ConnectionId,
+                    ConnectionId = Context!.ConnectionId,
                     UserId = userId
                 };
                 await _connectionsCollection.InsertOneAsync(connection);
@@ -54,7 +55,7 @@ namespace NotificationService.Hubs
             await base.OnConnectedAsync();
         }
 
-        public override async Task OnDisconnectedAsync(Exception exception)
+        public override async Task OnDisconnectedAsync(Exception? exception)
         {
             await _connectionsCollection.DeleteOneAsync(x => x.ConnectionId == Context.ConnectionId);
             await base.OnDisconnectedAsync(exception);
