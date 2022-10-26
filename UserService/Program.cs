@@ -33,6 +33,7 @@ builder.Services.AddSingleton<IRefreshTokenService, RefreshTokenService>();
 builder.Services.AddSingleton<IFollowerService, FollowService>();
 builder.Services.AddSingleton<IBlockService, BlockService>();
 builder.Services.AddSingleton<IForgotPasswordService, ForgotPasswordService>();
+builder.Services.AddSingleton<IAdminService, AdminService>();
 
 builder.Services.AddControllers();
 
