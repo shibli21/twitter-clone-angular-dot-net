@@ -1,7 +1,7 @@
-import { ToastrService } from 'ngx-toastr';
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { HubConnection, HubConnectionBuilder } from '@microsoft/signalr';
+import { ToastrService } from 'ngx-toastr';
 import { MenuItem } from 'primeng/api';
 import { Notification } from 'src/app/core/models/notification.model';
 import { environment } from 'src/environments/environment';
@@ -9,6 +9,7 @@ import { AuthService } from './../../auth/auth.service';
 import { LoginResponse } from './../../core/models/user.model';
 import { NotificationService } from './../../core/services/notification.service';
 import { SearchService } from './../../core/services/search.service';
+import { TimelineService } from './../../core/services/timeline.service';
 
 @Component({
   selector: 'app-nav',
@@ -20,60 +21,73 @@ export class NavComponent implements OnInit {
   totalUnreadNotifications = 0;
   display = false;
 
-  items: MenuItem[] = [
-    {
-      label: 'Home',
-      icon: 'pi pi-home',
-      routerLink: ['/home'],
-    },
-
-    {
-      label: 'Profile',
-      icon: 'pi pi-fw pi-user',
-      items: [
-        {
-          label: 'My Profile',
-          icon: 'pi pi-fw pi-user-edit',
-          routerLink: ['/profile', this.authService.userId()],
-        },
-        {
-          label: 'Edit',
-          icon: 'pi pi-pencil',
-          routerLink: ['/profile/edit', this.authService.userId()],
-        },
-        {
-          label: 'Block list',
-          icon: 'pi pi-circle-fill',
-          routerLink: [`/profile/block/users`],
-        },
-        {
-          label: 'Logout',
-          icon: 'pi pi-fw pi-power-off',
-          routerLink: ['/login'],
-          command: () => {
-            this.authService.logout();
-          },
-        },
-      ],
-    },
-    {
-      label: 'Admin',
-      icon: 'pi pi-key',
-      routerLink: ['/admin'],
-      visible: this.authService.isAdmin(),
-    },
-  ];
-
+  items!: MenuItem[];
   private _hubConnection!: HubConnection;
   constructor(
     private authService: AuthService,
     private searchService: SearchService,
     private router: Router,
     private notificationService: NotificationService,
+    private timelineService: TimelineService,
     private toastr: ToastrService
   ) {}
 
   ngOnInit() {
+    this.items = [
+      {
+        label: 'Home',
+        icon: 'pi pi-home',
+        routerLink: ['/home'],
+        command: () => {
+          this.timelineService.newsFeed.next({
+            page: 0,
+            tweets: [],
+            lastPage: 0,
+            size: 0,
+            totalElements: 0,
+            totalPages: 0,
+          });
+          this.timelineService.getNewsFeed();
+        },
+      },
+
+      {
+        label: 'Profile',
+        icon: 'pi pi-fw pi-user',
+        items: [
+          {
+            label: 'My Profile',
+            icon: 'pi pi-fw pi-user-edit',
+            routerLink: ['/profile', this.authService.userId()],
+          },
+          {
+            label: 'Edit',
+            icon: 'pi pi-pencil',
+            routerLink: ['/profile/edit', this.authService.userId()],
+          },
+          {
+            label: 'Block list',
+            icon: 'pi pi-circle-fill',
+            routerLink: [`/profile/block/users`],
+          },
+          {
+            label: 'Logout',
+            icon: 'pi pi-fw pi-power-off',
+            routerLink: ['/login'],
+            command: () => {
+              this.authService.logout();
+            },
+          },
+        ],
+      },
+      {
+        label: 'Admin',
+        icon: 'pi pi-key',
+        routerLink: ['/admin'],
+        visible: this.authService.isAdmin(),
+      },
+    ];
+
     const userAuthData = localStorage.getItem('userData')!;
     const { jwtToken } = JSON.parse(userAuthData) as LoginResponse;
 
