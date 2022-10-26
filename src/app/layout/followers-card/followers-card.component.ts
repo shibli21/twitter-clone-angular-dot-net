@@ -9,6 +9,7 @@ import { Component, OnInit } from '@angular/core';
 })
 export class FollowersCardComponent implements OnInit {
   users: User[] = [];
+  isLoading = false;
 
   constructor(private userService: UserService) {
     this.getYouMayFollow();
@@ -17,8 +18,15 @@ export class FollowersCardComponent implements OnInit {
   ngOnInit(): void {}
 
   getYouMayFollow() {
-    this.userService.getYouMayFollow().subscribe((users) => {
-      this.users = users;
+    this.isLoading = true;
+    this.userService.getYouMayFollow().subscribe({
+      next: (users) => {
+        this.users = users;
+        this.isLoading = false;
+      },
+      error: (err) => {
+        this.isLoading = false;
+      },
     });
   }
 }
