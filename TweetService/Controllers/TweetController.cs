@@ -210,7 +210,7 @@ namespace Core.Controllers
             LikedOrRetweetedDto likedOrRetweet = await _iLikeCommentService.IsLikedOrRetweeted(id);
             tweetResponse.IsLiked = likedOrRetweet.IsLiked;
             tweetResponse.IsRetweeted = likedOrRetweet.IsRetweeted;
-
+            tweetResponse.User = user.AsDtoTweetComment();
 
             Tweets? refTweet = await _tweetService.GetTweetById(tweet.RetweetRefId);
             if (refTweet != null)
