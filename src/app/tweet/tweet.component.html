@@ -21,6 +21,7 @@
         <app-name-and-time-header
           [date]="tweet.createdAt"
           [user]="tweet.user"
+          [overlay]="true"
         ></app-name-and-time-header>
         <div *ngIf="currentUser.id === tweet.user.id">
           <div class="flex items-center text-gray-600">
