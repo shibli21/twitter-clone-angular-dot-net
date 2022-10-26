@@ -19,11 +19,8 @@ export class TweetCardComponent implements OnInit {
 
   comment = '';
   isCommenting = false;
-  isEditing = false;
-  isRetweeting = false;
   display: boolean = false;
   displayEditDialog: boolean = false;
-  editTweet = '';
   retweetDisplay = false;
   retweetText = '';
   currentUser!: User;
@@ -38,8 +35,6 @@ export class TweetCardComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.editTweet = this.tweet.tweet;
-
     this.authService.user.subscribe((res) => {
       if (res) {
         this.currentUser = res;
@@ -50,6 +45,7 @@ export class TweetCardComponent implements OnInit {
   showDialog() {
     this.display = true;
   }
+
   showEditDialog() {
     this.displayEditDialog = true;
   }
@@ -61,7 +57,7 @@ export class TweetCardComponent implements OnInit {
   commentOnTweet() {
     this.isCommenting = true;
     this.commentService.commentOnTweet(this.tweet.id, this.comment).subscribe({
-      next: () => {
+      next: (res) => {
         this.tweetService.getTweet(this.tweet.id).subscribe((res) => {
           this.tweet = res;
           this.comment = '';
@@ -87,44 +83,11 @@ export class TweetCardComponent implements OnInit {
     });
   }
 
-  onEditTweet() {
-    this.isEditing = true;
-    if (this.tweet?.type === 'Retweet') {
-      this.tweetService.editRetweet(this.tweet.id, this.editTweet).subscribe({
-        next: (res) => {
-          this.isEditing = false;
-          this.displayEditDialog = false;
-        },
-      });
-    } else {
-      this.tweetService.editTweet(this.tweet.id, this.editTweet).subscribe({
-        next: (res) => {
-          this.tweetService.getTweet(this.tweet.id).subscribe((res) => {
-            this.isEditing = false;
-            this.displayEditDialog = false;
-          });
-        },
-      });
-    }
-  }
-
   deleteTweet() {
     this.tweetService.deleteTweet(this.tweet.id).subscribe({
       next: (res) => {
         this.toastr.success('Tweet deleted successfully');
         this.timelineService.updateProfileTimelineAfterDelete(this.tweet.id);
-      },
-    });
-  }
-
-  retweet() {
-    this.retweetService.retweet(this.tweet.id, this.retweetText).subscribe({
-      next: () => {
-        this.tweetService.getTweet(this.tweet.id).subscribe((res) => {
-          this.tweet = res;
-        });
-        this.toastr.success('Retweeted successfully');
-        this.retweetDisplay = false;
       },
     });
   }

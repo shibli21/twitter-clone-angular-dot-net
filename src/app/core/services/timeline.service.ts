@@ -35,7 +35,7 @@ export class TimelineService {
 
   constructor(private http: HttpClient, private router: Router) {}
 
-  getNewsFeed(page = 0, size = 5) {
+  getNewsFeed(page = 0, size = 20) {
     this.isLoadingNewsFeed.next(true);
 
     return this.http
@@ -61,11 +61,11 @@ export class TimelineService {
   loadMoreNewsFeed() {
     const newsFeed = this.newsFeed.getValue();
     if (newsFeed && newsFeed.page < newsFeed.totalPages) {
-      this.getNewsFeed(newsFeed.page + 1, 5);
+      this.getNewsFeed(newsFeed.page + 1);
     }
   }
 
-  getUserTimeline(userId: string, page = 0, size = 5) {
+  getUserTimeline(userId: string, page = 0, size = 20) {
     this.isLoadingUserTimeline.next(true);
     return this.http
       .get<PaginatedTweets>(
@@ -90,7 +90,7 @@ export class TimelineService {
   loadMoreUserTimeline(userId: string) {
     const userTimeline = this.userTimeline.getValue();
     if (userTimeline && userTimeline.page < userTimeline.totalPages) {
-      this.getUserTimeline(userId, userTimeline.page + 1, 5);
+      this.getUserTimeline(userId, userTimeline.page + 1);
     }
   }
 
