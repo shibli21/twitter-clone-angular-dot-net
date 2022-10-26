@@ -1,5 +1,4 @@
 using Core.Dtos;
-using Core.Interfaces;
 using Core.Models;
 using Infrastructure.Config;
 using MassTransit;
@@ -13,29 +12,22 @@ namespace CacheService.Consumers
     public class CacheConsumer : IConsumer<CacheNotificationConsumerDto>
     {
 
-        private readonly ITimeLineService _iTimeLineService;
-        private readonly ITweetService _tweetService;
-        private readonly IUsersService _usersService;
         private readonly IMongoCollection<User> _usersCollection;
         private readonly IMongoCollection<Follows> _followCollection;
         private readonly IMongoCollection<Tweets> _tweetCollection;
         private readonly IMongoCollection<LikeRetweets> _likeRetweetCollection;
         private readonly IConnectionMultiplexer _connectionMultiplexer;
         private readonly IDatabase _database;
-        private readonly TwitterCloneRedisConfig _redisConfig;
         private int cacheTime = 60;
-        public CacheConsumer(IOptions<TwitterCloneDbConfig> twitterCloneDbConfig, IMongoClient mongoClient, IOptions<TwitterCloneRedisConfig> twitterCloneRedisSettings, IConnectionMultiplexer connectionMultiplexer, ITimeLineService iTimeLineService, ITweetService tweetService, IUsersService usersService)
+        public CacheConsumer(IOptions<TwitterCloneDbConfig> twitterCloneDbConfig, IMongoClient mongoClient, IConnectionMultiplexer connectionMultiplexer)
         {
             var mongoDatabase = mongoClient.GetDatabase(twitterCloneDbConfig.Value.DatabaseName);
             _usersCollection = mongoDatabase.GetCollection<User>(twitterCloneDbConfig.Value.UserCollectionName);
             _followCollection = mongoDatabase.GetCollection<Follows>(twitterCloneDbConfig.Value.FollowerCollectionName);
-            _tweetCollection = mongoDatabase.GetCollection<Tweets>(twitterCloneDbConfig.Value.TweetCollectionName); _connectionMultiplexer = connectionMultiplexer;
+            _tweetCollection = mongoDatabase.GetCollection<Tweets>(twitterCloneDbConfig.Value.TweetCollectionName);
             _likeRetweetCollection = mongoDatabase.GetCollection<LikeRetweets>(twitterCloneDbConfig.Value.LikeRetweetCollectionName);
+            _connectionMultiplexer = connectionMultiplexer;
             _database = _connectionMultiplexer.GetDatabase();
-            _redisConfig = twitterCloneRedisSettings.Value;
-            _iTimeLineService = iTimeLineService;
-            _tweetService = tweetService;
-            _usersService = usersService;
 
         }
         public async Task Consume(ConsumeContext<CacheNotificationConsumerDto> context)
@@ -456,24 +448,24 @@ namespace CacheService.Consumers
                     PaginatedTweetResponseDto? newsfeed = JsonConvert.DeserializeObject<PaginatedTweetResponseDto>(resJson);
                     if (newsfeed != null)
                     {
-                        TweetCommentUserResponseDto? user = (await _usersService.GetUserAsync(cacheNotificationConsumerDto.RefUserId))?.AsDtoTweetComment();
+                        TweetCommentUserResponseDto? user = (await _usersCollection.Find(u => u.Id == cacheNotificationConsumerDto.RefUserId).FirstOrDefaultAsync())?.AsDtoTweetComment();
                         if (user != null)
                         {
-                            newsfeed = await _iTimeLineService.GetUserTimeLine(cacheNotificationConsumerDto.RefUserId, newsfeed.Size, newsfeed.Page);
+                            newsfeed = await GetNewsFeed(cacheNotificationConsumerDto.RefUserId, newsfeed.Size, newsfeed.Page);
                             if (newsfeed.Tweets != null)
                             {
                                 foreach (TweetResponseDto tweet in newsfeed.Tweets)
                                 {
-                                    tweet.User = (await _usersService.GetUserAsync(tweet.UserId))?.AsDtoTweetComment();
+                                    tweet.User = (await _usersCollection.Find(u => u.Id == tweet.UserId).FirstOrDefaultAsync())?.AsDtoTweetComment();
                                     LikedOrRetweetedDto likedOrRetweet = await IsLikedOrRetweeted(cacheNotificationConsumerDto.RefUserId, tweet.Id);
                                     tweet.IsLiked = likedOrRetweet.IsLiked;
                                     tweet.IsRetweeted = likedOrRetweet.IsRetweeted;
                                     if (tweet.Type == "Retweet" && tweet.RetweetRefId != null)
                                     {
-                                        Tweets? refTweet = await _tweetService.GetTweetById(tweet.RetweetRefId);
+                                        Tweets? refTweet = await _tweetCollection.Find(t => t.Id == tweet.RetweetRefId).FirstOrDefaultAsync();
                                         if (refTweet != null)
                                         {
-                                            User? refUser = await _usersService.GetUserAsync(refTweet.UserId);
+                                            User? refUser = await _usersCollection.Find(u => u.Id == refTweet.UserId).FirstOrDefaultAsync();
                                             if (refUser != null && refUser.DeletedAt == null && refUser.BlockedAt == null)
                                             {
                                                 tweet.RefTweet = refTweet.AsDto();
@@ -497,7 +489,7 @@ namespace CacheService.Consumers
             if (cacheNotificationConsumerDto.RefUserId != null)
             {
 
-                User? user = await _usersService.GetUserAsync(cacheNotificationConsumerDto.RefUserId);
+                User? user = await _usersCollection.Find(u => u.Id == cacheNotificationConsumerDto.RefUserId).FirstOrDefaultAsync();
                 if (user != null)
                 {
                     // / updating timeline of user
@@ -569,6 +561,26 @@ namespace CacheService.Consumers
             return likeRetweetResponse;
         }
 
+        public async Task<PaginatedTweetResponseDto> GetNewsFeed(string userId, int size, int page)
+        {
+            string[] followingIds = (await _followCollection.Find(f => f.UserId == userId).ToListAsync()).Select(f => f.FollowingId).ToArray();
+            var filter = _tweetCollection.Find(t => followingIds.Contains(t.UserId) && t.DeletedAt == null).SortByDescending(t => t.CreatedAt);
+            int LastPage = (int)Math.Ceiling((double)await filter.CountDocumentsAsync() / size) - 1;
+            LastPage = LastPage < 0 ? 0 : LastPage;
+            return new PaginatedTweetResponseDto()
+            {
+                TotalElements = await filter.CountDocumentsAsync(),
+                Page = page,
+                Size = size,
+                LastPage = LastPage,
+                TotalPages = (int)Math.Ceiling((double)await filter.CountDocumentsAsync() / size),
+                Tweets = await filter.Skip((page) * size)
+                                    .Limit(size)
+                                    .Project(tweet => tweet.AsDto())
+                                    .ToListAsync()
+            };
+
+        }
 
 
     }
