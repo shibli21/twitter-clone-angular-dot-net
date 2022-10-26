@@ -31,7 +31,7 @@ public class UsersController : ControllerBase
     public async Task<ActionResult<SearchedUserResponseDto?>> GetUserById(string id)
     {
         var userId = _httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier);
-        if(userId == null)
+        if (userId == null)
         {
             return Unauthorized();
         }
@@ -86,18 +86,7 @@ public class UsersController : ControllerBase
             {
                 return Unauthorized();
             }
-            // RabbitMQ Publish Check start
-            CacheNotificationConsumerDto? cacheNotificationConsumerDto = null;
-            if( user.UserName != userEditDto.UserName || user.FirstName != userEditDto.FirstName || user.LastName != userEditDto.LastName || user.ProfilePictureUrl != userEditDto.ProfilePictureUrl || user.CoverPictureUrl != userEditDto.CoverPictureUrl)
-            {
-                cacheNotificationConsumerDto = new CacheNotificationConsumerDto
-                {
-                    Type = "Edit Profile",
-                    IsNotification = false,
-                    RefUserId = user.Id,
-                };
-            }
-            // RabbitMQ Publish Check end
+            
 
             user.UserName = userEditDto.UserName;
             user.Email = userEditDto.Email;
@@ -113,10 +102,15 @@ public class UsersController : ControllerBase
 
             await _usersService.UpdateGetUserAsync(user.Id, user);
             // RabbitMQ Publish start
-            if(cacheNotificationConsumerDto != null)
+
+            CacheNotificationConsumerDto cacheNotificationConsumerDto = new CacheNotificationConsumerDto
             {
-                await _bus.Publish(cacheNotificationConsumerDto);
-            }
+                Type = "Edit Profile",
+                IsNotification = false,
+                RefUserId = user.Id,
+            };
+            await _bus.Publish(cacheNotificationConsumerDto);
+
             // RabbitMQ Publish end
             return Ok(user.AsDto());
         }
