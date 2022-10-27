@@ -6,7 +6,7 @@ namespace Core.Interfaces
     public interface ILikeCommentService
     {
 
-        Task<string> LikeTweet(Tweets tweet, string userId);
+        Task<LikedOrRetweetedDto> LikeTweet(Tweets tweet, string userId);
         Task<List<TweetCommentUserResponseDto>> GetLikedUsers(int max, int page, string tweetId);
         Task<CommentResponseDto?> Comment(string userId, Tweets tweet, string comment);
         Task<Comments?> GetCommentById(string commentId);
