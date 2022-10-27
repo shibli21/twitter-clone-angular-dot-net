@@ -1,3 +1,4 @@
+import { DashboardData } from './../models/admin.model';
 import { catchError, throwError } from 'rxjs';
 import { PaginatedUsers } from './../models/user.model';
 import { HttpClient } from '@angular/common/http';
@@ -36,5 +37,9 @@ export class AdminService {
 
   blockUser(id: string) {
     return this.http.post(`${this.baseUrl}block/by-admin/${id}`, {});
+  }
+
+  getDashboardData() {
+    return this.http.get<DashboardData>(`${this.baseUrl}admin/dashboard`);
   }
 }

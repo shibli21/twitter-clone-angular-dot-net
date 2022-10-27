@@ -1,1 +1,145 @@
-<div>Dashboard</div>
+<div
+  *ngIf="dashboardData"
+  class="container px-4 grid md:grid-cols-2 grid-cols-1 gap-4"
+>
+  <div>
+    <div>
+      <h1 class="text-xl md:text-2xl text-gray-800 font-bold my-5 md:my-10">
+        Overview of 24 hours
+      </h1>
+    </div>
+
+    <div class="grid lg:grid-cols-2 sm:grid-cols-1 gap-4">
+      <div class="border p-4 md:p-8 rounded-md flex">
+        <div class="w-[70%]">
+          <h5 class="text-xl text-gray-600">Users</h5>
+          <h3 class="mt-2 text-3xl font-bold text-gray-700">
+            {{ dashboardData.todaysUsers | number }}
+          </h3>
+        </div>
+        <div class="w-[30%] h-full">
+          <img
+            src="assets/icons/users.png"
+            alt="users"
+            class="h-auto object-cover w-[100px]"
+          />
+        </div>
+      </div>
+      <div class="border p-4 md:p-8 rounded-md flex">
+        <div class="w-[70%]">
+          <h5 class="text-xl text-gray-600">Blocked</h5>
+          <h3 class="mt-2 text-3xl font-bold text-gray-700">
+            {{ dashboardData.todaysBlockedUsers | number }}
+          </h3>
+        </div>
+        <div class="w-[30%] h-full">
+          <img
+            src="assets/icons/block.png"
+            alt="blocked"
+            class="h-auto object-cover w-[100px]"
+          />
+        </div>
+      </div>
+      <div class="border p-4 md:p-8 rounded-md flex">
+        <div class="w-[70%]">
+          <h5 class="text-xl text-gray-600">Tweets</h5>
+          <h3 class="mt-2 text-3xl font-bold text-gray-700">
+            {{ dashboardData.todaysTweets | number }}
+          </h3>
+        </div>
+        <div class="w-[30%] h-full">
+          <img
+            src="assets/icons/tweet.png"
+            alt="blocked"
+            class="h-auto object-cover w-[100px]"
+          />
+        </div>
+      </div>
+      <div class="border p-4 md:p-8 rounded-md flex">
+        <div class="w-[70%]">
+          <h5 class="text-xl text-gray-600">Retweets</h5>
+          <h3 class="mt-2 text-3xl font-bold text-gray-700">
+            {{ dashboardData.todaysRetweets | number }}
+          </h3>
+        </div>
+        <div class="w-[30%] h-full">
+          <img
+            src="assets/icons/retweet.png"
+            alt="blocked"
+            class="h-auto object-cover w-[100px]"
+          />
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div>
+    <div>
+      <h1 class="text-xl md:text-2xl text-gray-800 font-bold my-5 md:my-10">
+        Overview of all time
+      </h1>
+    </div>
+    <div class="grid lg:grid-cols-2 sm:grid-cols-1 gap-4">
+      <div class="border p-4 md:p-8 rounded-md flex">
+        <div class="w-[70%]">
+          <h5 class="text-xl text-gray-600">Users</h5>
+          <h3 class="mt-2 text-3xl font-bold text-gray-700">
+            {{ dashboardData.totalUsers | number }}
+          </h3>
+        </div>
+        <div class="w-[30%] h-full">
+          <img
+            src="assets/icons/users.png"
+            alt="users"
+            class="h-auto object-cover w-[100px]"
+          />
+        </div>
+      </div>
+      <div class="border p-4 md:p-8 rounded-md flex">
+        <div class="w-[70%]">
+          <h5 class="text-xl text-gray-600">Blocked</h5>
+          <h3 class="mt-2 text-3xl font-bold text-gray-700">
+            {{ dashboardData.totalBlockedUsers | number }}
+          </h3>
+        </div>
+        <div class="w-[30%] h-full">
+          <img
+            src="assets/icons/block.png"
+            alt="blocked"
+            class="h-auto object-cover w-[100px]"
+          />
+        </div>
+      </div>
+      <div class="border p-4 md:p-8 rounded-md flex">
+        <div class="w-[70%]">
+          <h5 class="text-xl text-gray-600">Tweets</h5>
+          <h3 class="mt-2 text-3xl font-bold text-gray-700">
+            {{ dashboardData.totalTweets | number }}
+          </h3>
+        </div>
+        <div class="w-[30%] h-full">
+          <img
+            src="assets/icons/tweet.png"
+            alt="blocked"
+            class="h-auto object-cover w-[100px]"
+          />
+        </div>
+      </div>
+      <div class="border p-4 md:p-8 rounded-md flex">
+        <div class="w-[70%]">
+          <h5 class="text-xl text-gray-600">Retweets</h5>
+          <h3 class="mt-2 text-3xl font-bold text-gray-700">
+            {{ dashboardData.totalRetweets | number }}
+          </h3>
+        </div>
+        <div class="w-[30%] h-full">
+          <img
+            src="assets/icons/retweet.png"
+            alt="blocked"
+            class="h-auto object-cover w-[100px]"
+          />
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
