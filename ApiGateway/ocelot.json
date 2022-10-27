@@ -155,6 +155,20 @@
       ]
     },
     {
+      "UpstreamPathTemplate": "/admin/dashboard",
+      "UpstreamHttpMethod": [
+        "Get"
+      ],
+      "DownstreamPathTemplate": "/admin/dashboard",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5211
+        }
+      ]
+    },
+    {
       "UpstreamPathTemplate": "/auth/register",
       "UpstreamHttpMethod": [
         "Post"
