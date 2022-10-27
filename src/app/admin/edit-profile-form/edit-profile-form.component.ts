@@ -46,7 +46,10 @@ export class EditProfileFormComponent implements OnInit {
   ngOnInit(): void {
     console.table(this.user);
 
-    this.editProfileForm.patchValue(this.user);
+    this.editProfileForm.patchValue({
+      ...this.user,
+      dateOfBirth: new Date(this.user.dateOfBirth),
+    });
   }
 
   onSubmit() {

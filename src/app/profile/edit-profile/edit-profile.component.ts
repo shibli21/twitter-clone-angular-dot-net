@@ -43,7 +43,10 @@ export class EditProfileComponent implements OnInit {
 
   ngOnInit(): void {
     this.authService.user.subscribe((user) => {
-      this.editProfileForm.patchValue(user!);
+      this.editProfileForm.patchValue({
+        ...user!,
+        dateOfBirth: new Date(user!.dateOfBirth),
+      });
     });
   }
 
