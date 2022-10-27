@@ -43,10 +43,9 @@ public class BlockController : ControllerBase
         {
             user.BlockedAt = DateTime.Now;
             msg = "User blocked";
-            if (msg == "User blocked successfully")
-            {
-                publishToRabbitMQ("Block by admin", id, null);
-            }
+            // Publish to RabbitMQ Start
+            publishToRabbitMQ("Block by admin", id, null);
+
             // Publish to RabbitMQ End
         }
         await _usersService.UpdateGetUserAsync(id, user);
@@ -71,14 +70,15 @@ public class BlockController : ControllerBase
         string msg = await _blockService.BlockByUser(id);
         if (msg == "Something went wrong")
         {
-            // Publish to RabbitMQ Start
-            if (msg == "User blocked successfully")
-            {
-                publishToRabbitMQ("Block by user", id, userId);
-            }
-            // Publish to RabbitMQ End
             return BadRequest(new { message = msg });
         }
+
+        // Publish to RabbitMQ Start
+        if (msg == "User blocked successfully")
+        {
+            publishToRabbitMQ("Block by user", id, userId);
+        }
+        // Publish to RabbitMQ End
         return Ok(new { message = msg });
     }
 
