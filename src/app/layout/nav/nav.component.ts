@@ -43,6 +43,7 @@ export class NavComponent implements OnInit {
         icon: 'pi pi-home',
         routerLink: ['/home'],
         command: () => {
+          window.scrollTo(0, 0);
           this.timelineService.newsFeed.next({
             page: 0,
             tweets: [],
