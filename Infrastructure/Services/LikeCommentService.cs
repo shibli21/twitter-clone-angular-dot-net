@@ -134,10 +134,9 @@ namespace Infrastructure.Services
             return commentResponse;
         }
 
-        public async Task<string> LikeTweet(Tweets tweet, string userId)
+        public async Task<LikedOrRetweetedDto> LikeTweet(Tweets tweet, string userId)
         {
-            string msg = "";
-
+            LikedOrRetweetedDto res = new LikedOrRetweetedDto();
             var likeRetweet = await _likeRetweetCollection.Find(x => x.UserId == userId && x.TweetId == tweet.Id).FirstOrDefaultAsync();
             if (likeRetweet == null)
             {
@@ -148,20 +147,21 @@ namespace Infrastructure.Services
                     IsLiked = true,
                     IsRetweeted = false,
                 };
+                res.IsLiked = true;
                 await _likeRetweetCollection.InsertOneAsync(likeRetweet);
                 tweet.LikeCount += 1;
                 await _tweetCollection.ReplaceOneAsync(x => x.Id == tweet.Id, tweet);
-                msg = "Tweet liked";
-
             }
             else
             {
                 if (likeRetweet.IsLiked)
                 {
-                    await _likeRetweetCollection.DeleteOneAsync(x => x.Id == likeRetweet.Id);
+                    likeRetweet.IsLiked = false;
+                    res.IsLiked = false;
+                    res.IsRetweeted = likeRetweet.IsRetweeted;
                     tweet.LikeCount -= 1;
+                    await _likeRetweetCollection.ReplaceOneAsync(x => x.Id == likeRetweet.Id, likeRetweet);
                     await _tweetCollection.ReplaceOneAsync(x => x.Id == tweet.Id, tweet);
-                    msg = "Tweet unliked";
                 }
                 else
                 {
@@ -169,13 +169,13 @@ namespace Infrastructure.Services
                     await _likeRetweetCollection.ReplaceOneAsync(x => x.Id == likeRetweet.Id, likeRetweet);
                     tweet.LikeCount += 1;
                     await _tweetCollection.ReplaceOneAsync(x => x.Id == tweet.Id, tweet);
-                    msg = "Tweet liked";
-
+                    res.IsLiked = true;
+                    res.IsRetweeted = likeRetweet.IsRetweeted;
                 }
             }
 
 
-            return msg;
+            return res;
         }
 
 

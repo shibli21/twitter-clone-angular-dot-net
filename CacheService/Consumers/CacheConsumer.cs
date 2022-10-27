@@ -41,9 +41,10 @@ namespace CacheService.Consumers
                 UpdateTweet(cacheNotificationConsumerDto);
             else if (cacheNotificationConsumerDto.Type == "Delete")
                 DeleteTweet(cacheNotificationConsumerDto);
-            else if (cacheNotificationConsumerDto.Type == "Like" || cacheNotificationConsumerDto.Type == "Unlike"
-                || cacheNotificationConsumerDto.Type == "Comment" || cacheNotificationConsumerDto.Type == "Delete Comment")
-                LikeCommentTweet(cacheNotificationConsumerDto);
+            else if (cacheNotificationConsumerDto.Type == "Comment" || cacheNotificationConsumerDto.Type == "Delete Comment")
+                CommentTweet(cacheNotificationConsumerDto);
+            else if (cacheNotificationConsumerDto.Type == "Like" || cacheNotificationConsumerDto.Type == "Unlike")
+                LikeTweet(cacheNotificationConsumerDto);
             else if (cacheNotificationConsumerDto.Type == "Block by user")
                 BlockByUser(cacheNotificationConsumerDto);
             else if (cacheNotificationConsumerDto.Type == "Block by admin")
@@ -152,9 +153,67 @@ namespace CacheService.Consumers
                     CacheNotificationConsumerDto cacheNotificationConsumerDtoRefTweet = new CacheNotificationConsumerDto
                     {
                         Tweet = refTweet,
-                        Type = "UpdateRetweet"
+                        Type = "UpdateRetweet",
+                        RefUserId = cacheNotificationConsumerDto.Tweet.UserId
                     };
-                    UpdateTweet(cacheNotificationConsumerDtoRefTweet);
+                    UpdateRetweetRef(cacheNotificationConsumerDtoRefTweet);
+                }
+            }
+        }
+
+
+
+        private async void UpdateRetweetRef(CacheNotificationConsumerDto cacheNotificationConsumerDto)
+        {
+            if (cacheNotificationConsumerDto.Tweet != null)
+            {
+                // Updating NewsFeed of followers
+                var followers = await _followCollection.Find(f => f.FollowingId == cacheNotificationConsumerDto.Tweet.UserId).ToListAsync();
+                foreach (var follower in followers)
+                {
+                    string? resJson = await _database.StringGetAsync("noobmasters_newsfeed_" + follower.UserId);
+                    if (resJson != null)
+                    {
+                        PaginatedTweetResponseDto? newsfeed = JsonConvert.DeserializeObject<PaginatedTweetResponseDto>(resJson);
+                        if (newsfeed != null && newsfeed.Tweets != null)
+                        {
+                            foreach (var tweet in newsfeed.Tweets)
+                            {
+                                if (tweet.Id == cacheNotificationConsumerDto.Tweet.Id)
+                                {
+                                    if (follower.UserId == cacheNotificationConsumerDto.RefUserId)
+                                    {
+                                        tweet.IsRetweeted = true;
+                                    }
+                                    tweet.RetweetCount = cacheNotificationConsumerDto.Tweet.RetweetCount;
+                                    break;
+                                }
+                            }
+                            await _database.StringSetAsync("noobmasters_newsfeed_" + follower.UserId, JsonConvert.SerializeObject(newsfeed), TimeSpan.FromMinutes(cacheTime));
+                        }
+                    }
+                }
+                // Updating Timeline of user
+                string? timelineJson = await _database.StringGetAsync("noobmasters_timeline_" + cacheNotificationConsumerDto.Tweet.UserId);
+                if (timelineJson != null)
+                {
+                    PaginatedTweetResponseDto? timeline = JsonConvert.DeserializeObject<PaginatedTweetResponseDto>(timelineJson);
+                    if (timeline != null && timeline.Tweets != null)
+                    {
+                        foreach (var tweet in timeline.Tweets)
+                        {
+                            if (tweet.Id == cacheNotificationConsumerDto.Tweet.Id)
+                            {
+                                if (tweet.UserId == cacheNotificationConsumerDto.RefUserId)
+                                {
+                                    tweet.IsRetweeted = true;
+                                }
+                                tweet.RetweetCount = cacheNotificationConsumerDto.Tweet.RetweetCount;
+                                break;
+                            }
+                        }
+                        await _database.StringSetAsync("noobmasters_timeline_" + cacheNotificationConsumerDto.Tweet.UserId, JsonConvert.SerializeObject(timeline), TimeSpan.FromMinutes(cacheTime));
+                    }
                 }
             }
         }
@@ -173,8 +232,15 @@ namespace CacheService.Consumers
                         PaginatedTweetResponseDto? newsfeed = JsonConvert.DeserializeObject<PaginatedTweetResponseDto>(resJson);
                         if (newsfeed != null && newsfeed.Tweets != null)
                         {
-                            newsfeed.Tweets = newsfeed.Tweets.Select(t => t.Id == cacheNotificationConsumerDto.Tweet.Id ? cacheNotificationConsumerDto.Tweet : t).ToList();
-
+                            foreach (var tweet in newsfeed.Tweets)
+                            {
+                                if (tweet.Id == cacheNotificationConsumerDto.Tweet.Id)
+                                {
+                                    tweet.Tweet = cacheNotificationConsumerDto.Tweet.Tweet;
+                                    tweet.History = cacheNotificationConsumerDto.Tweet.History;
+                                    break;
+                                }
+                            }
                             await _database.StringSetAsync("noobmasters_newsfeed_" + follower.UserId, JsonConvert.SerializeObject(newsfeed), TimeSpan.FromMinutes(cacheTime));
                         }
                     }
@@ -186,7 +252,15 @@ namespace CacheService.Consumers
                     PaginatedTweetResponseDto? timeline = JsonConvert.DeserializeObject<PaginatedTweetResponseDto>(timelineJson);
                     if (timeline != null && timeline.Tweets != null)
                     {
-                        timeline.Tweets = timeline.Tweets.Select(t => t.Id == cacheNotificationConsumerDto.Tweet.Id ? cacheNotificationConsumerDto.Tweet : t).ToList();
+                        foreach (var tweet in timeline.Tweets)
+                        {
+                            if (tweet.Id == cacheNotificationConsumerDto.Tweet.Id)
+                            {
+                                tweet.Tweet = cacheNotificationConsumerDto.Tweet.Tweet;
+                                tweet.History = cacheNotificationConsumerDto.Tweet.History;
+                                break;
+                            }
+                        }
                         await _database.StringSetAsync("noobmasters_timeline_" + cacheNotificationConsumerDto.Tweet.UserId, JsonConvert.SerializeObject(timeline), TimeSpan.FromMinutes(cacheTime));
                     }
                 }
@@ -245,27 +319,10 @@ namespace CacheService.Consumers
             }
         }
 
-        private async void LikeCommentTweet(CacheNotificationConsumerDto cacheNotificationConsumerDto)
+        private async void LikeTweet(CacheNotificationConsumerDto cacheNotificationConsumerDto)
         {
             if (cacheNotificationConsumerDto.Tweet != null)
             {
-                // Getting tweet owner info and ref tweet and ref user in case of Re tweet
-                cacheNotificationConsumerDto.Tweet.User = (await _usersCollection.Find(u => u.Id == cacheNotificationConsumerDto.Tweet.UserId && u.DeletedAt == null && u.BlockedAt == null).FirstOrDefaultAsync()).AsDtoTweetComment();
-                if (cacheNotificationConsumerDto.Tweet.User == null)
-                    return;
-                if (cacheNotificationConsumerDto.Tweet.Type == "Retweet")
-                {
-                    Tweets refTweet = await _tweetCollection.Find(t => t.Id == cacheNotificationConsumerDto.Tweet.RetweetRefId).FirstOrDefaultAsync();
-                    if (refTweet != null)
-                    {
-                        User refUser = await _usersCollection.Find(u => u.Id == refTweet.UserId && u.DeletedAt == null && u.BlockedAt == null).FirstOrDefaultAsync();
-                        if (refUser != null)
-                        {
-                            cacheNotificationConsumerDto.Tweet.RefTweet = refTweet.AsDto();
-                            cacheNotificationConsumerDto.Tweet.RefTweet.User = refUser.AsDtoTweetComment();
-                        }
-                    }
-                }
 
                 // Updating NewsFeed of followers
                 var followers = await _followCollection.Find(f => f.FollowingId == cacheNotificationConsumerDto.Tweet.UserId).ToListAsync();
@@ -277,8 +334,18 @@ namespace CacheService.Consumers
                         PaginatedTweetResponseDto? newsfeed = JsonConvert.DeserializeObject<PaginatedTweetResponseDto>(resJson);
                         if (newsfeed != null && newsfeed.Tweets != null)
                         {
-                            newsfeed.Tweets = newsfeed.Tweets.Select(t => t.Id == cacheNotificationConsumerDto.Tweet.Id ? cacheNotificationConsumerDto.Tweet : t).ToList();
-
+                            foreach (var tweet in newsfeed.Tweets)
+                            {
+                                if (tweet.Id == cacheNotificationConsumerDto.Tweet.Id)
+                                {
+                                    tweet.LikeCount = cacheNotificationConsumerDto.Tweet.LikeCount;
+                                    if (follower.UserId == cacheNotificationConsumerDto.RefUserId)
+                                    {
+                                        tweet.IsLiked = cacheNotificationConsumerDto.Tweet.IsLiked;
+                                    }
+                                    break;
+                                }
+                            }
                             await _database.StringSetAsync("noobmasters_newsfeed_" + follower.UserId, JsonConvert.SerializeObject(newsfeed), TimeSpan.FromMinutes(cacheTime));
                         }
                     }
@@ -291,7 +358,68 @@ namespace CacheService.Consumers
                     PaginatedTweetResponseDto? timeline = JsonConvert.DeserializeObject<PaginatedTweetResponseDto>(timelineJson);
                     if (timeline != null && timeline.Tweets != null)
                     {
-                        timeline.Tweets = timeline.Tweets.Select(t => t.Id == cacheNotificationConsumerDto.Tweet.Id ? cacheNotificationConsumerDto.Tweet : t).ToList();
+                        foreach (var tweet in timeline.Tweets)
+                        {
+                            if (tweet.Id == cacheNotificationConsumerDto.Tweet.Id)
+                            {
+                                tweet.LikeCount = cacheNotificationConsumerDto.Tweet.LikeCount;
+                                if (tweet.UserId == cacheNotificationConsumerDto.RefUserId)
+                                {
+                                    tweet.IsLiked = cacheNotificationConsumerDto.Tweet.IsLiked;
+                                }
+                                break;
+                            }
+                        }
+                        await _database.StringSetAsync("noobmasters_timeline_" + cacheNotificationConsumerDto.Tweet.UserId, JsonConvert.SerializeObject(timeline), TimeSpan.FromMinutes(cacheTime));
+                    }
+                }
+            }
+        }
+        private async void CommentTweet(CacheNotificationConsumerDto cacheNotificationConsumerDto)
+        {
+            if (cacheNotificationConsumerDto.Tweet != null)
+            {
+
+                // Updating NewsFeed of followers
+                var followers = await _followCollection.Find(f => f.FollowingId == cacheNotificationConsumerDto.Tweet.UserId).ToListAsync();
+                foreach (var follower in followers)
+                {
+                    string? resJson = await _database.StringGetAsync("noobmasters_newsfeed_" + follower.UserId);
+                    if (resJson != null)
+                    {
+                        PaginatedTweetResponseDto? newsfeed = JsonConvert.DeserializeObject<PaginatedTweetResponseDto>(resJson);
+                        if (newsfeed != null && newsfeed.Tweets != null)
+                        {
+                            foreach (var tweet in newsfeed.Tweets)
+                            {
+                                if (tweet.Id == cacheNotificationConsumerDto.Tweet.Id)
+                                {
+                                    tweet.CommentCount = cacheNotificationConsumerDto.Tweet.CommentCount;
+
+                                    break;
+                                }
+                            }
+                            await _database.StringSetAsync("noobmasters_newsfeed_" + follower.UserId, JsonConvert.SerializeObject(newsfeed), TimeSpan.FromMinutes(cacheTime));
+                        }
+                    }
+                }
+
+                // Updating Timeline of user
+                string? timelineJson = await _database.StringGetAsync("noobmasters_timeline_" + cacheNotificationConsumerDto.Tweet.UserId);
+                if (timelineJson != null)
+                {
+                    PaginatedTweetResponseDto? timeline = JsonConvert.DeserializeObject<PaginatedTweetResponseDto>(timelineJson);
+                    if (timeline != null && timeline.Tweets != null)
+                    {
+                        foreach (var tweet in timeline.Tweets)
+                        {
+                            if (tweet.Id == cacheNotificationConsumerDto.Tweet.Id)
+                            {
+                                tweet.CommentCount = cacheNotificationConsumerDto.Tweet.CommentCount;
+
+                                break;
+                            }
+                        }
                         await _database.StringSetAsync("noobmasters_timeline_" + cacheNotificationConsumerDto.Tweet.UserId, JsonConvert.SerializeObject(timeline), TimeSpan.FromMinutes(cacheTime));
                     }
                 }
@@ -564,6 +692,8 @@ namespace CacheService.Consumers
         public async Task<PaginatedTweetResponseDto> GetNewsFeed(string userId, int size, int page)
         {
             string[] followingIds = (await _followCollection.Find(f => f.UserId == userId).ToListAsync()).Select(f => f.FollowingId).ToArray();
+            string[] adminBlockIds = (await _usersCollection.Find(u => u.BlockedAt !=null).ToListAsync()).Select(u => u.Id).ToArray();
+            followingIds = followingIds.Except(adminBlockIds).ToArray();
             var filter = _tweetCollection.Find(t => followingIds.Contains(t.UserId) && t.DeletedAt == null).SortByDescending(t => t.CreatedAt);
             int LastPage = (int)Math.Ceiling((double)await filter.CountDocumentsAsync() / size) - 1;
             LastPage = LastPage < 0 ? 0 : LastPage;

@@ -35,13 +35,18 @@ namespace TimelineService.Controllers
         [HttpGet("user-timeline/{userId}"), Authorize]
         public async Task<ActionResult<PaginatedTweetResponseDto>> GetUserTweets(string userId, [FromQuery] int size = 20, [FromQuery] int page = 0)
         {
+            var authUserId = _httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (authUserId == null)
+            {
+                return Unauthorized();
+            }
             User? userModel = await _usersService.GetUserAsync(userId);
             if (userModel == null || userModel.DeletedAt != null || userModel.BlockedAt != null)
             {
                 return NotFound(new { Message = "User Not Found" });
             }
             PaginatedTweetResponseDto? tweets;
-            if (page == 0)
+            if (page == 0 && authUserId == userId)
             {
                 string? resJson = await _database.StringGetAsync("noobmasters_timeline_" + userId);
                 if (resJson != null)
@@ -86,7 +91,7 @@ namespace TimelineService.Controllers
                     }
                 }
             }
-            if (page == 0)
+            if (page == 0 && authUserId == userId)
             {
                 string resJson = JsonConvert.SerializeObject(tweets);
                 await _database.StringSetAsync("noobmasters_timeline_" + userId, resJson, TimeSpan.FromMinutes(60));
