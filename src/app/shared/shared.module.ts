@@ -17,6 +17,7 @@ import { UserCardSkeletonComponent } from './user-card-skeleton/user-card-skelet
 import { LikeReplyRetweetButtonComponent } from './like-reply-retweet-button/like-reply-retweet-button.component';
 import { RetweetDialogComponent } from './retweet-dialog/retweet-dialog.component';
 import { EditTweetDialogComponent } from './edit-tweet-dialog/edit-tweet-dialog.component';
+import { RetweetUndoDialogComponent } from './retweet-undo-dialog/retweet-undo-dialog.component';
 
 @NgModule({
   declarations: [
@@ -32,6 +33,7 @@ import { EditTweetDialogComponent } from './edit-tweet-dialog/edit-tweet-dialog.
     LikeReplyRetweetButtonComponent,
     RetweetDialogComponent,
     EditTweetDialogComponent,
+    RetweetUndoDialogComponent,
   ],
   imports: [
     CommonModule,
@@ -70,6 +72,7 @@ import { EditTweetDialogComponent } from './edit-tweet-dialog/edit-tweet-dialog.
     LikeReplyRetweetButtonComponent,
     RetweetDialogComponent,
     EditTweetDialogComponent,
+    RetweetUndoDialogComponent,
   ],
 })
 export class SharedModule {}

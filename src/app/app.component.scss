@@ -2,6 +2,9 @@
   .p-button {
     @apply px-4 py-1.5 shadow-none text-sm w-full;
   }
+  .p-button.p-button-danger:enabled:focus {
+    @apply shadow-none;
+  }
 
   i-tabler {
     width: 1.2rem;

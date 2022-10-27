@@ -1,0 +1,34 @@
+<p-dialog
+  position="top"
+  [(visible)]="visible"
+  [modal]="true"
+  [breakpoints]="{ '960px': '600px' }"
+  [style]="{ width: '600px' }"
+  [baseZIndex]="10000"
+  [draggable]="false"
+  [resizable]="false"
+  [dismissableMask]="true"
+  (onHide)="onHide()"
+  header="Undo retweet?"
+>
+  Are you sure that you want to proceed?
+
+  <ng-template pTemplate="footer">
+    <button
+      pButton
+      type="button"
+      label="Cancel"
+      class="p-button-danger"
+      (click)="visible = false"
+    ></button>
+
+    <button
+      icon="pi pi-undo"
+      pButton
+      label="Undo"
+      class="p-button -mr-2"
+      (click)="undoRetweet()"
+      [loading]="isUndoing"
+    ></button>
+  </ng-template>
+</p-dialog>

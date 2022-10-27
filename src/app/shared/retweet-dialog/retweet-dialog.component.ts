@@ -1,11 +1,11 @@
-import { Router } from '@angular/router';
-import { TweetService } from './../../core/services/tweet.service';
-import { TimelineService } from './../../core/services/timeline.service';
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { Tweet } from './../../core/models/tweet.model';
 import { User } from './../../core/models/user.model';
 import { RetweetService } from './../../core/services/retweet.service';
+import { TimelineService } from './../../core/services/timeline.service';
+import { TweetService } from './../../core/services/tweet.service';
 
 @Component({
   selector: 'app-retweet-dialog',
@@ -33,11 +33,7 @@ export class RetweetDialogComponent implements OnInit {
 
   retweet() {
     this.isRetweeting = true;
-    const retweetTweetId = this.tweet.refTweet
-      ? this.tweet.refTweet.id
-      : this.tweet.id;
-
-    this.retweetService.retweet(retweetTweetId, this.retweetText).subscribe({
+    this.retweetService.retweet(this.tweet.id, this.retweetText).subscribe({
       next: (res) => {
         this.visible = false;
         this.toastr.success('Retweeted successfully');
@@ -48,7 +44,7 @@ export class RetweetDialogComponent implements OnInit {
         } else if (this.router.url.startsWith('/profile')) {
           this.timelineService.updateUserTimelineRetweetCount(this.tweet.id);
         } else {
-          this.tweetService.updateTweet(res);
+          this.tweetService.updateTweetRetweetCount();
         }
       },
       error: (err) => {

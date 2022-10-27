@@ -99,4 +99,12 @@ export class TweetService {
   updateTweet(tweet: Tweet) {
     this.tweet.next(tweet);
   }
+
+  updateTweetRetweetCount() {
+    const tweet = this.tweet.value;
+    if (tweet) {
+      tweet.retweetCount++;
+      this.tweet.next(tweet);
+    }
+  }
 }

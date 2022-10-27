@@ -14,8 +14,11 @@ export class RetweetService {
 
   constructor(private http: HttpClient, private router: Router) {}
 
-  retweet(id: string, tweet: string) {
-    const hashTags = tweet.match(/#\w+/g);
+  retweet(id: string, tweet?: string) {
+    let hashTags: string[] | null = [];
+    if (tweet) {
+      hashTags = tweet.match(/#\w+/g);
+    }
 
     return this.http
       .post<Tweet>(`${this.baseUrl}tweet/retweet/${id}`, {

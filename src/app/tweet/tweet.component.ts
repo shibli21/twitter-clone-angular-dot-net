@@ -17,6 +17,7 @@ import { RetweetService } from './../core/services/retweet.service';
 export class TweetComponent implements OnInit {
   display = false;
   retweetDisplay = false;
+  retweetUndoDisplay = false;
   tweet!: Tweet | null;
   comment = '';
   tweetId = '';
@@ -95,7 +96,14 @@ export class TweetComponent implements OnInit {
   }
 
   showRetweetDialog() {
-    this.retweetDisplay = true;
+    if (
+      this.tweet?.userId === this.currentUser.id &&
+      this.tweet.type === 'Retweet'
+    ) {
+      this.retweetUndoDisplay = true;
+    } else {
+      this.retweetDisplay = true;
+    }
   }
 
   deleteTweet() {

@@ -22,6 +22,7 @@ export class TweetCardComponent implements OnInit {
   display: boolean = false;
   displayEditDialog: boolean = false;
   retweetDisplay = false;
+  retweetUndoDisplay = false;
   retweetText = '';
   currentUser!: User;
 
@@ -51,7 +52,14 @@ export class TweetCardComponent implements OnInit {
   }
 
   showRetweetDialog() {
-    this.retweetDisplay = true;
+    if (
+      this.tweet.userId === this.currentUser.id &&
+      this.tweet.type === 'Retweet'
+    ) {
+      this.retweetUndoDisplay = true;
+    } else {
+      this.retweetDisplay = true;
+    }
   }
 
   commentOnTweet() {

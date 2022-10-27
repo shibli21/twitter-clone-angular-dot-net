@@ -107,6 +107,16 @@
       (onCloseEvent)="retweetDisplay = false"
     ></app-retweet-dialog>
 
+    <div *ngIf="tweet.userId === currentUser.id && tweet.type === 'Retweet'">
+      <app-retweet-undo-dialog
+        [tweet]="tweet"
+        [currentUser]="currentUser"
+        [visible]="retweetUndoDisplay"
+        (onCloseEvent)="retweetUndoDisplay = false"
+      >
+      </app-retweet-undo-dialog>
+    </div>
+
     <div *ngIf="!tweet">Tweet not found</div>
   </div>
 </div>

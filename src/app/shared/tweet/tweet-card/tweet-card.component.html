@@ -60,6 +60,7 @@
 </div>
 
 <p-dialog
+  position="top"
   [(visible)]="display"
   [modal]="true"
   [breakpoints]="{ '960px': '600px' }"
@@ -76,8 +77,18 @@
     ></app-name-and-time-header>
   </ng-template>
 
-  <div class="mb-4 pb-2">
+  <div class="mb-4">
     <quill-view-html [content]="tweet.tweet"></quill-view-html>
+    <div
+      *ngIf="tweet.type === 'Retweet' && tweet.refTweet === null"
+      class="hover:bg-gray-50 cursor-pointer border w-full transition rounded-md"
+    >
+      <div
+        class="text-gray-500 text-sm border border-gray-300 px-2 md:px-4 py-2 items-center justify-between flex"
+      >
+        This tweet is no longer available.
+      </div>
+    </div>
     <div
       *ngIf="tweet.type === 'Retweet' && tweet.refTweet"
       class="hover:bg-gray-50 cursor-pointer border w-full transition rounded-md"
@@ -136,3 +147,13 @@
   [visible]="retweetDisplay"
   (onCloseEvent)="retweetDisplay = false"
 ></app-retweet-dialog>
+
+<div *ngIf="tweet.userId === currentUser.id && tweet.type === 'Retweet'">
+  <app-retweet-undo-dialog
+    [tweet]="tweet"
+    [currentUser]="currentUser"
+    [visible]="retweetUndoDisplay"
+    (onCloseEvent)="retweetUndoDisplay = false"
+  >
+  </app-retweet-undo-dialog>
+</div>
