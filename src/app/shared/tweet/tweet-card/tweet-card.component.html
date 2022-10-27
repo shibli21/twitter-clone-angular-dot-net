@@ -34,15 +34,13 @@
 
     <div *ngIf="tweet.type === 'Retweet'" class="">
       <div *ngIf="tweet.refTweet">
-        <app-tweet-card [isRetweet]="true" [tweet]="tweet.refTweet">
-        </app-tweet-card>
+        <app-retweet-card [tweet]="tweet.refTweet"></app-retweet-card>
       </div>
-      <div *ngIf="!tweet.refTweet" class="">
-        <div
-          class="text-gray-500 text-sm border border-gray-300 px-2 md:px-4 py-2 items-center justify-between flex"
-        >
-          This tweet is no longer available.
-        </div>
+      <div
+        class="text-gray-500 text-sm border border-gray-300 px-2 md:px-4 py-2 items-center justify-between flex"
+        *ngIf="!tweet.refTweet"
+      >
+        This tweet is no longer available.
       </div>
     </div>
   </div>
@@ -79,31 +77,16 @@
 
   <div class="mb-4">
     <quill-view-html [content]="tweet.tweet"></quill-view-html>
-    <div
-      *ngIf="tweet.type === 'Retweet' && tweet.refTweet === null"
-      class="hover:bg-gray-50 cursor-pointer border w-full transition rounded-md"
-    >
+
+    <div *ngIf="tweet.type === 'Retweet'" class="">
+      <div *ngIf="tweet.refTweet">
+        <app-retweet-card [tweet]="tweet.refTweet"></app-retweet-card>
+      </div>
       <div
         class="text-gray-500 text-sm border border-gray-300 px-2 md:px-4 py-2 items-center justify-between flex"
+        *ngIf="!tweet.refTweet"
       >
         This tweet is no longer available.
-      </div>
-    </div>
-    <div
-      *ngIf="tweet.type === 'Retweet' && tweet.refTweet"
-      class="hover:bg-gray-50 cursor-pointer border w-full transition rounded-md"
-    >
-      <div
-        class="border-b border-gray-300 px-2 md:px-4 py-2 items-center justify-between flex"
-      >
-        <app-name-and-time-header
-          [date]="tweet.refTweet.createdAt"
-          [user]="tweet.refTweet.user"
-        ></app-name-and-time-header>
-      </div>
-
-      <div class="p-4" [routerLink]="['/tweet', tweet.refTweet.id]">
-        <quill-view-html [content]="tweet.refTweet.tweet"></quill-view-html>
       </div>
     </div>
   </div>
