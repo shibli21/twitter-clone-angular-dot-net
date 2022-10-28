@@ -7,6 +7,7 @@ public interface IUsersService
 {
     Task<User?> GetUserAsync(string id);
     Task<PaginatedUserResponseDto> GetPaginatedUsers(int size, int page);
+    Task<PaginatedUserResponseDto> GetPaginatedAdmins(int size, int page);
     Task<List<UserResponseDto>> MayFollowUser(int size);
     Task<User> UpdateGetUserAsync(string id, User user);
     Task<User?> GetUserByNameAsync(string name);
