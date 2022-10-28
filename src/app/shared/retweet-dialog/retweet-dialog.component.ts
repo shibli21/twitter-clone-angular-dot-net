@@ -31,9 +31,19 @@ export class RetweetDialogComponent implements OnInit {
 
   ngOnInit(): void {}
 
+  isTweetNull() {
+    return this.tweet.tweet.length === 0;
+  }
+
   retweet() {
     this.isRetweeting = true;
-    this.retweetService.retweet(this.tweet.id, this.retweetText).subscribe({
+    let retweetId = this.tweet.id;
+
+    if (this.tweet.tweet === '' && this.tweet.refTweet) {
+      retweetId = this.tweet.refTweet.id;
+    }
+
+    this.retweetService.retweet(retweetId, this.retweetText).subscribe({
       next: (res) => {
         this.visible = false;
         this.toastr.success('Retweeted successfully');
