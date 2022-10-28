@@ -1,8 +1,8 @@
 import { ToastrModule } from 'ngx-toastr';
 import { TweetService } from './../../core/services/tweet.service';
 import { Component, OnInit, EventEmitter, Output, Input } from '@angular/core';
-import { Tweet } from 'src/app/core/models/tweet.model';
-import { User } from 'src/app/core/models/user.model';
+import { ITweet } from 'src/app/core/models/tweet.model';
+import { IUser } from 'src/app/core/models/user.model';
 
 @Component({
   selector: 'app-retweet-undo-dialog',
@@ -11,8 +11,8 @@ import { User } from 'src/app/core/models/user.model';
 })
 export class RetweetUndoDialogComponent implements OnInit {
   @Input() visible = false;
-  @Input() currentUser!: User;
-  @Input() tweet!: Tweet;
+  @Input() currentUser!: IUser;
+  @Input() tweet!: ITweet;
   @Output() onCloseEvent = new EventEmitter();
 
   isUndoing = false;

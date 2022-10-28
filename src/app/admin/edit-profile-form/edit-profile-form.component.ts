@@ -1,9 +1,9 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
-import { User } from '../../core/models/user.model';
+import { IUser } from '../../core/models/user.model';
 import { EditUserService } from '../../core/services/edit-user.service';
-import { UserService } from '../../profile/user.service';
+import { UserService } from '../../core/services/user.service';
 
 @Component({
   selector: 'app-edit-profile-form',
@@ -11,7 +11,7 @@ import { UserService } from '../../profile/user.service';
   styleUrls: ['./edit-profile-form.component.scss'],
 })
 export class EditProfileFormComponent implements OnInit {
-  @Input() user!: User;
+  @Input() user!: IUser;
   genders = [
     { name: 'Male', value: 'male' },
     {

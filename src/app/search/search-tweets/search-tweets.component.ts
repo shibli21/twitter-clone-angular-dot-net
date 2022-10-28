@@ -1,6 +1,6 @@
 import { SearchService } from './../../core/services/search.service';
-import { PaginatedTweets } from './../../core/models/tweet.model';
-import { PaginatedUsers } from 'src/app/core/models/user.model';
+import { IPaginatedTweets } from './../../core/models/tweet.model';
+import { IPaginatedUsers } from 'src/app/core/models/user.model';
 import { Component, OnInit, OnDestroy } from '@angular/core';
 
 @Component({
@@ -9,7 +9,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
   styleUrls: ['./search-tweets.component.scss'],
 })
 export class SearchTweetsComponent implements OnInit {
-  searchedTweets!: PaginatedTweets | null;
+  searchedTweets!: IPaginatedTweets | null;
   tweetSearchQuery!: string;
   isLoading = false;
 

@@ -9,8 +9,8 @@ import { BehaviorSubject, catchError, tap, throwError } from 'rxjs';
 import {
   ILoginUser,
   IRegisterUser,
-  LoginResponse,
-  User,
+  ILoginResponse,
+  IUser,
 } from '../core/models/user.model';
 
 @Injectable({
@@ -18,7 +18,7 @@ import {
 })
 export class AuthService {
   baseUrl = environment.baseUrl;
-  user = new BehaviorSubject<User | null>(null);
+  user = new BehaviorSubject<IUser | null>(null);
   isLoggingInLoading = new BehaviorSubject<boolean>(false);
 
   constructor(
@@ -38,12 +38,12 @@ export class AuthService {
   loginUser(loginUser: ILoginUser) {
     this.isLoggingInLoading.next(true);
     return this.http
-      .post<LoginResponse>(this.baseUrl + 'auth/login', loginUser, {
+      .post<ILoginResponse>(this.baseUrl + 'auth/login', loginUser, {
         withCredentials: true,
       })
       .pipe(
-        tap((loginResponse) => {
-          localStorage.setItem('userData', JSON.stringify(loginResponse));
+        tap((ILoginResponse) => {
+          localStorage.setItem('userData', JSON.stringify(ILoginResponse));
           this.currentUser().subscribe({
             next: (user) => {
               if (user.role === 'admin') {
@@ -90,12 +90,12 @@ export class AuthService {
     if (!userAuthData) {
       return '';
     }
-    const { jwtToken } = JSON.parse(userAuthData) as LoginResponse;
+    const { jwtToken } = JSON.parse(userAuthData) as ILoginResponse;
     return jwtToken;
   }
 
   currentUser() {
-    return this.http.get<User>(this.baseUrl + 'users/current-user').pipe(
+    return this.http.get<IUser>(this.baseUrl + 'users/current-user').pipe(
       tap((user) => {
         this.user.next(user);
       }),
@@ -108,7 +108,7 @@ export class AuthService {
 
   getRefreshToken() {
     return this.http
-      .post<LoginResponse>(
+      .post<ILoginResponse>(
         this.baseUrl + 'auth/refresh-token',
         {},
         {
@@ -116,8 +116,8 @@ export class AuthService {
         }
       )
       .pipe(
-        tap((loginResponse) => {
-          localStorage.setItem('userData', JSON.stringify(loginResponse));
+        tap((ILoginResponse) => {
+          localStorage.setItem('userData', JSON.stringify(ILoginResponse));
           this.currentUser().subscribe();
         }),
         catchError((error) => {

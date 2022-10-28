@@ -1,13 +1,31 @@
-export interface PaginatedTweets {
+export class PaginatedTweets {
+  lastPage: number;
+  page: number;
+  size: number;
+  totalElements: number;
+  totalPages: number;
+  tweets: ITweet[];
+
+  constructor() {
+    this.lastPage = 0;
+    this.page = 0;
+    this.size = 0;
+    this.totalElements = 0;
+    this.totalPages = 0;
+    this.tweets = [];
+  }
+}
+
+export interface IPaginatedTweets {
   page: number;
   size: number;
   totalElements: number;
   lastPage: number;
   totalPages: number;
-  tweets: Tweet[];
+  tweets: ITweet[];
 }
 
-export interface Tweet {
+export interface ITweet {
   id: string;
   type: string;
   userId: string;
@@ -20,7 +38,7 @@ export interface Tweet {
   isLiked: boolean;
   isRetweeted: boolean;
   user: User;
-  refTweet: Tweet | null;
+  refTweet: ITweet | null;
   createdAt: Date;
 }
 
@@ -36,7 +54,7 @@ export interface User {
   bio: string;
 }
 
-export interface PaginatedComments {
+export interface IPaginatedComments {
   page: number;
   size: number;
   totalElements: number;

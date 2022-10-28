@@ -1,7 +1,7 @@
 import { FollowService } from './../../core/services/follow.service';
 import { AuthService } from './../../auth/auth.service';
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { User } from '../../core/models/user.model';
+import { PaginatedUsers, IUser } from '../../core/models/user.model';
 
 @Component({
   selector: 'app-profile-card',
@@ -9,29 +9,15 @@ import { User } from '../../core/models/user.model';
   styleUrls: ['./profile-card.component.scss'],
 })
 export class ProfileCardComponent implements OnInit, OnDestroy {
-  currentUser!: User;
+  currentUser!: IUser;
   display = false;
   constructor(
     private authService: AuthService,
     private followService: FollowService
   ) {}
   ngOnDestroy(): void {
-    this.followService.myFollowers.next({
-      lastPage: 0,
-      page: 0,
-      size: 0,
-      totalElements: 0,
-      totalPages: 0,
-      users: [],
-    });
-    this.followService.myFollowings.next({
-      lastPage: 0,
-      page: 0,
-      size: 0,
-      totalElements: 0,
-      totalPages: 0,
-      users: [],
-    });
+    this.followService.myFollowers.next(new PaginatedUsers());
+    this.followService.myFollowings.next(new PaginatedUsers());
   }
 
   ngOnInit(): void {

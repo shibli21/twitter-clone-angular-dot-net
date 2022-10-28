@@ -2,13 +2,13 @@ import { tap } from 'rxjs';
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
-import { PaginatedTweets } from '../core/models/tweet.model';
-import { User } from '../core/models/user.model';
+import { IPaginatedTweets, PaginatedTweets } from '../core/models/tweet.model';
+import { PaginatedUsers, IUser } from '../core/models/user.model';
 import { FollowService } from '../core/services/follow.service';
 import { AuthService } from './../auth/auth.service';
 import { BlockService } from './../core/services/block.service';
 import { TimelineService } from './../core/services/timeline.service';
-import { UserService } from './user.service';
+import { UserService } from '../core/services/user.service';
 
 @Component({
   selector: 'app-profile',
@@ -16,9 +16,9 @@ import { UserService } from './user.service';
   styleUrls: ['./profile.component.scss'],
 })
 export class ProfileComponent implements OnInit, OnDestroy {
-  usersTweets: PaginatedTweets | null = null;
+  usersTweets: IPaginatedTweets | null = null;
   userId!: string;
-  profileUser: User | null = null;
+  profileUser: IUser | null = null;
   isCurrentUser: boolean = false;
   isLoading = false;
   isBlocking = false;
@@ -76,14 +76,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
         });
       }
 
-      this.timelineService.userTimeline.next({
-        tweets: [],
-        page: 0,
-        totalPages: 0,
-        totalElements: 0,
-        lastPage: 0,
-        size: 0,
-      });
+      this.timelineService.userTimeline.next(new PaginatedTweets());
 
       this.timelineService.isLoadingUserTimeline.subscribe((isLoading) => {
         this.isLoading = isLoading;
@@ -102,14 +95,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
       .followUnfollowUser(this.userId)
       .pipe(
         tap((res) => {
-          this.followService.userFollowers.next({
-            lastPage: 0,
-            page: 0,
-            size: 0,
-            totalElements: 0,
-            totalPages: 0,
-            users: [],
-          });
+          this.followService.userFollowers.next(new PaginatedUsers());
           this.followService.getFollowersByUserId(this.userId);
         })
       )

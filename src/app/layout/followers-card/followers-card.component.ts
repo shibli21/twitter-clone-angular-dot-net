@@ -1,5 +1,5 @@
-import { User } from '../../core/models/user.model';
-import { UserService } from './../../profile/user.service';
+import { IUser } from '../../core/models/user.model';
+import { UserService } from '../../core/services/user.service';
 import { Component, OnInit } from '@angular/core';
 
 @Component({
@@ -8,7 +8,7 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./followers-card.component.scss'],
 })
 export class FollowersCardComponent implements OnInit {
-  users: User[] = [];
+  users: IUser[] = [];
   isLoading = false;
 
   constructor(private userService: UserService) {

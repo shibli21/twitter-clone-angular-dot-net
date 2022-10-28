@@ -1,8 +1,8 @@
 import { TimelineService } from './../../../core/services/timeline.service';
-import { User } from './../../../core/models/user.model';
+import { IUser } from './../../../core/models/user.model';
 import { Component, Input, OnInit } from '@angular/core';
 import { ToastrService } from 'ngx-toastr';
-import { Tweet } from 'src/app/core/models/tweet.model';
+import { ITweet } from 'src/app/core/models/tweet.model';
 import { CommentService } from '../../../core/services/comment.service';
 import { TweetService } from '../../../core/services/tweet.service';
 import { AuthService } from './../../../auth/auth.service';
@@ -14,7 +14,7 @@ import { RetweetService } from './../../../core/services/retweet.service';
   styleUrls: ['./tweet-card.component.scss'],
 })
 export class TweetCardComponent implements OnInit {
-  @Input() tweet!: Tweet;
+  @Input() tweet!: ITweet;
   @Input() isRetweet? = false;
 
   comment = '';
@@ -23,14 +23,12 @@ export class TweetCardComponent implements OnInit {
   displayEditDialog: boolean = false;
   retweetDisplay = false;
   retweetUndoDisplay = false;
-  retweetText = '';
-  currentUser!: User;
+  currentUser!: IUser;
 
   constructor(
     private tweetService: TweetService,
     private commentService: CommentService,
     private toastr: ToastrService,
-    private retweetService: RetweetService,
     private authService: AuthService,
     private timelineService: TimelineService
   ) {}

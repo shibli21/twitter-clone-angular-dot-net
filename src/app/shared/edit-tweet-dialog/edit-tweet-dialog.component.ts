@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { Router } from '@angular/router';
-import { Tweet } from './../../core/models/tweet.model';
-import { User } from './../../core/models/user.model';
+import { ITweet } from './../../core/models/tweet.model';
+import { IUser } from './../../core/models/user.model';
 import { TimelineService } from './../../core/services/timeline.service';
 import { TweetService } from './../../core/services/tweet.service';
 
@@ -12,8 +12,8 @@ import { TweetService } from './../../core/services/tweet.service';
 })
 export class EditTweetDialogComponent implements OnInit {
   @Input() visible = false;
-  @Input() currentUser!: User;
-  @Input() tweet!: Tweet;
+  @Input() currentUser!: IUser;
+  @Input() tweet!: ITweet;
   @Output() onCloseEvent = new EventEmitter();
   editTweet = '';
   isEditing = false;

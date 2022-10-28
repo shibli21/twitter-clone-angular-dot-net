@@ -1,7 +1,7 @@
 import { ToastrModule, ToastrService } from 'ngx-toastr';
-import { DashboardData } from './../models/admin.model';
+import { IDashboardData } from './../models/admin.model';
 import { catchError, throwError } from 'rxjs';
-import { PaginatedUsers } from './../models/user.model';
+import { IPaginatedUsers } from './../models/user.model';
 import { HttpClient } from '@angular/common/http';
 import { environment } from './../../../environments/environment';
 import { Injectable } from '@angular/core';
@@ -16,7 +16,7 @@ export class AdminService {
 
   getUsers(page = 0, size = 10) {
     return this.http
-      .get<PaginatedUsers>(`${this.baseUrl}users?page=${page}&size=${size} `)
+      .get<IPaginatedUsers>(`${this.baseUrl}users?page=${page}&size=${size} `)
       .pipe(
         catchError((err) => {
           return throwError(err);
@@ -26,7 +26,7 @@ export class AdminService {
 
   getBlockedUsers(page = 0, size = 10) {
     return this.http
-      .get<PaginatedUsers>(
+      .get<IPaginatedUsers>(
         `${this.baseUrl}block/by-admin?page=${page}&size=${size} `
       )
       .pipe(
@@ -41,7 +41,7 @@ export class AdminService {
   }
 
   getDashboardData() {
-    return this.http.get<DashboardData>(`${this.baseUrl}admin/dashboard`);
+    return this.http.get<IDashboardData>(`${this.baseUrl}admin/dashboard`);
   }
 
   createAdmin(id: string) {
@@ -56,7 +56,7 @@ export class AdminService {
 
   getAdmins(page = 0, size = 10) {
     return this.http
-      .get<PaginatedUsers>(`${this.baseUrl}admin?page=${page}&size=${size}`)
+      .get<IPaginatedUsers>(`${this.baseUrl}admin?page=${page}&size=${size}`)
       .pipe(
         catchError((err) => {
           return throwError(() => err);

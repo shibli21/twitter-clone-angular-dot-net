@@ -1,12 +1,12 @@
-import { User } from 'src/app/core/models/user.model';
+import { IUser } from 'src/app/core/models/user.model';
 import { AuthService } from './../auth/auth.service';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
-import { Tweet } from '../core/models/tweet.model';
+import { ITweet } from '../core/models/tweet.model';
 import { CommentService } from '../core/services/comment.service';
 import { TweetService } from '../core/services/tweet.service';
-import { PaginatedComments } from './../core/models/tweet.model';
+import { IPaginatedComments } from './../core/models/tweet.model';
 import { RetweetService } from './../core/services/retweet.service';
 
 @Component({
@@ -18,15 +18,15 @@ export class TweetComponent implements OnInit {
   display = false;
   retweetDisplay = false;
   retweetUndoDisplay = false;
-  tweet!: Tweet | null;
+  tweet!: ITweet | null;
   comment = '';
   tweetId = '';
   isCommenting = false;
   isLoading = false;
-  currentUser!: User;
+  currentUser!: IUser;
   notFound = false;
 
-  tweetComments!: PaginatedComments | null;
+  tweetComments!: IPaginatedComments | null;
 
   constructor(
     private tweetService: TweetService,

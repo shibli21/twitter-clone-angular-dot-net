@@ -14,7 +14,7 @@ export interface ILoginUser {
   password: string;
 }
 
-export interface LoginResponse {
+export interface ILoginResponse {
   userName: string;
   jwtToken: string;
   refreshToken: string;
@@ -22,7 +22,7 @@ export interface LoginResponse {
   refreshTokenExpiresIn: number;
 }
 
-export interface User {
+export interface IUser {
   id: string;
   userName: string;
   firstName: string;
@@ -41,11 +41,29 @@ export interface User {
   isFollowed?: boolean;
 }
 
-export interface PaginatedUsers {
+export interface IPaginatedUsers {
   page: number;
   size: number;
   totalElements: number;
   lastPage: number;
   totalPages: number;
-  users: User[];
+  users: IUser[];
+}
+
+export class PaginatedUsers {
+  lastPage: number;
+  page: number;
+  size: number;
+  totalElements: number;
+  totalPages: number;
+  users: IUser[];
+
+  constructor() {
+    this.lastPage = 0;
+    this.page = 0;
+    this.size = 0;
+    this.totalElements = 0;
+    this.totalPages = 0;
+    this.users = [];
+  }
 }

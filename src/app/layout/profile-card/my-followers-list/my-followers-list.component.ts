@@ -1,4 +1,8 @@
-import { PaginatedUsers, User } from './../../../core/models/user.model';
+import {
+  IPaginatedUsers,
+  PaginatedUsers,
+  IUser,
+} from './../../../core/models/user.model';
 import { Router } from '@angular/router';
 import { FollowService } from './../../../core/services/follow.service';
 import { Component, Input, OnInit } from '@angular/core';
@@ -9,15 +13,8 @@ import { Component, Input, OnInit } from '@angular/core';
   styleUrls: ['./my-followers-list.component.scss'],
 })
 export class MyFollowersListComponent implements OnInit {
-  @Input() user!: User;
-  followers: PaginatedUsers = {
-    lastPage: 0,
-    page: 0,
-    size: 0,
-    totalElements: 0,
-    totalPages: 0,
-    users: [],
-  };
+  @Input() user!: IUser;
+  followers: IPaginatedUsers = new PaginatedUsers();
 
   isLoading = false;
   display = false;

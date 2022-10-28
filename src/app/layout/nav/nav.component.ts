@@ -1,3 +1,5 @@
+import { PaginatedUsers } from 'src/app/core/models/user.model';
+import { PaginatedTweets } from './../../core/models/tweet.model';
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { MenuItem } from 'primeng/api';
@@ -41,14 +43,7 @@ export class NavComponent implements OnInit {
         routerLink: ['/home'],
         command: () => {
           window.scrollTo(0, 0);
-          this.timelineService.newsFeed.next({
-            page: 0,
-            tweets: [],
-            lastPage: 0,
-            size: 0,
-            totalElements: 0,
-            totalPages: 0,
-          });
+          this.timelineService.newsFeed.next(new PaginatedTweets());
           this.timelineService.getNewsFeed();
         },
       },
@@ -103,8 +98,8 @@ export class NavComponent implements OnInit {
     }
 
     this.notificationService.notifications.subscribe(
-      (paginatedNotifications) => {
-        this.totalUnreadNotifications = paginatedNotifications.totalUnread;
+      (IPaginatedNotifications) => {
+        this.totalUnreadNotifications = IPaginatedNotifications.totalUnread;
       }
     );
   }
@@ -113,14 +108,7 @@ export class NavComponent implements OnInit {
     this.display = false;
 
     if (this.searchQuery.startsWith('#')) {
-      this.searchService.searchedTweets.next({
-        page: 0,
-        tweets: [],
-        lastPage: 0,
-        size: 0,
-        totalElements: 0,
-        totalPages: 0,
-      });
+      this.searchService.searchedTweets.next(new PaginatedTweets());
 
       this.searchService.tweetSearchQuery.next(this.searchQuery);
       if (this.router.url !== '/search/search-tweets') {
@@ -128,14 +116,7 @@ export class NavComponent implements OnInit {
       }
       this.searchService.getSearchTweets();
     } else {
-      this.searchService.searchedUsers.next({
-        page: 0,
-        users: [],
-        lastPage: 0,
-        size: 0,
-        totalElements: 0,
-        totalPages: 0,
-      });
+      this.searchService.searchedUsers.next(new PaginatedUsers());
 
       this.searchService.searchQuery.next(this.searchQuery);
       if (this.router.url !== '/search/search-users') {

@@ -5,14 +5,14 @@ import { environment } from 'src/environments/environment';
 import { AuthService } from '../../auth/auth.service';
 import { Comment } from '../models/tweet.model';
 import { TweetService } from './tweet.service';
-import { PaginatedComments } from './../models/tweet.model';
+import { IPaginatedComments } from './../models/tweet.model';
 
 @Injectable({
   providedIn: 'root',
 })
 export class CommentService {
   isLoadingComment = new BehaviorSubject<boolean>(false);
-  comments = new BehaviorSubject<PaginatedComments>({
+  comments = new BehaviorSubject<IPaginatedComments>({
     comments: [],
     lastPage: 0,
     page: 0,
@@ -32,19 +32,19 @@ export class CommentService {
   getTweetComments(tweetId: string, page = 0, size = 20) {
     this.isLoadingComment.next(true);
     return this.http
-      .get<PaginatedComments>(
+      .get<IPaginatedComments>(
         `${this.baseUrl}tweet/comments/${tweetId}?size=${size}&page=${page}`
       )
       .pipe(
-        tap((paginatedComments) => {
+        tap((IPaginatedComments) => {
           const comments = this.comments.getValue();
           if (comments) {
-            paginatedComments.comments = [
+            IPaginatedComments.comments = [
               ...comments.comments,
-              ...paginatedComments.comments,
+              ...IPaginatedComments.comments,
             ];
           }
-          this.comments.next(paginatedComments);
+          this.comments.next(IPaginatedComments);
           this.isLoadingComment.next(false);
         })
       )

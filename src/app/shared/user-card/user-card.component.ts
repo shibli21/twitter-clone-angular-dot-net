@@ -1,5 +1,5 @@
 import { FollowService } from './../../core/services/follow.service';
-import { User } from 'src/app/core/models/user.model';
+import { IUser } from 'src/app/core/models/user.model';
 import { Component, Input, OnInit } from '@angular/core';
 
 @Component({
@@ -8,7 +8,7 @@ import { Component, Input, OnInit } from '@angular/core';
   styleUrls: ['./user-card.component.scss'],
 })
 export class UserCardComponent implements OnInit {
-  @Input() user!: User;
+  @Input() user!: IUser;
 
   constructor(private followService: FollowService) {}
 

@@ -1,4 +1,4 @@
-import { PaginatedNotifications } from './../models/notification.model';
+import { IPaginatedNotifications } from './../models/notification.model';
 import { BehaviorSubject, tap } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
@@ -9,7 +9,7 @@ import { environment } from 'src/environments/environment';
 })
 export class NotificationService {
   baseUrl = environment.baseUrl;
-  notifications = new BehaviorSubject<PaginatedNotifications>({
+  notifications = new BehaviorSubject<IPaginatedNotifications>({
     page: 0,
     size: 0,
     totalElements: 0,
@@ -25,7 +25,7 @@ export class NotificationService {
   getNotifications(page = 0, size = 20) {
     this.isLoadingNotifications.next(true);
     return this.http
-      .get<PaginatedNotifications>(
+      .get<IPaginatedNotifications>(
         this.baseUrl + 'notifications/all' + `?page=${page}&size=${size}`
       )
       .pipe(
@@ -58,7 +58,7 @@ export class NotificationService {
         tap((notification) => {
           const prevNotifications = this.notifications.getValue();
 
-          const updatedNotifications: PaginatedNotifications = {
+          const updatedNotifications: IPaginatedNotifications = {
             ...prevNotifications,
             totalUnread: prevNotifications.totalUnread - 1,
           };

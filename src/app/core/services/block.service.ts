@@ -1,7 +1,10 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, catchError, tap, throwError } from 'rxjs';
-import { PaginatedUsers } from 'src/app/core/models/user.model';
+import {
+  IPaginatedUsers,
+  PaginatedUsers,
+} from 'src/app/core/models/user.model';
 import { environment } from './../../../environments/environment';
 import { FollowService } from './follow.service';
 
@@ -10,14 +13,7 @@ import { FollowService } from './follow.service';
 })
 export class BlockService {
   baseUrl = environment.baseUrl;
-  blockedUsers = new BehaviorSubject<PaginatedUsers>({
-    users: [],
-    lastPage: 0,
-    page: 0,
-    size: 0,
-    totalElements: 0,
-    totalPages: 0,
-  });
+  blockedUsers = new BehaviorSubject<IPaginatedUsers>(new PaginatedUsers());
   isLoadingBlockedUsers = new BehaviorSubject<boolean>(false);
 
   constructor(private http: HttpClient, private followService: FollowService) {}
@@ -25,27 +21,14 @@ export class BlockService {
   blockUserByUser(userId: string) {
     return this.http.post(`${this.baseUrl}block/by-user/${userId}`, {}).pipe(
       tap(() => {
-        this.followService.myFollowers.next({
-          lastPage: 0,
-          page: 0,
-          size: 0,
-          totalElements: 0,
-          totalPages: 0,
-          users: [],
-        });
+        this.followService.myFollowers.next(new PaginatedUsers());
         this.followService.getMyFollowers();
-        this.followService.myFollowings.next({
-          lastPage: 0,
-          page: 0,
-          size: 0,
-          totalElements: 0,
-          totalPages: 0,
-          users: [],
-        });
+
+        this.followService.myFollowings.next(new PaginatedUsers());
         this.followService.getMyFollowings();
       }),
       catchError((err) => {
-        return throwError(err);
+        return throwError(() => err);
       })
     );
   }
@@ -53,19 +36,19 @@ export class BlockService {
   getBlockedUsers(page = 0, size = 20) {
     this.isLoadingBlockedUsers.next(true);
     return this.http
-      .get<PaginatedUsers>(
+      .get<IPaginatedUsers>(
         `${this.baseUrl}block/by-user?size=${size}&page=${page}`
       )
       .pipe(
-        tap((paginatedUsers) => {
+        tap((IPaginatedUsers) => {
           const blockedUsers = this.blockedUsers.getValue();
           if (blockedUsers) {
-            paginatedUsers.users = [
+            IPaginatedUsers.users = [
               ...blockedUsers.users,
-              ...paginatedUsers.users,
+              ...IPaginatedUsers.users,
             ];
           }
-          this.blockedUsers.next(paginatedUsers);
+          this.blockedUsers.next(IPaginatedUsers);
           this.isLoadingBlockedUsers.next(false);
         }),
         catchError((err) => {

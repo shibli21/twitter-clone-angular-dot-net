@@ -1,4 +1,4 @@
-export interface PaginatedNotifications {
+export interface IPaginatedNotifications {
   page: number;
   size: number;
   totalElements: number;
@@ -15,12 +15,12 @@ export interface Notification {
   refUserId: string;
   tweetId: string;
   isRead: boolean;
-  refUser: RefUser;
+  refUser: IRefUser;
   message: string;
   createdAt: Date;
 }
 
-export interface RefUser {
+export interface IRefUser {
   id: string;
   userName: string;
   firstName: string;

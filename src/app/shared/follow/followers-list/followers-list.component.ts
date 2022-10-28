@@ -1,8 +1,8 @@
 import { Router } from '@angular/router';
 import { FollowService } from '../../../core/services/follow.service';
-import { PaginatedUsers } from '../../../core/models/user.model';
+import { IPaginatedUsers } from '../../../core/models/user.model';
 import { Component, Input, OnInit } from '@angular/core';
-import { User } from 'src/app/core/models/user.model';
+import { IUser } from 'src/app/core/models/user.model';
 
 @Component({
   selector: 'app-followers-list',
@@ -10,8 +10,8 @@ import { User } from 'src/app/core/models/user.model';
   styleUrls: ['./followers-list.component.scss'],
 })
 export class FollowersListComponent implements OnInit {
-  @Input() user!: User;
-  followers: PaginatedUsers = {
+  @Input() user!: IUser;
+  followers: IPaginatedUsers = {
     lastPage: 0,
     page: 0,
     size: 0,

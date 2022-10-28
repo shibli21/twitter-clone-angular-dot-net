@@ -2,7 +2,10 @@ import { ActivatedRoute } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { BlockService } from './../../core/services/block.service';
 import { Component, OnInit } from '@angular/core';
-import { PaginatedUsers } from 'src/app/core/models/user.model';
+import {
+  IPaginatedUsers,
+  PaginatedUsers,
+} from 'src/app/core/models/user.model';
 
 @Component({
   selector: 'app-block-list',
@@ -10,7 +13,7 @@ import { PaginatedUsers } from 'src/app/core/models/user.model';
   styleUrls: ['./block-list.component.scss'],
 })
 export class BlockListComponent implements OnInit {
-  blockedUsers!: PaginatedUsers | null;
+  blockedUsers!: IPaginatedUsers | null;
   isLoading = false;
   isUnblocking = false;
 
@@ -22,21 +25,14 @@ export class BlockListComponent implements OnInit {
 
   ngOnInit(): void {
     this.route.data.subscribe((data) => {
-      this.blockService.blockedUsers.next({
-        lastPage: 0,
-        page: 0,
-        size: 0,
-        totalElements: 0,
-        totalPages: 0,
-        users: [],
-      });
+      this.blockService.blockedUsers.next(new PaginatedUsers());
 
       this.blockService.isLoadingBlockedUsers.subscribe((isLoading) => {
         this.isLoading = isLoading;
       });
 
-      this.blockService.blockedUsers.subscribe((paginatedUsers) => {
-        this.blockedUsers = paginatedUsers;
+      this.blockService.blockedUsers.subscribe((IPaginatedUsers) => {
+        this.blockedUsers = IPaginatedUsers;
       });
 
       this.blockService.getBlockedUsers(this.blockedUsers?.page);

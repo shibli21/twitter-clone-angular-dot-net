@@ -6,7 +6,11 @@ import { BehaviorSubject, tap } from 'rxjs';
 
 import { environment } from 'src/environments/environment';
 
-import { PaginatedTweets, Tweet } from './../models/tweet.model';
+import {
+  IPaginatedTweets,
+  PaginatedTweets,
+  ITweet,
+} from './../models/tweet.model';
 
 @Injectable({
   providedIn: 'root',
@@ -15,23 +19,9 @@ export class TimelineService {
   baseUrl = environment.baseUrl;
   isLoadingNewsFeed = new BehaviorSubject<boolean>(false);
   isLoadingUserTimeline = new BehaviorSubject<boolean>(false);
-  newsFeed = new BehaviorSubject<PaginatedTweets>({
-    tweets: [],
-    page: 0,
-    totalPages: 0,
-    totalElements: 0,
-    lastPage: 0,
-    size: 0,
-  });
+  newsFeed = new BehaviorSubject<IPaginatedTweets>(new PaginatedTweets());
 
-  userTimeline = new BehaviorSubject<PaginatedTweets>({
-    tweets: [],
-    page: 0,
-    totalPages: 0,
-    totalElements: 0,
-    lastPage: 0,
-    size: 0,
-  });
+  userTimeline = new BehaviorSubject<IPaginatedTweets>(new PaginatedTweets());
 
   constructor(private http: HttpClient, private router: Router) {}
 
@@ -39,19 +29,19 @@ export class TimelineService {
     this.isLoadingNewsFeed.next(true);
 
     return this.http
-      .get<PaginatedTweets>(
+      .get<IPaginatedTweets>(
         `${this.baseUrl}news-feed?page=${page}&size=${size}`
       )
       .pipe(
-        tap((paginatedTweets) => {
+        tap((IPaginatedTweets) => {
           const newsFeed = this.newsFeed.getValue();
           if (newsFeed) {
-            paginatedTweets.tweets = [
+            IPaginatedTweets.tweets = [
               ...newsFeed.tweets,
-              ...paginatedTweets.tweets,
+              ...IPaginatedTweets.tweets,
             ];
           }
-          this.newsFeed.next(paginatedTweets);
+          this.newsFeed.next(IPaginatedTweets);
           this.isLoadingNewsFeed.next(false);
         })
       )
@@ -68,19 +58,19 @@ export class TimelineService {
   getUserTimeline(userId: string, page = 0, size = 20) {
     this.isLoadingUserTimeline.next(true);
     return this.http
-      .get<PaginatedTweets>(
+      .get<IPaginatedTweets>(
         `${this.baseUrl}user-timeline/${userId}?page=${page}&size=${size}`
       )
       .pipe(
-        tap((paginatedTweets) => {
+        tap((IPaginatedTweets) => {
           const userTimeline = this.userTimeline.getValue();
           if (userTimeline) {
-            paginatedTweets.tweets = [
+            IPaginatedTweets.tweets = [
               ...userTimeline.tweets,
-              ...paginatedTweets.tweets,
+              ...IPaginatedTweets.tweets,
             ];
           }
-          this.userTimeline.next(paginatedTweets);
+          this.userTimeline.next(IPaginatedTweets);
           this.isLoadingUserTimeline.next(false);
         })
       )
@@ -94,7 +84,7 @@ export class TimelineService {
     }
   }
 
-  updateProfileTimeline(tweet: Tweet) {
+  updateProfileTimeline(tweet: ITweet) {
     const userTimeline = this.userTimeline.getValue();
     if (userTimeline) {
       const index = userTimeline.tweets.findIndex((t) => t.id === tweet.id);
@@ -116,7 +106,7 @@ export class TimelineService {
     }
   }
 
-  updateNewsFeed(tweet: Tweet) {
+  updateNewsFeed(tweet: ITweet) {
     const newsFeed = this.newsFeed.getValue();
     if (newsFeed) {
       const index = newsFeed.tweets.findIndex((t) => t.id === tweet.id);

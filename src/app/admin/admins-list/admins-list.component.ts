@@ -3,7 +3,7 @@ import { EditUserService } from './../../core/services/edit-user.service';
 import { AdminService } from './../../core/services/admin.service';
 import { Page } from './../users-list/users-list.component';
 import { Component, OnInit } from '@angular/core';
-import { User } from 'src/app/core/models/user.model';
+import { IUser } from 'src/app/core/models/user.model';
 
 @Component({
   selector: 'app-admins-list',
@@ -12,9 +12,9 @@ import { User } from 'src/app/core/models/user.model';
 })
 export class AdminsListComponent implements OnInit {
   page = new Page();
-  rows = new Array<User>();
+  rows = new Array<IUser>();
   editUserDialog!: boolean;
-  editingUser!: User;
+  editingUser!: IUser;
 
   constructor(
     private adminService: AdminService,
@@ -58,12 +58,12 @@ export class AdminsListComponent implements OnInit {
     });
   }
 
-  showEditUseDialog(user: User) {
+  showEditUseDialog(user: IUser) {
     this.editingUser = user;
     this.editUserService.editingDialog.next(true);
   }
 
-  removeAdmin(user: User) {
+  removeAdmin(user: IUser) {
     this.adminService.createAdmin(user.id).subscribe(() => {
       this.setPage({ offset: this.page.page });
       this.toastr.success('Admin removed');

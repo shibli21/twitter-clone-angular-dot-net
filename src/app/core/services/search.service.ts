@@ -1,9 +1,10 @@
+import { PaginatedUsers } from './../models/user.model';
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, tap } from 'rxjs';
-import { PaginatedUsers } from 'src/app/core/models/user.model';
+import { IPaginatedUsers } from 'src/app/core/models/user.model';
 import { environment } from 'src/environments/environment';
-import { PaginatedTweets } from './../models/tweet.model';
+import { IPaginatedTweets, PaginatedTweets } from './../models/tweet.model';
 
 @Injectable({
   providedIn: 'root',
@@ -12,22 +13,8 @@ export class SearchService {
   baseUrl = environment.baseUrl;
   isSearchingUsers = new BehaviorSubject<boolean>(false);
   isSearchingTweets = new BehaviorSubject<boolean>(false);
-  searchedUsers = new BehaviorSubject<PaginatedUsers>({
-    users: [],
-    lastPage: 0,
-    page: 0,
-    size: 0,
-    totalElements: 0,
-    totalPages: 0,
-  });
-  searchedTweets = new BehaviorSubject<PaginatedTweets>({
-    tweets: [],
-    lastPage: 0,
-    page: 0,
-    size: 0,
-    totalElements: 0,
-    totalPages: 0,
-  });
+  searchedUsers = new BehaviorSubject<IPaginatedUsers>(new PaginatedUsers());
+  searchedTweets = new BehaviorSubject<IPaginatedTweets>(new PaginatedTweets());
   searchQuery = new BehaviorSubject<string>('');
   tweetSearchQuery = new BehaviorSubject<string>('');
 
@@ -42,19 +29,19 @@ export class SearchService {
     }
 
     return this.http
-      .get<PaginatedUsers>(
+      .get<IPaginatedUsers>(
         `${this.baseUrl}search/search-users?searchQuery=${this.searchQuery.value}&page=${page}&limit=${size}`
       )
       .pipe(
-        tap((paginatedUsers) => {
+        tap((IPaginatedUsers) => {
           const searchedUsers = this.searchedUsers.getValue();
           if (searchedUsers) {
-            paginatedUsers.users = [
+            IPaginatedUsers.users = [
               ...searchedUsers.users,
-              ...paginatedUsers.users,
+              ...IPaginatedUsers.users,
             ];
           }
-          this.searchedUsers.next(paginatedUsers);
+          this.searchedUsers.next(IPaginatedUsers);
           this.isSearchingUsers.next(false);
         })
       )
@@ -79,19 +66,19 @@ export class SearchService {
     }
 
     return this.http
-      .get<PaginatedTweets>(
+      .get<IPaginatedTweets>(
         `${this.baseUrl}search/search-tweets?searchQuery=${searchQueryWithOutHash}&page=${page}&limit=${size}`
       )
       .pipe(
-        tap((paginatedTweets) => {
+        tap((IPaginatedTweets) => {
           const searchedTweets = this.searchedTweets.getValue();
           if (searchedTweets) {
-            paginatedTweets.tweets = [
+            IPaginatedTweets.tweets = [
               ...searchedTweets.tweets,
-              ...paginatedTweets.tweets,
+              ...IPaginatedTweets.tweets,
             ];
           }
-          this.searchedTweets.next(paginatedTweets);
+          this.searchedTweets.next(IPaginatedTweets);
           this.isSearchingTweets.next(false);
         })
       )

@@ -1,4 +1,4 @@
-import { Tweet } from './../../../core/models/tweet.model';
+import { ITweet } from './../../../core/models/tweet.model';
 import { Component, Input, OnInit } from '@angular/core';
 
 @Component({
@@ -7,7 +7,7 @@ import { Component, Input, OnInit } from '@angular/core';
   styleUrls: ['./retweet-card.component.scss'],
 })
 export class RetweetCardComponent implements OnInit {
-  @Input() tweet!: Tweet;
+  @Input() tweet!: ITweet;
 
   constructor() {}
 

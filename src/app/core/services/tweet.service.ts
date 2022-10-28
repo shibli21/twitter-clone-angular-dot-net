@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { BehaviorSubject, catchError, tap, throwError } from 'rxjs';
-import { Tweet } from '../models/tweet.model';
+import { ITweet } from '../models/tweet.model';
 import { environment } from '../../../environments/environment';
 
 @Injectable({
@@ -10,7 +10,7 @@ import { environment } from '../../../environments/environment';
 })
 export class TweetService {
   baseUrl = environment.baseUrl;
-  tweet = new BehaviorSubject<Tweet | null>(null);
+  tweet = new BehaviorSubject<ITweet | null>(null);
 
   constructor(private http: HttpClient, private router: Router) {}
 
@@ -18,7 +18,7 @@ export class TweetService {
     const hashTags = tweetText.match(/#\w+/g);
 
     return this.http
-      .post<Tweet>(this.baseUrl + 'tweet/create', {
+      .post<ITweet>(this.baseUrl + 'tweet/create', {
         tweet: tweetText,
         hashTags: hashTags ? hashTags : [],
       })
@@ -30,7 +30,7 @@ export class TweetService {
   }
 
   getTweet(id: string) {
-    return this.http.get<Tweet>(this.baseUrl + 'tweet/' + id).pipe(
+    return this.http.get<ITweet>(this.baseUrl + 'tweet/' + id).pipe(
       tap((tweet) => {
         this.tweet.next(tweet);
       }),
@@ -42,7 +42,7 @@ export class TweetService {
 
   getUserTweets(userId: string) {
     return this.http
-      .get<Tweet[]>(this.baseUrl + 'tweet/user-tweets/' + userId)
+      .get<ITweet[]>(this.baseUrl + 'tweet/user-tweets/' + userId)
       .pipe(
         catchError((err) => {
           return throwError(() => err);
@@ -62,7 +62,7 @@ export class TweetService {
     const hashTags = tweetText.match(/#\w+/g);
 
     return this.http
-      .put<Tweet>(this.baseUrl + 'tweet/' + tweetId, {
+      .put<ITweet>(this.baseUrl + 'tweet/' + tweetId, {
         tweet: tweetText,
         hashTags: hashTags ? hashTags : [],
       })
@@ -85,7 +85,7 @@ export class TweetService {
     const hashTags = tweetText.match(/#\w+/g);
 
     return this.http
-      .put<Tweet>(this.baseUrl + 'tweet/retweet/' + retweetId, {
+      .put<ITweet>(this.baseUrl + 'tweet/retweet/' + retweetId, {
         tweet: tweetText,
         hashTags: hashTags ? hashTags : [],
       })
@@ -96,7 +96,7 @@ export class TweetService {
       );
   }
 
-  updateTweet(tweet: Tweet) {
+  updateTweet(tweet: ITweet) {
     this.tweet.next(tweet);
   }
 

@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, catchError, tap, throwError } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { PaginatedUsers } from '../models/user.model';
+import { IPaginatedUsers, PaginatedUsers } from '../models/user.model';
 import { AuthService } from './../../auth/auth.service';
 
 @Injectable({
@@ -10,41 +10,17 @@ import { AuthService } from './../../auth/auth.service';
 })
 export class FollowService {
   baseUrl = environment.baseUrl;
-  myFollowers = new BehaviorSubject<PaginatedUsers>({
-    lastPage: 0,
-    page: 0,
-    size: 0,
-    totalElements: 0,
-    totalPages: 0,
-    users: [],
-  });
+
+  myFollowers = new BehaviorSubject<IPaginatedUsers>(new PaginatedUsers());
   isLoadingMyFollowers = new BehaviorSubject<boolean>(false);
-  myFollowings = new BehaviorSubject<PaginatedUsers>({
-    lastPage: 0,
-    page: 0,
-    size: 0,
-    totalElements: 0,
-    totalPages: 0,
-    users: [],
-  });
+
+  myFollowings = new BehaviorSubject<IPaginatedUsers>(new PaginatedUsers());
   isLoadingMyFollowings = new BehaviorSubject<boolean>(false);
-  userFollowings = new BehaviorSubject<PaginatedUsers>({
-    lastPage: 0,
-    page: 0,
-    size: 0,
-    totalElements: 0,
-    totalPages: 0,
-    users: [],
-  });
+
+  userFollowings = new BehaviorSubject<IPaginatedUsers>(new PaginatedUsers());
   isLoadingUserFollowings = new BehaviorSubject<boolean>(false);
-  userFollowers = new BehaviorSubject<PaginatedUsers>({
-    lastPage: 0,
-    page: 0,
-    size: 0,
-    totalElements: 0,
-    totalPages: 0,
-    users: [],
-  });
+
+  userFollowers = new BehaviorSubject<IPaginatedUsers>(new PaginatedUsers());
   isLoadingUserFollowers = new BehaviorSubject<boolean>(false);
 
   constructor(private http: HttpClient, private authService: AuthService) {}
@@ -52,23 +28,10 @@ export class FollowService {
   followUnfollowUser(id: string) {
     return this.http.post(this.baseUrl + 'follow/' + id, {}).pipe(
       tap(() => {
-        this.myFollowers.next({
-          lastPage: 0,
-          page: 0,
-          size: 0,
-          totalElements: 0,
-          totalPages: 0,
-          users: [],
-        });
+        this.myFollowers.next(new PaginatedUsers());
         this.getMyFollowers();
-        this.myFollowings.next({
-          lastPage: 0,
-          page: 0,
-          size: 0,
-          totalElements: 0,
-          totalPages: 0,
-          users: [],
-        });
+
+        this.myFollowings.next(new PaginatedUsers());
         this.getMyFollowings();
       }),
       catchError((err) => {
@@ -80,19 +43,19 @@ export class FollowService {
   getFollowersByUserId(id: string, page = 0, size = 10) {
     this.isLoadingUserFollowers.next(true);
     return this.http
-      .get<PaginatedUsers>(
+      .get<IPaginatedUsers>(
         `${this.baseUrl}follow/followers/${id}?page=${page}&size=${size}`
       )
       .pipe(
-        tap((paginatedUsers) => {
+        tap((IPaginatedUsers) => {
           const userFollowers = this.userFollowers.getValue();
           if (userFollowers) {
-            paginatedUsers.users = [
+            IPaginatedUsers.users = [
               ...userFollowers.users,
-              ...paginatedUsers.users,
+              ...IPaginatedUsers.users,
             ];
           }
-          this.userFollowers.next(paginatedUsers);
+          this.userFollowers.next(IPaginatedUsers);
           this.isLoadingUserFollowers.next(false);
         })
       )
@@ -109,19 +72,19 @@ export class FollowService {
   getFollowingsByUserId(id: string, page = 0, size = 10) {
     this.isLoadingUserFollowings.next(true);
     return this.http
-      .get<PaginatedUsers>(
+      .get<IPaginatedUsers>(
         `${this.baseUrl}follow/following/${id}?page=${page}&size=${size}`
       )
       .pipe(
-        tap((paginatedUsers) => {
+        tap((IPaginatedUsers) => {
           const userFollowings = this.userFollowings.getValue();
           if (userFollowings) {
-            paginatedUsers.users = [
+            IPaginatedUsers.users = [
               ...userFollowings.users,
-              ...paginatedUsers.users,
+              ...IPaginatedUsers.users,
             ];
           }
-          this.userFollowings.next(paginatedUsers);
+          this.userFollowings.next(IPaginatedUsers);
           this.isLoadingUserFollowings.next(false);
         })
       )
@@ -138,21 +101,21 @@ export class FollowService {
   getMyFollowers(page = 0, size = 10) {
     this.isLoadingMyFollowers.next(true);
     return this.http
-      .get<PaginatedUsers>(
+      .get<IPaginatedUsers>(
         `${
           this.baseUrl
         }follow/followers/${this.authService.userId()}?page=${page}&size=${size}`
       )
       .pipe(
-        tap((paginatedUsers) => {
+        tap((IPaginatedUsers) => {
           const myFollowers = this.myFollowers.getValue();
           if (myFollowers) {
-            paginatedUsers.users = [
+            IPaginatedUsers.users = [
               ...myFollowers.users,
-              ...paginatedUsers.users,
+              ...IPaginatedUsers.users,
             ];
           }
-          this.myFollowers.next(paginatedUsers);
+          this.myFollowers.next(IPaginatedUsers);
           this.isLoadingMyFollowers.next(false);
         })
       )
@@ -169,21 +132,21 @@ export class FollowService {
   getMyFollowings(page = 0, size = 10) {
     this.isLoadingMyFollowings.next(true);
     return this.http
-      .get<PaginatedUsers>(
+      .get<IPaginatedUsers>(
         `${
           this.baseUrl
         }follow/following/${this.authService.userId()}?page=${page}&size=${size}`
       )
       .pipe(
-        tap((paginatedUsers) => {
+        tap((IPaginatedUsers) => {
           const myFollowings = this.myFollowings.getValue();
           if (myFollowings) {
-            paginatedUsers.users = [
+            IPaginatedUsers.users = [
               ...myFollowings.users,
-              ...paginatedUsers.users,
+              ...IPaginatedUsers.users,
             ];
           }
-          this.myFollowings.next(paginatedUsers);
+          this.myFollowings.next(IPaginatedUsers);
           this.isLoadingMyFollowings.next(false);
         })
       )

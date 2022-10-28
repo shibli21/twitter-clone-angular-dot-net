@@ -1,4 +1,4 @@
-export interface DashboardData {
+export interface IDashboardData {
   totalRetweets: number;
   totalTweets: number;
   totalUsers: number;

@@ -1,6 +1,6 @@
 import { Router } from '@angular/router';
 import { SearchService } from './../../core/services/search.service';
-import { PaginatedUsers } from 'src/app/core/models/user.model';
+import { IPaginatedUsers } from 'src/app/core/models/user.model';
 import { Component, OnInit } from '@angular/core';
 
 @Component({
@@ -9,7 +9,7 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./search-users.component.scss'],
 })
 export class SearchUsersComponent implements OnInit {
-  searchedUsers!: PaginatedUsers | null;
+  searchedUsers!: IPaginatedUsers | null;
   searchQuery!: string;
   isLoading = false;
 

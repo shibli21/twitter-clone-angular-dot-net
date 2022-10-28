@@ -1,9 +1,8 @@
-import { ToastrService } from 'ngx-toastr';
-import { EditUserService } from './../../core/services/edit-user.service';
-import { AdminService } from './../../core/services/admin.service';
-import { User } from './../../core/models/user.model';
-import { Page } from './../users-list/users-list.component';
 import { Component, OnInit } from '@angular/core';
+import { ToastrService } from 'ngx-toastr';
+import { IUser } from './../../core/models/user.model';
+import { AdminService } from './../../core/services/admin.service';
+import { Page } from './../users-list/users-list.component';
 
 @Component({
   selector: 'app-blocked-users-list',
@@ -12,9 +11,9 @@ import { Component, OnInit } from '@angular/core';
 })
 export class BlockedUsersListComponent implements OnInit {
   page = new Page();
-  rows = new Array<User>();
+  rows = new Array<IUser>();
   editUserDialog!: boolean;
-  editingUser!: User;
+  editingUser!: IUser;
 
   constructor(
     private adminService: AdminService,

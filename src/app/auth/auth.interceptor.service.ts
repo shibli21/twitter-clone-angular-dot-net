@@ -8,7 +8,7 @@ import {
 } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { catchError, Observable, switchMap, throwError } from 'rxjs';
-import { LoginResponse } from '../core/models/user.model';
+import { ILoginResponse } from '../core/models/user.model';
 import { AuthService } from './auth.service';
 
 @Injectable()
@@ -76,7 +76,7 @@ export class AuthInterceptor implements HttpInterceptor {
   }
   addToken(
     request: HttpRequest<unknown>,
-    response: LoginResponse
+    response: ILoginResponse
   ): HttpRequest<any> {
     return request.clone({
       setHeaders: {

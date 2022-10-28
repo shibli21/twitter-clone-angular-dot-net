@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { DashboardData } from './../../core/models/admin.model';
+import { IDashboardData } from './../../core/models/admin.model';
 import { AdminService } from './../../core/services/admin.service';
 
 @Component({
@@ -8,7 +8,7 @@ import { AdminService } from './../../core/services/admin.service';
   styleUrls: ['./dashboard.component.scss'],
 })
 export class DashboardComponent implements OnInit {
-  dashboardData!: DashboardData;
+  dashboardData!: IDashboardData;
   isLoading = false;
   constructor(private adminService: AdminService) {}
 

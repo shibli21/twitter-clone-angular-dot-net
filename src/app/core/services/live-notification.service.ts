@@ -4,7 +4,7 @@ import { HubConnection, HubConnectionBuilder } from '@microsoft/signalr';
 import { ToastrService } from 'ngx-toastr';
 import { Notification } from '../models/notification.model';
 import { environment } from './../../../environments/environment';
-import { LoginResponse } from './../models/user.model';
+import { ILoginResponse } from './../models/user.model';
 import { NotificationService } from './notification.service';
 
 @Injectable({
@@ -21,7 +21,7 @@ export class LiveNotificationService {
 
   async startConnection(userId: string) {
     const userAuthData = localStorage.getItem('userData')!;
-    const { jwtToken } = JSON.parse(userAuthData) as LoginResponse;
+    const { jwtToken } = JSON.parse(userAuthData) as ILoginResponse;
 
     this._hubConnection = new HubConnectionBuilder()
       .withUrl(`${environment.notificationHubUrl}?userId=${userId}`, {

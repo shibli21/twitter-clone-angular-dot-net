@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import {
   Notification,
-  PaginatedNotifications,
+  IPaginatedNotifications,
 } from './../core/models/notification.model';
 import { NotificationService } from './../core/services/notification.service';
 @Component({
@@ -11,7 +11,7 @@ import { NotificationService } from './../core/services/notification.service';
   styleUrls: ['./notifications.component.scss'],
 })
 export class NotificationsComponent implements OnInit {
-  paginatedNotifications!: PaginatedNotifications | null;
+  IPaginatedNotifications!: IPaginatedNotifications | null;
   isLoading = false;
 
   constructor(
@@ -39,13 +39,13 @@ export class NotificationsComponent implements OnInit {
       });
 
       this.notificationService.notifications.subscribe(
-        (paginatedNotifications) => {
-          this.paginatedNotifications = paginatedNotifications;
+        (IPaginatedNotifications) => {
+          this.IPaginatedNotifications = IPaginatedNotifications;
         }
       );
 
       this.notificationService.getNotifications(
-        this.paginatedNotifications?.page
+        this.IPaginatedNotifications?.page
       );
     });
   }

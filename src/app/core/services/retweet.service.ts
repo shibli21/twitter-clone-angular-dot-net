@@ -4,7 +4,7 @@ import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 
 import { environment } from 'src/environments/environment';
-import { Tweet } from '../models/tweet.model';
+import { ITweet } from '../models/tweet.model';
 
 @Injectable({
   providedIn: 'root',
@@ -21,7 +21,7 @@ export class RetweetService {
     }
 
     return this.http
-      .post<Tweet>(`${this.baseUrl}tweet/retweet/${id}`, {
+      .post<ITweet>(`${this.baseUrl}tweet/retweet/${id}`, {
         tweet,
         hashTags: hashTags ? hashTags : [],
       })
