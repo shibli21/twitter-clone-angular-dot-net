@@ -47,9 +47,9 @@ public class AdminController : ControllerBase
         {
             return Unauthorized();
         }
-        if(authUserId == userId)
+        if (authUserId == userId)
         {
-            return BadRequest("You can't change your own role");
+            return BadRequest(new { message = "You can't change your own role" });
         }
 
         User? user = await _usersService.GetUserAsync(userId);
@@ -57,8 +57,8 @@ public class AdminController : ControllerBase
         {
             return NotFound();
         }
-        string? msg ;
-        if(user.Role == "admin")
+        string? msg;
+        if (user.Role == "admin")
         {
             user.Role = "user";
             msg = "User is no longer admin";
