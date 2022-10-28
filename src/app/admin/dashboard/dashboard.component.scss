@@ -5,4 +5,8 @@
   .p-button-danger {
     @apply enabled:focus:shadow-none;
   }
+
+  .pi {
+    @apply text-5xl;
+  }
 }
