@@ -6,7 +6,6 @@ import { ITweet } from 'src/app/core/models/tweet.model';
 import { CommentService } from '../../../core/services/comment.service';
 import { TweetService } from '../../../core/services/tweet.service';
 import { AuthService } from './../../../auth/auth.service';
-import { RetweetService } from './../../../core/services/retweet.service';
 
 @Component({
   selector: 'app-tweet-card',
@@ -62,21 +61,14 @@ export class TweetCardComponent implements OnInit {
 
   commentOnTweet() {
     this.isCommenting = true;
-    this.commentService.commentOnTweet(this.tweet.id, this.comment).subscribe({
-      next: (res) => {
-        this.tweetService.getTweet(this.tweet.id).subscribe((res) => {
-          this.tweet = res;
-          this.comment = '';
-          this.display = false;
-          this.isCommenting = false;
-        });
-      },
-      error: (err) => {
+    this.commentService
+      .commentOnTweetFromDialog(this.tweet.id, this.comment)
+      .subscribe()
+      .add(() => {
         this.isCommenting = false;
         this.display = false;
         this.comment = '';
-      },
-    });
+      });
   }
 
   likeUnlike() {

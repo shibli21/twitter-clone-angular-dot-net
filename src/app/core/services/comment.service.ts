@@ -1,3 +1,5 @@
+import { Router } from '@angular/router';
+import { TimelineService } from './timeline.service';
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, catchError, tap, throwError } from 'rxjs';
@@ -25,8 +27,9 @@ export class CommentService {
 
   constructor(
     private http: HttpClient,
-    private authService: AuthService,
-    private tweetService: TweetService
+    private tweetService: TweetService,
+    private timelineService: TimelineService,
+    private router: Router
   ) {}
 
   getTweetComments(tweetId: string, page = 0, size = 20) {
@@ -64,26 +67,9 @@ export class CommentService {
       .pipe(
         tap((comment) => {
           const comments = this.comments.getValue();
-          const user = this.authService.user.getValue();
-          let newComment: Comment;
-
-          newComment = {
-            ...comment,
-            user: {
-              id: user!.id,
-              userName: user!.userName,
-              firstName: user!.firstName,
-              lastName: user!.lastName,
-              profilePictureUrl: user!.profilePictureUrl,
-              coverPictureUrl: user!.coverPictureUrl,
-              address: user!.address,
-              bio: user!.bio,
-              dateOfBirth: user!.dateOfBirth,
-            },
-          };
 
           if (comments) {
-            comments.comments = [newComment, ...comments.comments];
+            comments.comments = [comment, ...comments.comments];
             this.comments.next(comments);
           }
 
@@ -91,7 +77,35 @@ export class CommentService {
           return comment;
         }),
         catchError((err) => {
-          return throwError(err);
+          return throwError(() => err);
+        })
+      );
+  }
+
+  commentOnTweetFromDialog(tweetId: string, comment: string) {
+    return this.http
+      .post<Comment>(this.baseUrl + 'tweet/comment/' + tweetId, { comment })
+      .pipe(
+        tap((comment) => {
+          if (this.router.url === '/home') {
+            const newsFeed = this.timelineService.newsFeed.getValue();
+            const tweetIndex = newsFeed.tweets.findIndex(
+              (tweet) => tweet.id === tweetId
+            );
+            newsFeed.tweets[tweetIndex].commentCount++;
+            this.timelineService.newsFeed.next(newsFeed);
+          } else {
+            const userTimeline = this.timelineService.userTimeline.getValue();
+            const tweetIndex = userTimeline.tweets.findIndex(
+              (tweet) => tweet.id === tweetId
+            );
+            userTimeline.tweets[tweetIndex].commentCount++;
+            this.timelineService.userTimeline.next(userTimeline);
+          }
+          return comment;
+        }),
+        catchError((err) => {
+          return throwError(() => err);
         })
       );
   }
@@ -110,7 +124,7 @@ export class CommentService {
         this.tweetService.tweet.getValue()!.commentCount--;
       }),
       catchError((err) => {
-        return throwError(err);
+        return throwError(() => err);
       })
     );
   }
