@@ -1,3 +1,4 @@
+import { LiveNotificationService } from './../core/services/live-notification.service';
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
@@ -20,7 +21,11 @@ export class AuthService {
   user = new BehaviorSubject<User | null>(null);
   isLoggingInLoading = new BehaviorSubject<boolean>(false);
 
-  constructor(private http: HttpClient, private router: Router) {}
+  constructor(
+    private http: HttpClient,
+    private router: Router,
+    private liveNotificationService: LiveNotificationService
+  ) {}
 
   registerUser(registerUser: IRegisterUser) {
     return this.http.post(this.baseUrl + 'auth/register', registerUser).pipe(
@@ -131,6 +136,7 @@ export class AuthService {
     localStorage.clear();
     this.deleteAllCookies();
     this.router.navigate(['/login']);
+    this.liveNotificationService.stopConnection();
   }
 
   autoLogin() {

@@ -1,16 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import {
-  HttpTransportType,
-  HubConnection,
-  HubConnectionBuilder,
-} from '@microsoft/signalr';
-import { ToastrService } from 'ngx-toastr';
 import { MenuItem } from 'primeng/api';
-import { Notification } from 'src/app/core/models/notification.model';
-import { environment } from 'src/environments/environment';
 import { AuthService } from './../../auth/auth.service';
-import { LoginResponse } from './../../core/models/user.model';
+import { LiveNotificationService } from './../../core/services/live-notification.service';
 import { NotificationService } from './../../core/services/notification.service';
 import { SearchService } from './../../core/services/search.service';
 import { TimelineService } from './../../core/services/timeline.service';
@@ -26,17 +18,22 @@ export class NavComponent implements OnInit {
   display = false;
 
   items!: MenuItem[];
-  private _hubConnection!: HubConnection;
   constructor(
     private authService: AuthService,
     private searchService: SearchService,
     private router: Router,
     private notificationService: NotificationService,
     private timelineService: TimelineService,
-    private toastr: ToastrService
+    private liveNotificationService: LiveNotificationService
   ) {}
 
   ngOnInit() {
+    this.liveNotificationService
+      .startConnection(this.authService.userId()!)
+      .then(() => {
+        this.liveNotificationService.addReceiveNotificationListener();
+      });
+
     this.items = [
       {
         label: 'Home',
@@ -64,6 +61,14 @@ export class NavComponent implements OnInit {
             label: 'My Profile',
             icon: 'pi pi-fw pi-user-edit',
             routerLink: ['/profile', this.authService.userId()],
+            command: () => {
+              window.scrollTo(0, 0);
+              this.router
+                .navigateByUrl('/', { skipLocationChange: true })
+                .then(() =>
+                  this.router.navigate(['/profile', this.authService.userId()])
+                );
+            },
           },
           {
             label: 'Edit',
@@ -92,51 +97,6 @@ export class NavComponent implements OnInit {
         visible: this.authService.isAdmin(),
       },
     ];
-
-    const userAuthData = localStorage.getItem('userData')!;
-    const { jwtToken } = JSON.parse(userAuthData) as LoginResponse;
-
-    this._hubConnection = new HubConnectionBuilder()
-      .withUrl(
-        `${environment.notificationHubUrl}?userId=${this.authService.userId()}`,
-        {
-          accessTokenFactory: () => jwtToken,
-          transport: HttpTransportType.LongPolling,
-        }
-      )
-      .build();
-
-    this._hubConnection
-      .start()
-      .then(() => {
-        console.log('Connection started');
-      })
-      .catch((err) => console.log('Error while starting connection: ' + err));
-
-    this._hubConnection.on(
-      'ReceiveNotification',
-      (notification: Notification) => {
-        let audio: HTMLAudioElement = new Audio('/assets/toast_sound.mp3');
-        audio.play();
-        const prevNotifications = this.notificationService.notifications.value;
-        this.notificationService.notifications.next({
-          ...prevNotifications,
-          notifications: [notification, ...prevNotifications.notifications],
-          totalUnread: prevNotifications.totalUnread + 1,
-        });
-        this.toastr
-          .success(notification.message, 'New notification', {
-            timeOut: 8000,
-          })
-          .onTap.subscribe(() => {
-            if (notification.type === 'Follow') {
-              this.router.navigate(['/profile', notification.refUserId]);
-            } else {
-              this.router.navigate(['/tweet', notification.tweetId]);
-            }
-          });
-      }
-    );
 
     if (this.router.url !== '/notifications') {
       this.notificationService.getNotifications();
