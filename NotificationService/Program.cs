@@ -2,6 +2,7 @@ using Core.Extensions;
 using Core.Interfaces;
 using Infrastructure.Config;
 using Infrastructure.Services;
+using Infrastructure.Middlewares;
 using JWTAuthenticationManager;
 using MassTransit;
 using Microsoft.AspNetCore.Http.Connections;
@@ -87,6 +88,8 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapHub<NotificationHub>("/live-notification");
+
+app.UseUserBlockedMiddleware();
 
 app.MapControllers();
 
