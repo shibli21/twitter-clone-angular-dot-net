@@ -1,3 +1,4 @@
+import { ToastrService } from 'ngx-toastr';
 import {
   HttpErrorResponse,
   HttpEvent,
@@ -14,7 +15,10 @@ import { AuthService } from './auth.service';
 export class AuthInterceptor implements HttpInterceptor {
   private isRefreshing = false;
 
-  constructor(private authService: AuthService) {}
+  constructor(
+    private authService: AuthService,
+    private toastr: ToastrService
+  ) {}
 
   intercept(
     request: HttpRequest<unknown>,
@@ -35,7 +39,11 @@ export class AuthInterceptor implements HttpInterceptor {
           error.status === 401
         ) {
           return this.handle401Error(request, next);
+        } else if (error.status == '403') {
+          this.toastr.error(error.error.message);
+          this.authService.logout();
         }
+
         return throwError(() => error);
       })
     );
