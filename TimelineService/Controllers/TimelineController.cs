@@ -57,6 +57,7 @@ namespace TimelineService.Controllers
                         if (tweets.Tweets != null && tweets.Tweets.Count > 0)
                         {
                             tweets.Tweets = tweets.Tweets.Take(size).ToList();
+                            tweets = await GetRetweetInformation(userId, userModel, tweets);
                             return Ok(tweets);
                         }
 
@@ -70,6 +71,7 @@ namespace TimelineService.Controllers
             tweets = await _iTimeLineService.GetUserTimeLine(userId, size, page);
             if (tweets.Tweets != null)
             {
+                string[] blockedIds = await _blockService.GetBlockedUsersIds(userId);
                 foreach (TweetResponseDto tweet in tweets.Tweets)
                 {
                     tweet.User = user;
@@ -82,7 +84,7 @@ namespace TimelineService.Controllers
                         if (refTweet != null)
                         {
                             User? refUser = await _usersService.GetUserAsync(refTweet.UserId);
-                            if (refUser != null && refUser.DeletedAt == null && refUser.BlockedAt == null)
+                            if (refUser != null && refUser.DeletedAt == null && refUser.BlockedAt == null && !blockedIds.Contains(refUser.Id))
                             {
                                 tweet.RefTweet = refTweet.AsDto();
                                 tweet.RefTweet.User = refUser.AsDtoTweetComment();
@@ -119,6 +121,7 @@ namespace TimelineService.Controllers
                         if (tweets.Tweets != null && tweets.Tweets.Count > 0)
                         {
                             tweets.Tweets = tweets.Tweets.Take(size).ToList();
+                            tweets = await GetRetweetInformation(userId, null, tweets);
                             return Ok(tweets);
                         }
 
@@ -159,6 +162,47 @@ namespace TimelineService.Controllers
                 await _database.StringSetAsync("noobmasters_newsfeed_" + userId, resJson, TimeSpan.FromMinutes(60));
             }
             return Ok(tweets);
+        }
+
+
+
+
+        private async Task<PaginatedTweetResponseDto> GetRetweetInformation(string userId, User? user, PaginatedTweetResponseDto tweets)
+        {
+            if (tweets.Tweets != null)
+            {
+                string[] blockedIds = await _blockService.GetBlockedUsersIds(userId);
+
+                foreach (TweetResponseDto tweet in tweets.Tweets)
+                {
+                    if (tweet.Type == "Retweet" && tweet.RetweetRefId != null)
+                    {
+                        Tweets? refTweet = await _tweetService.GetTweetById(tweet.RetweetRefId);
+                        if (refTweet != null)
+                        {
+                            User? refUser;
+                            if (user != null && user.Id == refTweet.UserId)
+                            {
+                                refUser = user;
+                            }
+                            else
+                            {
+                                refUser = await _usersService.GetUserAsync(refTweet.UserId);
+                            }
+                            if (refUser != null && refUser.DeletedAt == null && refUser.BlockedAt == null && !blockedIds.Contains(refUser.Id))
+                            {
+                                tweet.RefTweet = refTweet.AsDto();
+                                tweet.RefTweet.User = refUser.AsDtoTweetComment();
+                            }
+                            else
+                            {
+                                tweet.RefTweet = null;
+                            }
+                        }
+                    }
+                }
+            }
+            return tweets;
         }
 
     }

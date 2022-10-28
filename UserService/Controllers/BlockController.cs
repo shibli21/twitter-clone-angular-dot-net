@@ -67,6 +67,10 @@ public class BlockController : ControllerBase
         {
             return Unauthorized();
         }
+        if(userId == id)
+        {
+            return BadRequest(new { message = "You can't block yourself" });
+        }
         string msg = await _blockService.BlockByUser(id);
         if (msg == "Something went wrong")
         {
