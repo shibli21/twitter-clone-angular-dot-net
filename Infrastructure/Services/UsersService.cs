@@ -139,5 +139,27 @@ public class UsersService : IUsersService
         };
     }
 
+    public async Task<PaginatedUserResponseDto> GetPaginatedAdmins(int size, int page)
+    {
+
+        var filter = _usersCollection.Find(user => user.Role == "admin" && user.BlockedAt == null && user.DeletedAt == null);
+        var total = await filter.CountDocumentsAsync();
+
+        int LastPage = (int)Math.Ceiling((double)total / size) - 1;
+        LastPage = LastPage < 0 ? 0 : LastPage;
+        return new PaginatedUserResponseDto()
+        {
+            TotalElements = total,
+            Page = page,
+            Size = size,
+            LastPage = LastPage,
+            TotalPages = LastPage + 1,
+            Users = await filter.Skip(page * size)
+                                .Limit(size)
+                                .ToListAsync()
+                                .ContinueWith(task => task.Result.Select(user => user.AsDto()).ToList())
+        };
+    }
+
 
 }
