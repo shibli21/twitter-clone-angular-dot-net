@@ -8,9 +8,10 @@ import { EditProfileFormComponent } from './edit-profile-form/edit-profile-form.
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { UsersListComponent } from './users-list/users-list.component';
 import { BlockedUsersListComponent } from './blocked-users-list/blocked-users-list.component';
+import { AdminsListComponent } from './admins-list/admins-list.component';
 
 @NgModule({
-  declarations: [DashboardComponent, EditProfileFormComponent, UsersListComponent, BlockedUsersListComponent],
+  declarations: [DashboardComponent, EditProfileFormComponent, UsersListComponent, BlockedUsersListComponent, AdminsListComponent],
   imports: [
     CommonModule,
     AdminRoutingModule,

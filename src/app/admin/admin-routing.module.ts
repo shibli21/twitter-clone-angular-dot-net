@@ -1,8 +1,9 @@
-import { BlockedUsersListComponent } from './blocked-users-list/blocked-users-list.component';
-import { UsersListComponent } from './users-list/users-list.component';
-import { DashboardComponent } from './dashboard/dashboard.component';
 import { NgModule } from '@angular/core';
-import { Routes, RouterModule } from '@angular/router';
+import { RouterModule, Routes } from '@angular/router';
+import { AdminsListComponent } from './admins-list/admins-list.component';
+import { BlockedUsersListComponent } from './blocked-users-list/blocked-users-list.component';
+import { DashboardComponent } from './dashboard/dashboard.component';
+import { UsersListComponent } from './users-list/users-list.component';
 
 export const routes: Routes = [
   {
@@ -12,6 +13,10 @@ export const routes: Routes = [
   {
     path: 'users-list',
     component: UsersListComponent,
+  },
+  {
+    path: 'admins-list',
+    component: AdminsListComponent,
   },
   {
     path: 'blocked-users-list',

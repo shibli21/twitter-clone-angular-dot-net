@@ -1,3 +1,4 @@
+import { ToastrModule, ToastrService } from 'ngx-toastr';
 import { DashboardData } from './../models/admin.model';
 import { catchError, throwError } from 'rxjs';
 import { PaginatedUsers } from './../models/user.model';
@@ -11,7 +12,7 @@ import { Injectable } from '@angular/core';
 export class AdminService {
   baseUrl = environment.baseUrl;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private toastrService: ToastrService) {}
 
   getUsers(page = 0, size = 10) {
     return this.http
@@ -41,5 +42,25 @@ export class AdminService {
 
   getDashboardData() {
     return this.http.get<DashboardData>(`${this.baseUrl}admin/dashboard`);
+  }
+
+  createAdmin(id: string) {
+    return this.http.post(`${this.baseUrl}admin/create/${id}`, {}).pipe(
+      catchError((err) => {
+        return throwError(() => {
+          this.toastrService.error(err.error.message);
+        });
+      })
+    );
+  }
+
+  getAdmins(page = 0, size = 10) {
+    return this.http
+      .get<PaginatedUsers>(`${this.baseUrl}admin?page=${page}&size=${size}`)
+      .pipe(
+        catchError((err) => {
+          return throwError(() => err);
+        })
+      );
   }
 }

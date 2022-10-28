@@ -3,7 +3,16 @@
     <ng-template pTemplate="start">
       <div
         [routerLink]="['/home']"
-        class="mr-10 flex items-center cursor-pointer justify-start space-x-3"
+        class="hidden md:mr-10 mr-0 md:flex items-center cursor-pointer justify-start space-x-3"
+      >
+        <span class="bg-black rounded-full w-6 h-6"></span>
+        <a class="font-medium text-lg">Geeky</a>
+      </div>
+    </ng-template>
+    <ng-template pTemplate="end">
+      <div
+        [routerLink]="['/home']"
+        class="md:mr-10 mr-0 md:hidden flex items-center cursor-pointer justify-start space-x-3"
       >
         <span class="bg-black rounded-full w-6 h-6"></span>
         <a class="font-medium text-lg">Geeky</a>

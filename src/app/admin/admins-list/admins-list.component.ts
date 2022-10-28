@@ -1,15 +1,16 @@
-import { User } from './../../core/models/user.model';
 import { ToastrService } from 'ngx-toastr';
 import { EditUserService } from './../../core/services/edit-user.service';
 import { AdminService } from './../../core/services/admin.service';
+import { Page } from './../users-list/users-list.component';
 import { Component, OnInit } from '@angular/core';
+import { User } from 'src/app/core/models/user.model';
 
 @Component({
-  selector: 'app-users-list',
-  templateUrl: './users-list.component.html',
-  styleUrls: ['./users-list.component.scss'],
+  selector: 'app-admins-list',
+  templateUrl: './admins-list.component.html',
+  styleUrls: ['./admins-list.component.scss'],
 })
-export class UsersListComponent implements OnInit {
+export class AdminsListComponent implements OnInit {
   page = new Page();
   rows = new Array<User>();
   editUserDialog!: boolean;
@@ -40,7 +41,7 @@ export class UsersListComponent implements OnInit {
   setPage(pageInfo: any) {
     this.page.page = pageInfo.offset;
     this.adminService
-      .getUsers(this.page.page, this.page.size)
+      .getAdmins(this.page.page, this.page.size)
       .subscribe((pagedData) => {
         this.page.page = pagedData.page;
         this.page.size = pagedData.size;
@@ -62,28 +63,14 @@ export class UsersListComponent implements OnInit {
     this.editUserService.editingDialog.next(true);
   }
 
-  addAdmin(user: User) {
+  removeAdmin(user: User) {
     this.adminService.createAdmin(user.id).subscribe(() => {
       this.setPage({ offset: this.page.page });
-      this.toastr.success(
-        'Admin can be removed from admin list',
-        'Admin created',
-        {
-          timeOut: 15000,
-        }
-      );
+      this.toastr.success('Admin removed');
     });
   }
 
   closeEditUserDialog() {
     this.editUserService.editingDialog.next(false);
   }
-}
-
-export class Page {
-  size: number = 0;
-  totalElements: number = 0;
-  totalPages: number = 0;
-  lastPage: number = 0;
-  page: number = 0;
 }
