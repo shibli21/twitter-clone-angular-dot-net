@@ -1,10 +1,9 @@
-import { AuthService } from './../../auth/auth.service';
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Router } from '@angular/router';
-import { catchError, throwError, tap, BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, catchError, tap, throwError } from 'rxjs';
 import { PaginatedUsers } from 'src/app/core/models/user.model';
 import { environment } from './../../../environments/environment';
+import { FollowService } from './follow.service';
 
 @Injectable({
   providedIn: 'root',
@@ -21,14 +20,29 @@ export class BlockService {
   });
   isLoadingBlockedUsers = new BehaviorSubject<boolean>(false);
 
-  constructor(private http: HttpClient, private authService: AuthService) {}
+  constructor(private http: HttpClient, private followService: FollowService) {}
 
   blockUserByUser(userId: string) {
     return this.http.post(`${this.baseUrl}block/by-user/${userId}`, {}).pipe(
       tap(() => {
-        this.authService.currentUser().subscribe((user) => {
-          this.authService.user.next(user);
+        this.followService.myFollowers.next({
+          lastPage: 0,
+          page: 0,
+          size: 0,
+          totalElements: 0,
+          totalPages: 0,
+          users: [],
         });
+        this.followService.getMyFollowers();
+        this.followService.myFollowings.next({
+          lastPage: 0,
+          page: 0,
+          size: 0,
+          totalElements: 0,
+          totalPages: 0,
+          users: [],
+        });
+        this.followService.getMyFollowings();
       }),
       catchError((err) => {
         return throwError(err);

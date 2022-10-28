@@ -8,6 +8,8 @@ import { UserLayoutComponent } from './user-layout/user-layout.component';
 import { AdminLayoutComponent } from './admin-layout/admin-layout.component';
 import { AdminNavComponent } from './admin-nav/admin-nav.component';
 import { FormsModule } from '@angular/forms';
+import { MyFollowersListComponent } from './profile-card/my-followers-list/my-followers-list.component';
+import { MyFollowingListComponent } from './profile-card/my-following-list/my-following-list.component';
 
 @NgModule({
   declarations: [
@@ -17,6 +19,8 @@ import { FormsModule } from '@angular/forms';
     FollowersCardComponent,
     AdminLayoutComponent,
     AdminNavComponent,
+    MyFollowersListComponent,
+    MyFollowingListComponent,
   ],
   imports: [CommonModule, SharedModule, FormsModule],
 })

@@ -1,9 +1,10 @@
-import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
-import { environment } from './../../environments/environment';
 import { Injectable } from '@angular/core';
-import { catchError, throwError } from 'rxjs';
+import { Router } from '@angular/router';
+import { catchError, tap, throwError } from 'rxjs';
 import { User } from '../core/models/user.model';
+import { environment } from './../../environments/environment';
+import { FollowService } from './../core/services/follow.service';
 
 @Injectable({
   providedIn: 'root',
@@ -11,10 +12,33 @@ import { User } from '../core/models/user.model';
 export class UserService {
   baseUrl = environment.baseUrl;
 
-  constructor(private http: HttpClient, private router: Router) {}
+  constructor(
+    private http: HttpClient,
+    private router: Router,
+    private followService: FollowService
+  ) {}
 
   getUserById(id: string) {
     return this.http.get<User>(this.baseUrl + 'users/' + id).pipe(
+      tap(() => {
+        this.followService.userFollowers.next({
+          lastPage: 0,
+          page: 0,
+          size: 0,
+          totalElements: 0,
+          totalPages: 0,
+          users: [],
+        });
+        this.followService.userFollowings.next({
+          lastPage: 0,
+          page: 0,
+          size: 0,
+          totalElements: 0,
+          totalPages: 0,
+          users: [],
+        });
+      }),
+
       catchError((err) => {
         return throwError(err);
       })

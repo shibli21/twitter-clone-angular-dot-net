@@ -1,3 +1,4 @@
+import { tap } from 'rxjs';
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
@@ -97,18 +98,33 @@ export class ProfileComponent implements OnInit, OnDestroy {
 
   followUnfollowUser() {
     this.isFollowUnFollowing = true;
-    this.followService.followUnfollowUser(this.userId).subscribe({
-      next: (res: any) => {
-        this.toastr.success(res.message);
-        if (this.profileUser) {
-          this.profileUser.isFollowed = !this.profileUser.isFollowed;
-        }
-        this.isFollowUnFollowing = false;
-      },
-      error: (err) => {
-        this.isFollowUnFollowing = false;
-      },
-    });
+    this.followService
+      .followUnfollowUser(this.userId)
+      .pipe(
+        tap((res) => {
+          this.followService.userFollowers.next({
+            lastPage: 0,
+            page: 0,
+            size: 0,
+            totalElements: 0,
+            totalPages: 0,
+            users: [],
+          });
+          this.followService.getFollowersByUserId(this.userId);
+        })
+      )
+      .subscribe({
+        next: (res: any) => {
+          this.toastr.success(res.message);
+          if (this.profileUser) {
+            this.profileUser.isFollowed = !this.profileUser.isFollowed;
+          }
+          this.isFollowUnFollowing = false;
+        },
+        error: (err) => {
+          this.isFollowUnFollowing = false;
+        },
+      });
   }
 
   blockUserByUser() {

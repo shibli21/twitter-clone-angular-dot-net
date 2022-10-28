@@ -43,17 +43,11 @@
     <hr class="mt-8" />
     <div class="flex p-4">
       <div class="w-1/2 text-center">
-        <app-followers-list
-          [followersCount]="currentUser.followers"
-          [user]="currentUser"
-        ></app-followers-list>
+        <app-my-followers-list [user]="currentUser"></app-my-followers-list>
       </div>
       <div class="w-0 border border-gray-300"></div>
       <div class="w-1/2 text-center">
-        <app-following-list
-          [followingCount]="currentUser.following"
-          [user]="currentUser"
-        ></app-following-list>
+        <app-my-following-list [user]="currentUser"></app-my-following-list>
       </div>
     </div>
   </div>

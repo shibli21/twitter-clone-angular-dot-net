@@ -1,15 +1,14 @@
+import { PaginatedUsers, User } from './../../../core/models/user.model';
 import { Router } from '@angular/router';
-import { FollowService } from '../../../core/services/follow.service';
-import { PaginatedUsers } from '../../../core/models/user.model';
+import { FollowService } from './../../../core/services/follow.service';
 import { Component, Input, OnInit } from '@angular/core';
-import { User } from 'src/app/core/models/user.model';
 
 @Component({
-  selector: 'app-followers-list',
-  templateUrl: './followers-list.component.html',
-  styleUrls: ['./followers-list.component.scss'],
+  selector: 'app-my-followers-list',
+  templateUrl: './my-followers-list.component.html',
+  styleUrls: ['./my-followers-list.component.scss'],
 })
-export class FollowersListComponent implements OnInit {
+export class MyFollowersListComponent implements OnInit {
   @Input() user!: User;
   followers: PaginatedUsers = {
     lastPage: 0,
@@ -26,15 +25,15 @@ export class FollowersListComponent implements OnInit {
   constructor(private followService: FollowService, private router: Router) {}
 
   ngOnInit(): void {
-    this.followService.isLoadingUserFollowers.subscribe((isLoading) => {
+    this.followService.isLoadingMyFollowers.subscribe((isLoading) => {
       this.isLoading = isLoading;
     });
 
-    this.followService.userFollowers.subscribe((followers) => {
+    this.followService.myFollowers.subscribe((followers) => {
       this.followers = followers;
     });
 
-    this.followService.getFollowersByUserId(this.user.id);
+    this.followService.getMyFollowers();
   }
 
   showDialog() {
@@ -42,7 +41,7 @@ export class FollowersListComponent implements OnInit {
   }
 
   loadMoreFollowers() {
-    this.followService.loadMoreUsersFollowers(this.user.id);
+    this.followService.loadMoreMyFollowers();
   }
 
   routeToProfile(userId: string) {
