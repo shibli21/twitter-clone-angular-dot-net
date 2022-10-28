@@ -698,15 +698,16 @@ namespace CacheService.Consumers
             string[] adminBlockIds = (await _usersCollection.Find(u => u.BlockedAt != null).ToListAsync()).Select(u => u.Id).ToArray();
             followingIds = followingIds.Except(adminBlockIds).ToArray();
             var filter = _tweetCollection.Find(t => followingIds.Contains(t.UserId) && t.DeletedAt == null).SortByDescending(t => t.CreatedAt);
-            int LastPage = (int)Math.Ceiling((double)await filter.CountDocumentsAsync() / size) - 1;
+            long totalElements = await filter.CountDocumentsAsync();
+            int LastPage = (int)Math.Ceiling((double)totalElements / size) - 1;
             LastPage = LastPage < 0 ? 0 : LastPage;
             return new PaginatedTweetResponseDto()
             {
-                TotalElements = await filter.CountDocumentsAsync(),
+                TotalElements = totalElements,
                 Page = page,
                 Size = size,
                 LastPage = LastPage,
-                TotalPages = (int)Math.Ceiling((double)await filter.CountDocumentsAsync() / size),
+                TotalPages = LastPage + 1,
                 Tweets = await filter.Skip((page) * size)
                                     .Limit(size)
                                     .Project(tweet => tweet.AsDto())

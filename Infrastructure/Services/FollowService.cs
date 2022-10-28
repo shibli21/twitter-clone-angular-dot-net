@@ -71,7 +71,7 @@ namespace Infrastructure.Services
                 Page = page,
                 LastPage = LastPage,
                 Size = limit,
-                TotalPages = (int)Math.Ceiling((double)await filter.CountDocumentsAsync() / limit)
+                TotalPages = LastPage + 1
             };
 
         }
@@ -91,7 +91,7 @@ namespace Infrastructure.Services
                 Page = page,
                 LastPage = LastPage,
                 Size = limit,
-                TotalPages = (int)Math.Ceiling((double)await filter.CountDocumentsAsync() / limit)
+                TotalPages = LastPage + 1
             };
         }
 
