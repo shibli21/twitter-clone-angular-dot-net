@@ -101,16 +101,17 @@ namespace Infrastructure.Services
 
 
             var filter = _commentCollection.Find(x => x.TweetId == tweetId && !blockedIds.Contains(x.UserId));
-            int LastPage = (int)Math.Ceiling((double)await filter.CountDocumentsAsync() / max) - 1;
+            var totalElements = await filter.CountDocumentsAsync();
+            int LastPage = (int)Math.Ceiling((double)totalElements / max) - 1;
             LastPage = LastPage < 0 ? 0 : LastPage;
 
             PaginatedCommentResponseDto commentResponse = new PaginatedCommentResponseDto()
             {
-                TotalElements = await filter.CountDocumentsAsync(),
+                TotalElements = totalElements,
                 Page = page,
                 Size = max,
                 LastPage = LastPage,
-                TotalPages = (int)Math.Ceiling((double)await filter.CountDocumentsAsync() / max),
+                TotalPages = LastPage + 1,
                 Comments = (await filter.Skip(page * max)
                                     .Limit(max)
                                     .ToListAsync())

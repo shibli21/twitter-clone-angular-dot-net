@@ -121,15 +121,17 @@ public class UsersService : IUsersService
     {
 
         var filter = _usersCollection.Find(user => user.Role == "user" && user.BlockedAt == null && user.DeletedAt == null);
-        int LastPage = (int)Math.Ceiling((double)await filter.CountDocumentsAsync() / size) - 1;
+        var total = await filter.CountDocumentsAsync();
+
+        int LastPage = (int)Math.Ceiling((double)total / size) - 1;
         LastPage = LastPage < 0 ? 0 : LastPage;
         return new PaginatedUserResponseDto()
         {
-            TotalElements = await filter.CountDocumentsAsync(),
+            TotalElements = total,
             Page = page,
             Size = size,
             LastPage = LastPage,
-            TotalPages = (int)Math.Ceiling((double)await filter.CountDocumentsAsync() / size),
+            TotalPages = LastPage + 1,
             Users = await filter.Skip(page * size)
                                 .Limit(size)
                                 .ToListAsync()

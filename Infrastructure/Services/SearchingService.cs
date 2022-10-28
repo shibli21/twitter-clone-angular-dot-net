@@ -37,6 +37,9 @@ namespace Infrastructure.Services
                 if (userId != null)
                 {
                     var filter = _hashTagCollection.Find(x => x.HashTag.Contains(searchQuery));
+                    var totalElements = await filter.CountDocumentsAsync();
+                    int LastPage = (int)Math.Ceiling((double)totalElements / limit) - 1;
+                    LastPage = LastPage < 0 ? 0 : LastPage;
                     var tweetIds = (await filter.Skip((page) * limit)
                         .Limit(limit).ToListAsync()).Select(x => x.TweetId).Distinct().ToArray();
 
@@ -46,15 +49,14 @@ namespace Infrastructure.Services
                     var blockedIds = blockedMeIds.Concat(myBlockedIds).ToList();
 
                     var tweets = await _tweetCollection.Find(tweet => tweetIds.Contains(tweet.Id) && tweet.DeletedAt == null && !blockedIds.Contains(tweet.UserId)).ToListAsync();
-                    int LastPage = (int)Math.Ceiling((double)await filter.CountDocumentsAsync() / limit) - 1;
-                    LastPage = LastPage < 0 ? 0 : LastPage;
+                    
                     return new PaginatedTweetResponseDto()
                     {
-                        TotalElements = await filter.CountDocumentsAsync(),
+                        TotalElements = totalElements,
                         Page = page,
                         Size = limit,
                         LastPage = LastPage,
-                        TotalPages = (int)Math.Ceiling((double)await filter.CountDocumentsAsync() / limit),
+                        TotalPages = LastPage + 1,
                         Tweets = tweets.Select(tweet => tweet.AsDto()).ToList()
                     };
                 }
@@ -76,10 +78,11 @@ namespace Infrastructure.Services
                     var myBlockedIds = blocked.Where(block => block.UserId == id).Select(block => block.BlockedUserId).ToList();
                     var blockedIds = blockedMeIds.Concat(myBlockedIds).ToList();
                     var filter = _usersCollection.Find(user => (user.UserName.Contains(searchQuery) || user.FirstName.Contains(searchQuery) || user.LastName.Contains(searchQuery)) && user.Id != id && !blockedIds.Contains(user.Id) && user.DeletedAt == null && user.BlockedAt == null);
-                    int lastPage = (int)Math.Ceiling((double)await filter.CountDocumentsAsync() / limit) - 1;
-                    lastPage = lastPage < 0 ? 0 : lastPage;
                     long totalElements = await filter.CountDocumentsAsync();
-                    int totalPages = (int)Math.Ceiling((double)totalElements / limit);
+                    int lastPage = (int)Math.Ceiling((double)totalElements / limit) - 1;
+                    lastPage = lastPage < 0 ? 0 : lastPage;
+                    
+                    int totalPages = lastPage + 1;
                     List<SearchedUserResponseDto> users = (await filter.Skip((page) * limit)
                         .Limit(limit)
                         .ToListAsync()).Select(user => user.AsDtoSearchedUser()).ToList();

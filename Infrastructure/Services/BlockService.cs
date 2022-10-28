@@ -67,15 +67,17 @@ namespace Infrastructure.Services
         public async Task<PaginatedUserResponseDto> GetAdminBlockedUsers(int size, int page)
         {
             var filter = _usersCollection.Find(user => user.BlockedAt != null && user.DeletedAt == null);
-            int LastPage = (int)Math.Ceiling((double)await filter.CountDocumentsAsync() / size) - 1;
+            var total = await filter.CountDocumentsAsync();
+            int LastPage = (int)Math.Ceiling((double)total / size) -1;
             LastPage = LastPage < 0 ? 0 : LastPage;
+            int totalPages = LastPage + 1;
             return new PaginatedUserResponseDto()
             {
-                TotalElements = await filter.CountDocumentsAsync(),
+                TotalElements = total,
                 Page = page,
                 Size = size,
                 LastPage = LastPage,
-                TotalPages = (int)Math.Ceiling((double)await filter.CountDocumentsAsync() / size),
+                TotalPages = totalPages,
                 Users = await filter.Skip(page * size)
                                     .Limit(size)
                                     .ToListAsync()
@@ -97,10 +99,10 @@ namespace Infrastructure.Services
                     if (user != null)
                     {
                         var blockedUsers = _blockCollection.Find(block => block.UserId == userId);
-                        int LastPage = (int)Math.Ceiling((double)await blockedUsers.CountDocumentsAsync() / size) - 1;
+                        var TotalElements = await blockedUsers.CountDocumentsAsync();
+                        int LastPage = (int)Math.Ceiling((double)TotalElements / size) - 1;
                         LastPage = LastPage < 0 ? 0 : LastPage;
-                        int TotalPages = (int)Math.Ceiling((double)await blockedUsers.CountDocumentsAsync() / size);
-                        long TotalElements = await blockedUsers.CountDocumentsAsync();
+                        int totalPages = LastPage + 1;
                         string[] blockedUsersIds = await blockedUsers.Skip(page * size)
                                                                     .Limit(size)
                                                                     .ToListAsync()
@@ -115,7 +117,7 @@ namespace Infrastructure.Services
                             Page = page,
                             Size = size,
                             LastPage = LastPage,
-                            TotalPages = TotalPages,
+                            TotalPages = totalPages,
                             Users = users
                         };
                     }
