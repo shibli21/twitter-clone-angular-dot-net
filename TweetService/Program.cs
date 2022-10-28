@@ -1,6 +1,7 @@
 using Core.Extensions;
 using Core.Interfaces;
 using Infrastructure.Config;
+using Infrastructure.Middlewares;
 using Infrastructure.Services;
 using JWTAuthenticationManager;
 using MassTransit;
@@ -59,6 +60,7 @@ app.UseAuthentication();
 
 app.UseAuthorization();
 
+app.UseUserBlockedMiddleware();
 app.MapControllers();
 
 app.Run();

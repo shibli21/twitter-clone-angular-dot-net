@@ -4,6 +4,7 @@ using Core.Interfaces;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using Infrastructure.Config;
+using Infrastructure.Middlewares;
 using Infrastructure.Services;
 using JWTAuthenticationManager;
 using MassTransit;
@@ -75,6 +76,8 @@ app.UseSwaggerDocumentation();
 app.UseAuthentication();
 
 app.UseAuthorization();
+
+app.UseUserBlockedMiddleware();
 
 app.MapControllers();
 

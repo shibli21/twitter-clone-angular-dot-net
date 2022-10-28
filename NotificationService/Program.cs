@@ -2,6 +2,7 @@ using Core.Extensions;
 using Core.Interfaces;
 using Infrastructure.Config;
 using Infrastructure.Services;
+using Infrastructure.Middlewares;
 using JWTAuthenticationManager;
 using MassTransit;
 using Microsoft.AspNetCore.Http.Connections;
@@ -90,6 +91,8 @@ app.MapHub<NotificationHub>("/live-notification", (option) =>
 {
     option.Transports = HttpTransportType.LongPolling;
 });
+
+app.UseUserBlockedMiddleware();
 
 app.MapControllers();
 
