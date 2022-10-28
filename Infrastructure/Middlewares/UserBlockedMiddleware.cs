@@ -13,7 +13,7 @@ namespace Infrastructure.Middlewares
     {
         private readonly RequestDelegate _next;
         private readonly IMongoCollection<User> _usersCollection;
-        public UserBlockedMiddleware(RequestDelegate next,IOptions<TwitterCloneDbConfig> twitterCloneDatabaseSettings,
+        public UserBlockedMiddleware(RequestDelegate next, IOptions<TwitterCloneDbConfig> twitterCloneDatabaseSettings,
         IMongoClient mongoClient)
         {
             _next = next;
@@ -26,22 +26,22 @@ namespace Infrastructure.Middlewares
             if (userId != null)
             {
                 var user = await _usersCollection.Find(user => user.Id == userId).FirstOrDefaultAsync();
-                if (user == null )
+                if (user == null)
                 {
                     context.Response.StatusCode = 403;
-                    await context.Response.WriteAsync("User not found");
+                    await context.Response.WriteAsJsonAsync(new { message = "User not found" });
                     return;
                 }
-                else if(user.BlockedAt != null)
+                else if (user.BlockedAt != null)
                 {
                     context.Response.StatusCode = 403;
-                    await context.Response.WriteAsync("User is blocked");
+                    await context.Response.WriteAsJsonAsync(new { message = "You have been blocked" });
                     return;
                 }
-                else if(user.DeletedAt != null)
+                else if (user.DeletedAt != null)
                 {
                     context.Response.StatusCode = 403;
-                    await context.Response.WriteAsync("User is deleted");
+                    await context.Response.WriteAsJsonAsync(new { message = "You have been deleted" });
                     return;
                 }
             }
