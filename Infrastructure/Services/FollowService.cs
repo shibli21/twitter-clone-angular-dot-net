@@ -59,13 +59,14 @@ namespace Infrastructure.Services
         public async Task<PaginatedUserResponseDto> GetFollowers(string userId, int limit, int page)
         {
             var filter = _followCollection.Find(f => f.FollowingId == userId);
-            int LastPage = (int)Math.Ceiling((double)await filter.CountDocumentsAsync() / limit) - 1;
+            long totalElements = await filter.CountDocumentsAsync();
+            int LastPage = (int)Math.Ceiling((double)totalElements / limit) - 1;
             LastPage = LastPage < 0 ? 0 : LastPage;
             string[] followersIds = (await filter.Skip((page) * limit).Limit(limit).ToListAsync()).Select(f => f.UserId).ToArray();
             var users = await _user.Find(u => followersIds.Contains(u.Id) && u.DeletedAt == null && u.BlockedAt == null).ToListAsync();
             return new PaginatedUserResponseDto
             {
-                TotalElements = await filter.CountDocumentsAsync(),
+                TotalElements = totalElements,
                 Users = users.Select(u => u.AsDto()).ToList(),
                 Page = page,
                 LastPage = LastPage,
@@ -78,13 +79,14 @@ namespace Infrastructure.Services
         public async Task<PaginatedUserResponseDto> GetFollowing(string userId, int limit, int page)
         {
             var filter = _followCollection.Find(f => f.UserId == userId);
-            int LastPage = (int)Math.Ceiling((double)await filter.CountDocumentsAsync() / limit) - 1;
+            long totalElements = await filter.CountDocumentsAsync();
+            int LastPage = (int)Math.Ceiling((double)totalElements / limit) - 1;
             LastPage = LastPage < 0 ? 0 : LastPage;
             string[] followingIds = (await filter.Skip((page) * limit).Limit(limit).ToListAsync()).Select(f => f.FollowingId).ToArray();
             var users = await _user.Find(u => followingIds.Contains(u.Id) && u.DeletedAt == null && u.BlockedAt == null).ToListAsync();
             return new PaginatedUserResponseDto
             {
-                TotalElements = await filter.CountDocumentsAsync(),
+                TotalElements = totalElements,
                 Users = users.Select(u => u.AsDto()).ToList(),
                 Page = page,
                 LastPage = LastPage,
