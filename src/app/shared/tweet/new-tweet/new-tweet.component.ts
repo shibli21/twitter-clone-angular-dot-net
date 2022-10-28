@@ -1,3 +1,5 @@
+import { AuthService } from './../../../auth/auth.service';
+import { UserService } from './../../../core/services/user.service';
 import { ToastrService } from 'ngx-toastr';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { TweetService } from '../../../core/services/tweet.service';
@@ -14,6 +16,7 @@ export class NewTweetComponent implements OnInit {
 
   constructor(
     private tweetService: TweetService,
+    private authService: AuthService,
     private toastr: ToastrService
   ) {}
 
@@ -35,5 +38,9 @@ export class NewTweetComponent implements OnInit {
         this.isLoading = false;
       },
     });
+  }
+
+  get user() {
+    return this.authService.currentUserValue()!;
   }
 }
