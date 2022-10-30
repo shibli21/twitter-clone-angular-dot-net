@@ -24,6 +24,7 @@ export class LiveNotificationService {
     const { jwtToken } = JSON.parse(userAuthData) as ILoginResponse;
 
     this._hubConnection = new HubConnectionBuilder()
+      .withAutomaticReconnect()
       .withUrl(`${environment.notificationHubUrl}?userId=${userId}`, {
         accessTokenFactory: () => jwtToken,
       })
