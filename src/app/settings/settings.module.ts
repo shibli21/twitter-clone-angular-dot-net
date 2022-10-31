@@ -1,3 +1,4 @@
+import { BlockUserCardComponent } from './block-list/block-user-card/block-user-card.component';
 import { SettingsComponent } from './settings.component';
 import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 import { BlockListComponent } from './block-list/block-list.component';
@@ -9,7 +10,12 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 @NgModule({
-  declarations: [SettingsComponent, EditProfileComponent, BlockListComponent],
+  declarations: [
+    SettingsComponent,
+    EditProfileComponent,
+    BlockListComponent,
+    BlockUserCardComponent,
+  ],
   imports: [
     CommonModule,
     SharedModule,

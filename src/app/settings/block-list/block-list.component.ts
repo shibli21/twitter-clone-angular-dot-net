@@ -1,5 +1,4 @@
 import { ActivatedRoute } from '@angular/router';
-import { ToastrService } from 'ngx-toastr';
 import { BlockService } from '../../core/services/block.service';
 import { Component, OnInit } from '@angular/core';
 import {
@@ -15,11 +14,9 @@ import {
 export class BlockListComponent implements OnInit {
   blockedUsers!: IPaginatedUsers | null;
   isLoading = false;
-  isUnblocking = false;
 
   constructor(
     private blockService: BlockService,
-    private toastr: ToastrService,
     private route: ActivatedRoute
   ) {}
 
@@ -41,27 +38,5 @@ export class BlockListComponent implements OnInit {
 
   loadMoreUser() {
     this.blockService.loadMoreBlockedUsers();
-  }
-
-  unblockUser(userId: string) {
-    this.isUnblocking = true;
-    this.blockService.blockUserByUser(userId).subscribe({
-      next: (res) => {
-        this.toastr.success('User unblocked successfully');
-        const oldUsers = this.blockedUsers;
-
-        if (oldUsers) {
-          this.blockService.blockedUsers.next({
-            ...oldUsers,
-            users: oldUsers.users?.filter((user) => user.id !== userId),
-          });
-        }
-        this.isUnblocking = false;
-      },
-      error: (err) => {
-        this.toastr.error(err.error.message);
-        this.isUnblocking = false;
-      },
-    });
   }
 }
