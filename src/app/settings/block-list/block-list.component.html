@@ -1,7 +1,5 @@
-<div *ngIf="blockedUsers" class="border p-4 md:p-8 rounded-md">
-  <h3 class="text-xl font-semibold mb-6 leading-none text-gray-900">
-    Blocked users list
-  </h3>
+<div *ngIf="blockedUsers" class="">
+  <app-top-nav title="Blocked users list"></app-top-nav>
 
   <div *ngIf="blockedUsers.users.length === 0 && !isLoading">
     You have blocked {{ blockedUsers.users.length }} user.

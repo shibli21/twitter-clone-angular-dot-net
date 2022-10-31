@@ -1,0 +1,27 @@
+<p-dialog
+  header="Search"
+  [(visible)]="display"
+  [modal]="true"
+  position="top"
+  [resizable]="false"
+  [dismissableMask]="true"
+  [draggable]="false"
+  appendTo="body"
+  [style]="{ width: '100%', maxWidth: '500px' }"
+  (onHide)="onHide()"
+>
+  <form (ngSubmit)="onSubmit()" class="flex gap-2">
+    <div class="p-input-icon-left w-full">
+      <i class="pi pi-search"></i>
+      <input
+        autofocus
+        type="text"
+        name="search"
+        pInputText
+        placeholder="Search"
+        class="p-inputtext-sm w-full"
+        [(ngModel)]="searchQuery"
+      />
+    </div>
+  </form>
+</p-dialog>

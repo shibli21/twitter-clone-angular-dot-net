@@ -1,3 +1,4 @@
+import { Router } from '@angular/router';
 import { PaginatedUsers } from './../models/user.model';
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
@@ -17,8 +18,9 @@ export class SearchService {
   searchedTweets = new BehaviorSubject<IPaginatedTweets>(new PaginatedTweets());
   searchQuery = new BehaviorSubject<string>('');
   tweetSearchQuery = new BehaviorSubject<string>('');
+  isSearchDialogOpen = new BehaviorSubject<boolean>(false);
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private router: Router) {}
 
   getSearchUsers = (page = 0, size = 20) => {
     this.isSearchingUsers.next(true);
@@ -93,6 +95,34 @@ export class SearchService {
     const users = this.searchedTweets.getValue();
     if (users && users.page < users.totalPages) {
       this.getSearchTweets(users.page + 1);
+    }
+  }
+
+  toggleSearchDialog() {
+    this.isSearchDialogOpen.next(!this.isSearchDialogOpen.value);
+  }
+
+  onSearch(query: string) {
+    this.isSearchDialogOpen.next(false);
+
+    if (query.startsWith('#')) {
+      this.searchedTweets.next(new PaginatedTweets());
+      this.tweetSearchQuery.next(query);
+
+      if (this.router.url !== '/search/search-tweets') {
+        this.router.navigate(['/search/search-tweets']);
+      }
+
+      this.getSearchTweets();
+    } else {
+      this.searchedUsers.next(new PaginatedUsers());
+      this.searchQuery.next(query);
+
+      if (this.router.url !== '/search/search-users') {
+        this.router.navigate(['/search/search-users']);
+      }
+
+      this.getSearchUsers();
     }
   }
 }

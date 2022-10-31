@@ -1,6 +1,6 @@
 import { ActivatedRoute } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
-import { BlockService } from './../../core/services/block.service';
+import { BlockService } from '../../core/services/block.service';
 import { Component, OnInit } from '@angular/core';
 import {
   IPaginatedUsers,

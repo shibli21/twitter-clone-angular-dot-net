@@ -1,0 +1,47 @@
+<div class="w-full h-[100px]">
+  <section
+    id="bottom-navigation"
+    class="block fixed inset-x-0 bottom-0 z-10 text-slate-700 bg-white shadow"
+  >
+    <div id="tabs" class="flex justify-between">
+      <a
+        class="w-full inline-flex items-center flex-col py-2"
+        (click)="navigateToHomeAndRefresh()"
+      >
+        <app-home-icon [isActive]="isActive('home')"></app-home-icon>
+        <span class="tab tab-home block text-xs">Home</span>
+      </a>
+      <a
+        class="w-full inline-flex items-center flex-col py-2"
+        (click)="navigateToProfileAndRefresh()"
+      >
+        <app-profile-icon
+          [isActive]="isMyProfileRouteActive()"
+        ></app-profile-icon>
+        <span class="tab tab-kategori block text-xs">Profile</span>
+      </a>
+      <a
+        class="w-full inline-flex items-center flex-col py-2"
+        [routerLink]="['/notifications']"
+      >
+        <app-notification-icon
+          [isActive]="isActive('notifications')"
+        ></app-notification-icon>
+        <span class="tab tab-explore block text-xs">Notification</span>
+      </a>
+      <a
+        class="w-full inline-flex items-center flex-col py-2"
+        (click)="toggleSearchDialog()"
+      >
+        <app-search-icon></app-search-icon>
+        <span class="tab tab-whishlist block text-xs">Search</span>
+      </a>
+    </div>
+    <button
+      (click)="toggleNewTweetDialog()"
+      class="-top-[70px] right-4 absolute p-4 inline-flex items-center bg-indigo-600 rounded-full hover:bg-indigo-700 active:shadow-lg shadow-lg transition focus:outline-none"
+    >
+      <app-tweet-icon></app-tweet-icon>
+    </button>
+  </section>
+</div>

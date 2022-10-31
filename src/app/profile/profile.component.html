@@ -40,10 +40,9 @@
 
   <div *ngIf="isProfileLoading" class=""></div>
 
-  <div class="" *ngIf="profileUser && !isProfileLoading">
-    <div
-      class="w-full flex flex-row justify-center items-center border rounded-md overflow-hidden"
-    >
+  <ng-container class="" *ngIf="profileUser && !isProfileLoading">
+    <app-top-nav [title]="profileUser.userName"></app-top-nav>
+    <div class="w-full flex flex-row justify-center items-center">
       <div class="w-full mx-auto bg-white">
         <div class="h-40 bg-indigo-600 overflow-hidden">
           <img
@@ -72,7 +71,7 @@
               icon="pi pi-pencil"
               *ngIf="isCurrentUser"
               class="p-button-text"
-              [routerLink]="['/profile/edit', userId]"
+              [routerLink]="['/settings/edit', userId]"
             ></button>
 
             <div *ngIf="!isCurrentUser" class="flex gap-2">
@@ -119,7 +118,7 @@
     <div class="flex justify-between items-center m-4">
       <h3 class="text-xl font-bold leading-none text-gray-900">Tweets</h3>
     </div>
-  </div>
+  </ng-container>
 
   <div *ngIf="usersTweets">
     <div

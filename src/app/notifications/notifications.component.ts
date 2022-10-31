@@ -11,7 +11,7 @@ import { NotificationService } from './../core/services/notification.service';
   styleUrls: ['./notifications.component.scss'],
 })
 export class NotificationsComponent implements OnInit {
-  IPaginatedNotifications!: IPaginatedNotifications | null;
+  paginatedNotifications!: IPaginatedNotifications | null;
   isLoading = false;
 
   constructor(
@@ -40,12 +40,12 @@ export class NotificationsComponent implements OnInit {
 
       this.notificationService.notifications.subscribe(
         (IPaginatedNotifications) => {
-          this.IPaginatedNotifications = IPaginatedNotifications;
+          this.paginatedNotifications = IPaginatedNotifications;
         }
       );
 
       this.notificationService.getNotifications(
-        this.IPaginatedNotifications?.page
+        this.paginatedNotifications?.page
       );
     });
   }

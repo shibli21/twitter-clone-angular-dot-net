@@ -1,0 +1,25 @@
+<app-top-nav title="settings"></app-top-nav>
+
+<ul class="divide-y">
+  <li
+    [routerLink]="['/settings/edit', user.id]"
+    class="px-4 md:px-8 py-4 flex gap-4 items-center cursor-pointer hover:bg-gray-100"
+  >
+    <app-edit-profile-icon></app-edit-profile-icon>
+    <a>Edit Profile</a>
+  </li>
+  <li
+    routerLink="/settings/block/users"
+    class="px-4 md:px-8 py-4 flex gap-4 items-center cursor-pointer hover:bg-gray-100"
+  >
+    <app-block-icon></app-block-icon>
+    <a>Block List</a>
+  </li>
+  <li
+    routerLink="/notifications"
+    class="px-4 md:px-8 py-4 flex gap-4 items-center cursor-pointer hover:bg-gray-100"
+  >
+    <app-notification-icon [isActive]="false"></app-notification-icon>
+    <a>Notifications</a>
+  </li>
+</ul>

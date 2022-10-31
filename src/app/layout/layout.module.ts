@@ -10,6 +10,8 @@ import { AdminNavComponent } from './admin-nav/admin-nav.component';
 import { FormsModule } from '@angular/forms';
 import { MyFollowersListComponent } from './profile-card/my-followers-list/my-followers-list.component';
 import { MyFollowingListComponent } from './profile-card/my-following-list/my-following-list.component';
+import { SideNavComponent } from './side-nav/side-nav.component';
+import { BottomNavComponent } from './bottom-nav/bottom-nav.component';
 
 @NgModule({
   declarations: [
@@ -21,6 +23,8 @@ import { MyFollowingListComponent } from './profile-card/my-following-list/my-fo
     AdminNavComponent,
     MyFollowersListComponent,
     MyFollowingListComponent,
+    SideNavComponent,
+    BottomNavComponent,
   ],
   imports: [CommonModule, SharedModule, FormsModule],
 })

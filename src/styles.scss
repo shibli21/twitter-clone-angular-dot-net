@@ -14,12 +14,13 @@
 }
 
 html {
-  padding-left: calc(100vw - 100%);
+  overflow-y: scroll;
 }
 
 html,
 body {
   font-family: "Poppins";
+  @apply text-slate-800;
 }
 
 // toast global style
@@ -39,4 +40,8 @@ body {
 
 .p-overlaypanel .p-overlaypanel-content {
   padding: 0 !important;
+}
+
+.p-overflow-hidden {
+  overflow: initial !important;
 }

@@ -1,0 +1,10 @@
+.sidenav-item {
+  @apply text-gray-700 flex gap-4 items-center px-4 py-2 rounded-md cursor-pointer hover:bg-gray-100;
+
+  .label {
+    @apply text-gray-500;
+  }
+  .pi {
+    @apply text-[28px];
+  }
+}

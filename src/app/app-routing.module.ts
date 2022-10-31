@@ -37,6 +37,11 @@ const routes: Routes = [
           import('./profile/profile.module').then((m) => m.ProfileModule),
       },
       {
+        path: 'settings',
+        loadChildren: () =>
+          import('./settings/settings.module').then((m) => m.SettingsModule),
+      },
+      {
         path: 'tweet',
         loadChildren: () =>
           import('./tweet/tweet.module').then((m) => m.TweetModule),

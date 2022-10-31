@@ -1,7 +1,6 @@
-<div
-  class="p-4 border rounded-md overflow-hidden"
-  *ngIf="searchQuery.length === 0"
->
+<app-top-nav title="Search"></app-top-nav>
+
+<div class="p-4" *ngIf="searchQuery.length === 0">
   <h3 class="text-xl font-bold leading-none text-gray-900">
     Please enter a search query
   </h3>
@@ -9,7 +8,7 @@
 
 <div *ngIf="searchedUsers && searchQuery">
   <div class="w-full mb-2">
-    <div class="p-4 border rounded-md overflow-hidden">
+    <div class="p-4">
       <div class="flex justify-between items-center">
         <h3 class="text-xl font-bold leading-none text-gray-900">
           Search results for

@@ -1,7 +1,5 @@
 import { SearchTweetsComponent } from './search-tweets/search-tweets.component';
 import { SearchUsersComponent } from './search-users/search-users.component';
-import { SearchComponent } from './search.component';
-import { UserLayoutComponent } from './../layout/user-layout/user-layout.component';
 import { RouterModule, Routes } from '@angular/router';
 import { NgModule } from '@angular/core';
 

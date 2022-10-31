@@ -1,0 +1,94 @@
+<div
+  class="w-full p-4 sticky flex gap-4 items-center top-0 backdrop-blur-lg z-50"
+>
+  <a
+    *ngIf="!showBackButton"
+    type="button"
+    class="rounded-full block sm:hidden overflow-hidden"
+    (click)="toggleSidebar()"
+  >
+    <img
+      class="h-[36px] w-[36px] object-cover"
+      [src]="
+        user.profilePictureUrl
+          ? user.profilePictureUrl
+          : 'https://avatars.dicebear.com/api/open-peeps/' +
+            user.userName +
+            '.svg'
+      "
+    />
+  </a>
+  <button
+    *ngIf="showBackButton"
+    type="button"
+    class="hover:bg-gray-100 transition font-medium rounded-full p-2.5 text-center inline-flex items-center"
+    (click)="goBack()"
+  >
+    <i class="pi pi-arrow-left"></i>
+  </button>
+  <h1 class="md:text-2xl text-xl font-bold">{{ title }}</h1>
+</div>
+
+<p-sidebar
+  [blockScroll]="true"
+  [style]="{ maxWidth: '280px' }"
+  [(visible)]="sidenavDisplay"
+  [showCloseIcon]="false"
+>
+  <ng-template pTemplate="content">
+    <div class="flex py-4 mb-2 items-center justify-between">
+      <h1 class="font-bold">Account info</h1>
+      <i class="pi pi-times mr-2" (click)="toggleSidebar()"></i>
+    </div>
+    <img
+      class="h-[50px] w-[50px] object-cover rounded-full"
+      [src]="
+        user.profilePictureUrl
+          ? user.profilePictureUrl
+          : 'https://avatars.dicebear.com/api/open-peeps/' +
+            user.userName +
+            '.svg'
+      "
+    />
+
+    <div class="mt-6 font-bold leading-3">
+      {{ user.firstName }} {{ user.lastName }}
+    </div>
+    <div class="text-sm">@{{ user.userName }}</div>
+
+    <div class="mt-2 flex gap-2 text-sm">
+      <div class="flex gap-1">
+        <p class="font-bold">{{ user.following }}</p>
+        <p>Following</p>
+      </div>
+      <div class="flex gap-1">
+        <p class="font-bold">{{ user.followers }}</p>
+        <p>Followers</p>
+      </div>
+    </div>
+
+    <ul class="space-y-2 mt-6">
+      <li class="sidenav-item" (click)="navigateToHomeAndRefresh()">
+        <app-home-icon [isActive]="false"></app-home-icon>
+        <div class="label">Home</div>
+      </li>
+      <li class="sidenav-item" (click)="navigateToProfileAndRefresh()">
+        <app-profile-icon [isActive]="false"></app-profile-icon>
+        <div class="label">Profile</div>
+      </li>
+      <li class="sidenav-item" [routerLink]="['/notifications']">
+        <app-notification-icon [isActive]="false"></app-notification-icon>
+        <div class="label">Notifications</div>
+      </li>
+
+      <li class="sidenav-item" [routerLink]="['/settings']">
+        <app-settings-icon></app-settings-icon>
+        <div class="label">Settings</div>
+      </li>
+      <li class="sidenav-item" (click)="logout()">
+        <app-logout-icon></app-logout-icon>
+        <div class="label">Logout</div>
+      </li>
+    </ul>
+  </ng-template>
+</p-sidebar>

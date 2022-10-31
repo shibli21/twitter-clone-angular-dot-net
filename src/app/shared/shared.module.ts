@@ -19,6 +19,9 @@ import { RetweetDialogComponent } from './retweet-dialog/retweet-dialog.componen
 import { EditTweetDialogComponent } from './edit-tweet-dialog/edit-tweet-dialog.component';
 import { RetweetUndoDialogComponent } from './retweet-undo-dialog/retweet-undo-dialog.component';
 import { RetweetCardComponent } from './tweet/retweet-card/retweet-card.component';
+import { TopNavComponent } from './top-nav/top-nav.component';
+import { SearchDialogComponent } from './search-dialog/search-dialog.component';
+import { NewTweetDialogComponent } from './new-tweet-dialog/new-tweet-dialog.component';
 
 @NgModule({
   declarations: [
@@ -36,6 +39,9 @@ import { RetweetCardComponent } from './tweet/retweet-card/retweet-card.componen
     EditTweetDialogComponent,
     RetweetUndoDialogComponent,
     RetweetCardComponent,
+    TopNavComponent,
+    SearchDialogComponent,
+    NewTweetDialogComponent,
   ],
   imports: [
     CommonModule,
@@ -76,6 +82,9 @@ import { RetweetCardComponent } from './tweet/retweet-card/retweet-card.componen
     EditTweetDialogComponent,
     RetweetUndoDialogComponent,
     RetweetCardComponent,
+    TopNavComponent,
+    NewTweetDialogComponent,
+    SearchDialogComponent,
   ],
 })
 export class SharedModule {}
