@@ -13,19 +13,11 @@
     </div>
   </div>
 
-  <div *ngIf="isLoading" class="space-y-2">
-    <div class="mt-2">
-      <app-tweet-card-skeleton></app-tweet-card-skeleton>
-    </div>
-    <div>
-      <app-tweet-card-skeleton></app-tweet-card-skeleton>
-    </div>
-    <div>
-      <app-tweet-card-skeleton></app-tweet-card-skeleton>
-    </div>
-    <div>
-      <app-tweet-card-skeleton></app-tweet-card-skeleton>
-    </div>
+  <div *ngIf="isLoading">
+    <app-tweet-card-skeleton></app-tweet-card-skeleton>
+    <app-tweet-card-skeleton></app-tweet-card-skeleton>
+    <app-tweet-card-skeleton></app-tweet-card-skeleton>
+    <app-tweet-card-skeleton></app-tweet-card-skeleton>
   </div>
 
   <p

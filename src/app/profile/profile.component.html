@@ -7,7 +7,7 @@
 </div>
 
 <div *ngIf="!notFound">
-  <div *ngIf="isProfileLoading" class="p-4 border rounded-md mb-4">
+  <div *ngIf="isProfileLoading" class="p-4 mb-4">
     <div class="flex items-center space-x-4">
       <p-skeleton shape="circle" size="8rem" class="mr-2"></p-skeleton>
       <div class="flex-1 justify-center">
@@ -109,20 +109,19 @@
             </div>
             <div class="">
               <app-following-list [user]="profileUser"></app-following-list>
-              <!-- <span class="font-bold">{{ profileUser.following }}</span> Following -->
             </div>
           </div>
         </div>
       </div>
     </div>
-    <div class="flex justify-between items-center m-4">
+    <div class="flex justify-between border-b items-center p-4">
       <h3 class="text-xl font-bold leading-none text-gray-900">Tweets</h3>
     </div>
   </ng-container>
 
   <div *ngIf="usersTweets">
     <div
-      class="space-y-4"
+      class="divide-y"
       infinite-scroll
       (scrolled)="loadMore()"
       [fromRoot]="true"
@@ -134,18 +133,10 @@
     </div>
 
     <div *ngIf="isLoading && !isProfileLoading" class="space-y-2">
-      <div class="mt-2">
-        <app-tweet-card-skeleton></app-tweet-card-skeleton>
-      </div>
-      <div>
-        <app-tweet-card-skeleton></app-tweet-card-skeleton>
-      </div>
-      <div>
-        <app-tweet-card-skeleton></app-tweet-card-skeleton>
-      </div>
-      <div>
-        <app-tweet-card-skeleton></app-tweet-card-skeleton>
-      </div>
+      <app-tweet-card-skeleton></app-tweet-card-skeleton>
+      <app-tweet-card-skeleton></app-tweet-card-skeleton>
+      <app-tweet-card-skeleton></app-tweet-card-skeleton>
+      <app-tweet-card-skeleton></app-tweet-card-skeleton>
     </div>
 
     <p
