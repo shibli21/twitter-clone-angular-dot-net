@@ -58,4 +58,8 @@
       @apply text-xl;
     }
   }
+
+  .ql-editor.ql-blank::before {
+    @apply text-[20px] text-slate-800 font-serif;
+  }
 }

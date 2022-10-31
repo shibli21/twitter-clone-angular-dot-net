@@ -10,8 +10,9 @@ import { Component, OnInit } from '@angular/core';
 })
 export class NewTweetDialogComponent implements OnInit {
   display = false;
-  tweet = '';
+  tweet: string = '';
   user!: IUser;
+  isLoading = false;
 
   constructor(
     private newTweetService: NewTweetService,
@@ -26,6 +27,9 @@ export class NewTweetDialogComponent implements OnInit {
       if (user) {
         this.user = user;
       }
+    });
+    this.newTweetService.isTweeting.subscribe((isTweeting) => {
+      this.isLoading = isTweeting;
     });
   }
 

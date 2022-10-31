@@ -1,5 +1,9 @@
 :host ::ng-deep {
-  .p-inputtext {
-    @apply border-white;
+  .ql-editor-main {
+    @apply flex flex-col-reverse;
+  }
+  .reply-button {
+    color: white !important;
+    @apply w-auto rounded-full;
   }
 }

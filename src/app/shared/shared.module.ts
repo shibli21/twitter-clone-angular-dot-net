@@ -52,16 +52,7 @@ import { NewTweetDialogComponent } from './new-tweet-dialog/new-tweet-dialog.com
     MomentModule,
     QuillModule.forRoot({
       modules: {
-        toolbar: [
-          [
-            'bold',
-            'italic',
-            'underline',
-            'blockquote',
-            { header: 1 },
-            { header: 2 },
-          ],
-        ],
+        toolbar: [['bold', 'italic', { header: 1 }, { header: 2 }]],
       },
     }),
   ],

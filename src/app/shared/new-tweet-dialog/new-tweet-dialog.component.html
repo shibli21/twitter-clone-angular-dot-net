@@ -6,8 +6,7 @@
   [resizable]="false"
   [dismissableMask]="true"
   [draggable]="false"
-  appendTo="body"
-  [style]="{ width: '100%', maxWidth: '500px' }"
+  [style]="{ width: '100%', maxWidth: '600px' }"
   (onHide)="onHide()"
 >
   <ng-template pTemplate="header">
@@ -16,26 +15,28 @@
 
   <div class="w-full relative">
     <quill-editor
-      class="w-full"
-      theme="snow"
-      placeholder="What's happening?"
-      customToolbarPosition="bottom"
-      [(ngModel)]="tweet"
+      class="ql-editor-main"
       name="tweet"
-      [styles]="{
-        height: 'auto',
-        maxWidth: '600px',
-        flexDirection: 'column-reverse !important'
-      }"
+      placeholder="What's happening?"
+      [(ngModel)]="tweet"
     >
+      <div quill-editor-toolbar class="flex justify-between items-center">
+        <span class="ql-formats flex-1">
+          <button class="ql-bold" [title]="'Bold'"></button>
+          <button class="ql-italic" [title]="'italic'"></button>
+          <button class="ql-header" [title]="'header'" value="1"></button>
+          <button class="ql-header" [title]="'header'" value="2"></button>
+        </span>
+        <a
+          pButton
+          [loading]="isLoading"
+          label="Tweet"
+          [ngClass]="tweet ? '' : 'p-disabled'"
+          class="reply-button rounded-full px-6 py-2 w-auto"
+          (click)="tweet ? onSubmit() : null"
+        >
+        </a>
+      </div>
     </quill-editor>
-    <button
-      class="p-button-sm"
-      (click)="onSubmit()"
-      pButton
-      [disabled]="tweet.length === 0"
-      label="Tweet"
-      type="submit"
-    ></button>
   </div>
 </p-dialog>
