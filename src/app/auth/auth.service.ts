@@ -74,7 +74,11 @@ export class AuthService {
   }
 
   isAdmin() {
-    return this.user.value?.role === 'admin';
+    if (!this.user.value) {
+      return false;
+    }
+
+    return this.user.value.role === 'admin';
   }
 
   userId() {

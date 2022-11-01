@@ -86,6 +86,10 @@
         <app-settings-icon></app-settings-icon>
         <div class="label">Settings</div>
       </li>
+      <li *ngIf="isAdmin()" class="sidenav-item" [routerLink]="['/admin']">
+        <app-admin-icon></app-admin-icon>
+        <div class="label">Admin</div>
+      </li>
       <li class="sidenav-item" (click)="logout()">
         <app-logout-icon></app-logout-icon>
         <div class="label">Logout</div>

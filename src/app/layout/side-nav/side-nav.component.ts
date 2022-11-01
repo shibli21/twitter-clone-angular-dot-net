@@ -1,3 +1,5 @@
+import { LiveNotificationService } from './../../core/services/live-notification.service';
+import { Page } from './../../admin/users-list/users-list.component';
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { IUser } from 'src/app/core/models/user.model';
@@ -21,10 +23,17 @@ export class SideNavComponent implements OnInit {
     private navService: NavService,
     private router: Router,
     private searchService: SearchService,
-    private newTweetService: NewTweetService
+    private newTweetService: NewTweetService,
+    private liveNotificationService: LiveNotificationService
   ) {}
 
   ngOnInit(): void {
+    this.liveNotificationService
+      .startConnection(this.authService.userId()!)
+      .then(() => {
+        this.liveNotificationService.addReceiveNotificationListener();
+      });
+
     this.authService.currentUser().subscribe((user) => {
       this.user = user;
     });
@@ -59,5 +68,9 @@ export class SideNavComponent implements OnInit {
 
   newTweet() {
     this.newTweetService.toggleTweetDialog();
+  }
+
+  isAdmin() {
+    return this.user.role === 'admin';
   }
 }

@@ -52,4 +52,8 @@ export class TopNavComponent implements OnInit {
   logout() {
     this.authService.logout();
   }
+
+  isAdmin() {
+    return this.user.role === 'admin';
+  }
 }
