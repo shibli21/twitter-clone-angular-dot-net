@@ -1,5 +1,6 @@
 <div
-  class="w-full p-4 sticky flex gap-4 items-center top-0 backdrop-blur-lg z-50"
+  [ngClass]="showBackButton ? 'pl-2' : 'pl-4'"
+  class="w-full pr-4 py-4 sticky flex gap-2 items-center top-0 backdrop-blur-lg z-50"
 >
   <a
     *ngIf="!showBackButton"

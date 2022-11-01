@@ -14,7 +14,7 @@
   <ng-container *ngIf="tweet && !isLoading">
     <app-top-nav title="Tweet"></app-top-nav>
     <div class="hover:bg-gray-50 cursor-pointer w-full transition">
-      <div class="border-b px-2 md:px-4 py-2 items-center justify-between flex">
+      <div class="border-b items-center justify-between flex">
         <app-name-and-time-header
           [date]="tweet.createdAt"
           [user]="tweet.user"
