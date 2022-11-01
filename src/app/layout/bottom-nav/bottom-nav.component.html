@@ -24,7 +24,17 @@
         class="w-full inline-flex items-center flex-col py-2"
         [routerLink]="['/notifications']"
       >
+        <div
+          pBadge
+          *ngIf="totalUnreadNotifications !== 0"
+          [value]="totalUnreadNotifications.toString()"
+        >
+          <app-notification-icon
+            [isActive]="isActive('notifications')"
+          ></app-notification-icon>
+        </div>
         <app-notification-icon
+          *ngIf="totalUnreadNotifications === 0"
           [isActive]="isActive('notifications')"
         ></app-notification-icon>
         <span class="tab tab-explore block text-xs">Notification</span>

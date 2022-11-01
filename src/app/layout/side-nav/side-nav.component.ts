@@ -1,3 +1,4 @@
+import { NotificationService } from './../../core/services/notification.service';
 import { LiveNotificationService } from './../../core/services/live-notification.service';
 import { Page } from './../../admin/users-list/users-list.component';
 import { Component, OnInit } from '@angular/core';
@@ -17,6 +18,7 @@ export class SideNavComponent implements OnInit {
   user!: IUser;
   searchQuery = '';
   display = false;
+  totalUnreadNotifications = 0;
 
   constructor(
     private authService: AuthService,
@@ -24,7 +26,8 @@ export class SideNavComponent implements OnInit {
     private router: Router,
     private searchService: SearchService,
     private newTweetService: NewTweetService,
-    private liveNotificationService: LiveNotificationService
+    private liveNotificationService: LiveNotificationService,
+    private notificationService: NotificationService
   ) {}
 
   ngOnInit(): void {
@@ -33,6 +36,16 @@ export class SideNavComponent implements OnInit {
       .then(() => {
         this.liveNotificationService.addReceiveNotificationListener();
       });
+
+    if (this.router.url !== '/notifications') {
+      this.notificationService.getNotifications();
+    }
+
+    this.notificationService.notifications.subscribe(
+      (IPaginatedNotifications) => {
+        this.totalUnreadNotifications = IPaginatedNotifications.totalUnread;
+      }
+    );
 
     this.authService.currentUser().subscribe((user) => {
       this.user = user;

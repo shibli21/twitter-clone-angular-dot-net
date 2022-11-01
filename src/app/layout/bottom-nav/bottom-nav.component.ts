@@ -1,3 +1,4 @@
+import { NotificationService } from './../../core/services/notification.service';
 import { NewTweetService } from './../../core/services/new-tweet.service';
 import { SearchService } from './../../core/services/search.service';
 import { Router } from '@angular/router';
@@ -13,19 +14,31 @@ import { Component, OnInit } from '@angular/core';
 })
 export class BottomNavComponent implements OnInit {
   user!: IUser;
+  totalUnreadNotifications = 0;
 
   constructor(
     private authService: AuthService,
     private navService: NavService,
     private searchService: SearchService,
     private newTweetService: NewTweetService,
-    private router: Router
+    private router: Router,
+    private notificationService: NotificationService
   ) {}
 
   ngOnInit(): void {
     this.authService.currentUser().subscribe((user) => {
       this.user = user;
     });
+
+    if (this.router.url !== '/notifications') {
+      this.notificationService.getNotifications();
+    }
+
+    this.notificationService.notifications.subscribe(
+      (IPaginatedNotifications) => {
+        this.totalUnreadNotifications = IPaginatedNotifications.totalUnread;
+      }
+    );
   }
 
   navigateToHomeAndRefresh() {

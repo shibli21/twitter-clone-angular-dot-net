@@ -15,7 +15,17 @@
       <div class="label">Profile</div>
     </li>
     <li class="sidenav-item" [routerLink]="['/notifications']">
+      <div
+        pBadge
+        *ngIf="totalUnreadNotifications !== 0"
+        [value]="totalUnreadNotifications.toString()"
+      >
+        <app-notification-icon
+          [isActive]="isActive('notifications')"
+        ></app-notification-icon>
+      </div>
       <app-notification-icon
+        *ngIf="totalUnreadNotifications === 0"
         [isActive]="isActive('notifications')"
       ></app-notification-icon>
       <div class="label">Notifications</div>
