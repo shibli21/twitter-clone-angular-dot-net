@@ -1,78 +1,32 @@
 <app-top-nav title="Search"></app-top-nav>
 
 <div class="p-4" *ngIf="searchQuery.length === 0">
-  <h3 class="text-xl font-bold leading-none text-gray-900">
-    Please enter a search query
-  </h3>
+  <h1 class="text-lg text-center">Please enter a search query!!</h1>
 </div>
 
-<div *ngIf="searchedUsers && searchQuery">
-  <div class="w-full mb-2">
-    <div class="p-4">
-      <div class="flex justify-between items-center">
-        <h3 class="text-xl font-bold leading-none text-gray-900">
-          Search results for
-          <span class="font-extrabold text-indigo-700">
-            {{ searchQuery }}
-          </span>
-        </h3>
+<!-- Please enter a search query -->
+
+<div>
+  <div *ngIf="searchedUsers && searchQuery">
+    <div infinite-scroll (scrolled)="loadMore()" [immediateCheck]="true">
+      <div *ngFor="let user of searchedUsers.users">
+        <app-user-card [user]="user"></app-user-card>
       </div>
     </div>
   </div>
 
-  <div
-    infinite-scroll
-    (scrolled)="loadMore()"
-    [immediateCheck]="true"
-    class="w-full space-y-2"
-  >
-    <div *ngFor="let user of searchedUsers.users">
-      <div
-        class="p-4 border rounded-md hover:bg-indigo-50 cursor-pointer transition"
-        [routerLink]="['/profile', user.id]"
-      >
-        <div class="flex w-full">
-          <img
-            class="w-10 h-10 object-cover rounded-full"
-            [src]="
-              user.profilePictureUrl
-                ? user.profilePictureUrl
-                : 'https://avatars.dicebear.com/api/open-peeps/' +
-                  user.userName +
-                  '.svg'
-            "
-            alt="Neil image"
-          />
-          <div class="px-4" style="width: calc(100% - 2.5rem - 100px)">
-            <p class="text-sm font-medium text-gray-900 truncate">
-              {{ user.firstName }} {{ user.lastName }}
-            </p>
-            <p class="text-sm truncate text-gray-500">{{ user.email }}</p>
-          </div>
-          <div class="w-[100px]">
-            <button
-              class="p-button-sm"
-              pButton
-              [label]="user.isFollowed ? 'Following' : 'Follow'"
-            ></button>
-          </div>
-        </div>
-      </div>
+  <div *ngIf="isLoading" class="space-y-2">
+    <div>
+      <app-user-card-skeleton></app-user-card-skeleton>
     </div>
-  </div>
-</div>
-
-<div *ngIf="isLoading" class="space-y-2">
-  <div>
-    <app-user-card-skeleton></app-user-card-skeleton>
-  </div>
-  <div>
-    <app-user-card-skeleton></app-user-card-skeleton>
-  </div>
-  <div>
-    <app-user-card-skeleton></app-user-card-skeleton>
-  </div>
-  <div>
-    <app-user-card-skeleton></app-user-card-skeleton>
+    <div>
+      <app-user-card-skeleton></app-user-card-skeleton>
+    </div>
+    <div>
+      <app-user-card-skeleton></app-user-card-skeleton>
+    </div>
+    <div>
+      <app-user-card-skeleton></app-user-card-skeleton>
+    </div>
   </div>
 </div>

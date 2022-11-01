@@ -1,8 +1,11 @@
 <div
-  class="p-4 hover:bg-gray-100 cursor-pointer transition"
+  class="p-4 hover:bg-gray-100 transition border-b cursor-pointer w-full"
   [routerLink]="['/profile', user.id]"
 >
-  <div class="flex w-full">
+  <div
+    class="grid gap-4 w-full"
+    style="grid-template-columns: 2.5rem auto 100px"
+  >
     <img
       class="w-10 h-10 object-cover rounded-full"
       [src]="
@@ -14,13 +17,13 @@
       "
       alt="Neil image"
     />
-    <div class="px-4" style="width: calc(100% - 2.5rem - 100px)">
-      <p class="text-sm font-medium text-gray-900 truncate">
+    <div class="truncate">
+      <p class="truncate text-sm font-medium text-gray-900">
         {{ user.firstName }} {{ user.lastName }}
       </p>
       <p class="text-sm truncate text-gray-500">{{ user.email }}</p>
     </div>
-    <div class="w-[100px]">
+    <div class="">
       <button
         class="p-button-sm"
         pButton

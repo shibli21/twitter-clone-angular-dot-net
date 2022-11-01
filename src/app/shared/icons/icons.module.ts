@@ -8,6 +8,7 @@ import {
   IconBrandGithub,
   IconHome,
   IconMapPin,
+  IconCandle,
   IconLayoutDashboard,
 } from 'angular-tabler-icons/icons';
 
@@ -31,6 +32,7 @@ const icons = {
   IconHome,
   IconBrandGithub,
   IconMapPin,
+  IconCandle,
 };
 
 @NgModule({

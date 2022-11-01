@@ -11,16 +11,19 @@
   (onHide)="onHide()"
 >
   <form (ngSubmit)="onSubmit()" class="flex gap-2">
-    <div class="p-input-icon-left w-full">
-      <i class="pi pi-search"></i>
+    <div class="relative w-full mt-2">
+      <div
+        class="flex absolute inset-y-0 left-0 items-center pl-3 pointer-events-none"
+      >
+        <i class="pi pi-search"></i>
+      </div>
       <input
-        autofocus
         type="text"
+        autofocus
         name="search"
-        pInputText
-        placeholder="Search"
-        class="p-inputtext-sm w-full"
         [(ngModel)]="searchQuery"
+        placeholder="search by name or #tag"
+        class="bg-gray-50 border border-gray-300 text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-indigo-600 block w-full pl-10 p-2.5"
       />
     </div>
   </form>
