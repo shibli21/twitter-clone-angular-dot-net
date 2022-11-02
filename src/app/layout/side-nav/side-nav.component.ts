@@ -84,6 +84,6 @@ export class SideNavComponent implements OnInit {
   }
 
   isAdmin() {
-    return this.user.role === 'admin';
+    return this.user?.role === 'admin';
   }
 }
