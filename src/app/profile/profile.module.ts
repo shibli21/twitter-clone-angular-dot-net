@@ -5,9 +5,17 @@ import { ProfileRoutingModule } from './profile-routing.module';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ProfileComponent } from './profile.component';
+import { FollowListComponent } from './follow-list/follow-list.component';
+import { FollowersListComponent } from './follow-list/followers-list/followers-list.component';
+import { FollowingListComponent } from './follow-list/following-list/following-list.component';
 
 @NgModule({
-  declarations: [ProfileComponent],
+  declarations: [
+    ProfileComponent,
+    FollowListComponent,
+    FollowersListComponent,
+    FollowingListComponent,
+  ],
   imports: [
     CommonModule,
     ProfileRoutingModule,

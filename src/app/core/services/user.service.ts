@@ -12,19 +12,10 @@ import { FollowService } from './follow.service';
 export class UserService {
   baseUrl = environment.baseUrl;
 
-  constructor(
-    private http: HttpClient,
-    private router: Router,
-    private followService: FollowService
-  ) {}
+  constructor(private http: HttpClient) {}
 
   getUserById(id: string) {
     return this.http.get<IUser>(this.baseUrl + 'users/' + id).pipe(
-      tap(() => {
-        this.followService.userFollowers.next(new PaginatedUsers());
-        this.followService.userFollowings.next(new PaginatedUsers());
-      }),
-
       catchError((err) => {
         return throwError(err);
       })

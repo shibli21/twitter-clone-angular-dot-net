@@ -12,7 +12,7 @@ import {
   styleUrls: ['./block-list.component.scss'],
 })
 export class BlockListComponent implements OnInit {
-  blockedUsers!: IPaginatedUsers | null;
+  blockedUsers: IPaginatedUsers | null = null;
   isLoading = false;
 
   constructor(

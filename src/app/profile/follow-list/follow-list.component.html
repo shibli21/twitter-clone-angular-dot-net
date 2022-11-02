@@ -1,0 +1,22 @@
+<div *ngIf="!user">
+  <app-top-nav title="Not Found"></app-top-nav>
+
+  <h1 class="text-center">User not found</h1>
+</div>
+
+<div *ngIf="user">
+  <app-top-nav [title]="user.userName"></app-top-nav>
+
+  <p-tabView
+    class="w-full"
+    [activeIndex]="activeIndex"
+    (onChange)="replaceUrl()"
+  >
+    <p-tabPanel header="Followers">
+      <app-followers-list [userId]="user.id"></app-followers-list>
+    </p-tabPanel>
+    <p-tabPanel header="Following">
+      <app-following-list [userId]="user.id"></app-following-list>
+    </p-tabPanel>
+  </p-tabView>
+</div>

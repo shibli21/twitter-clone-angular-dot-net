@@ -11,152 +11,71 @@ import { AuthService } from './../../auth/auth.service';
 export class FollowService {
   baseUrl = environment.baseUrl;
 
-  myFollowers = new BehaviorSubject<IPaginatedUsers>(new PaginatedUsers());
-  isLoadingMyFollowers = new BehaviorSubject<boolean>(false);
+  followers = new BehaviorSubject<IPaginatedUsers | null>(new PaginatedUsers());
+  isLoadingFollowers = new BehaviorSubject<boolean>(false);
 
-  myFollowings = new BehaviorSubject<IPaginatedUsers>(new PaginatedUsers());
-  isLoadingMyFollowings = new BehaviorSubject<boolean>(false);
-
-  userFollowings = new BehaviorSubject<IPaginatedUsers>(new PaginatedUsers());
-  isLoadingUserFollowings = new BehaviorSubject<boolean>(false);
-
-  userFollowers = new BehaviorSubject<IPaginatedUsers>(new PaginatedUsers());
-  isLoadingUserFollowers = new BehaviorSubject<boolean>(false);
+  following = new BehaviorSubject<IPaginatedUsers | null>(new PaginatedUsers());
+  isLoadingFollowing = new BehaviorSubject<boolean>(false);
 
   constructor(private http: HttpClient, private authService: AuthService) {}
 
   followUnfollowUser(id: string) {
     return this.http.post(this.baseUrl + 'follow/' + id, {}).pipe(
-      tap(() => {
-        this.myFollowers.next(new PaginatedUsers());
-        this.getMyFollowers();
-
-        this.myFollowings.next(new PaginatedUsers());
-        this.getMyFollowings();
-      }),
       catchError((err) => {
-        return throwError(err);
+        return throwError(() => err);
       })
     );
   }
 
-  getFollowersByUserId(id: string, page = 0, size = 10) {
-    this.isLoadingUserFollowers.next(true);
+  getFollowersByUserId(id: string, page = 0, size = 20) {
+    this.isLoadingFollowers.next(true);
     return this.http
       .get<IPaginatedUsers>(
         `${this.baseUrl}follow/followers/${id}?page=${page}&size=${size}`
       )
       .pipe(
-        tap((IPaginatedUsers) => {
-          const userFollowers = this.userFollowers.getValue();
+        tap((users) => {
+          const userFollowers = this.followers.getValue();
           if (userFollowers) {
-            IPaginatedUsers.users = [
-              ...userFollowers.users,
-              ...IPaginatedUsers.users,
-            ];
+            users.users = [...userFollowers.users, ...users.users];
           }
-          this.userFollowers.next(IPaginatedUsers);
-          this.isLoadingUserFollowers.next(false);
+          this.followers.next(users);
+          this.isLoadingFollowers.next(false);
         })
       )
       .subscribe();
   }
 
-  loadMoreUsersFollowers(userId: string) {
-    const userFollowings = this.userFollowings.getValue();
-    if (userFollowings && userFollowings.page < userFollowings.totalPages) {
-      this.getFollowersByUserId(userId, userFollowings.page + 1);
+  loadMoreFollowers(id: string) {
+    const followers = this.followers.getValue();
+    if (followers && followers.page < followers.totalPages) {
+      this.getFollowersByUserId(id, followers.page + 1);
     }
   }
 
-  getFollowingsByUserId(id: string, page = 0, size = 10) {
-    this.isLoadingUserFollowings.next(true);
+  getFollowingByUserId(id: string, page = 0, size = 20) {
+    this.isLoadingFollowing.next(true);
     return this.http
       .get<IPaginatedUsers>(
         `${this.baseUrl}follow/following/${id}?page=${page}&size=${size}`
       )
       .pipe(
-        tap((IPaginatedUsers) => {
-          const userFollowings = this.userFollowings.getValue();
-          if (userFollowings) {
-            IPaginatedUsers.users = [
-              ...userFollowings.users,
-              ...IPaginatedUsers.users,
-            ];
+        tap((users) => {
+          const following = this.following.getValue();
+          if (following) {
+            users.users = [...following.users, ...users.users];
           }
-          this.userFollowings.next(IPaginatedUsers);
-          this.isLoadingUserFollowings.next(false);
+          this.following.next(users);
+          this.isLoadingFollowing.next(false);
         })
       )
       .subscribe();
   }
 
-  loadMoreUsersFollowings(userId: string) {
-    const userFollowings = this.userFollowings.getValue();
+  loadMoreFollowing(id: string) {
+    const userFollowings = this.following.getValue();
     if (userFollowings && userFollowings.page < userFollowings.totalPages) {
-      this.getFollowingsByUserId(userId, userFollowings.page + 1);
-    }
-  }
-
-  getMyFollowers(page = 0, size = 10) {
-    this.isLoadingMyFollowers.next(true);
-    return this.http
-      .get<IPaginatedUsers>(
-        `${
-          this.baseUrl
-        }follow/followers/${this.authService.userId()}?page=${page}&size=${size}`
-      )
-      .pipe(
-        tap((IPaginatedUsers) => {
-          const myFollowers = this.myFollowers.getValue();
-          if (myFollowers) {
-            IPaginatedUsers.users = [
-              ...myFollowers.users,
-              ...IPaginatedUsers.users,
-            ];
-          }
-          this.myFollowers.next(IPaginatedUsers);
-          this.isLoadingMyFollowers.next(false);
-        })
-      )
-      .subscribe();
-  }
-
-  loadMoreMyFollowers() {
-    const myFollowers = this.myFollowers.getValue();
-    if (myFollowers && myFollowers.page < myFollowers.totalPages) {
-      this.getMyFollowers(myFollowers.page + 1);
-    }
-  }
-
-  getMyFollowings(page = 0, size = 10) {
-    this.isLoadingMyFollowings.next(true);
-    return this.http
-      .get<IPaginatedUsers>(
-        `${
-          this.baseUrl
-        }follow/following/${this.authService.userId()}?page=${page}&size=${size}`
-      )
-      .pipe(
-        tap((IPaginatedUsers) => {
-          const myFollowings = this.myFollowings.getValue();
-          if (myFollowings) {
-            IPaginatedUsers.users = [
-              ...myFollowings.users,
-              ...IPaginatedUsers.users,
-            ];
-          }
-          this.myFollowings.next(IPaginatedUsers);
-          this.isLoadingMyFollowings.next(false);
-        })
-      )
-      .subscribe();
-  }
-
-  loadMoreMyFollowings() {
-    const myFollowings = this.myFollowings.getValue();
-    if (myFollowings && myFollowings.page < myFollowings.totalPages) {
-      this.getMyFollowings(myFollowings.page + 1);
+      this.getFollowingByUserId(id, userFollowings.page + 1);
     }
   }
 }

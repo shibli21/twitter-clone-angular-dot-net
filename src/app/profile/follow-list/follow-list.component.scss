@@ -1,0 +1,12 @@
+:host::ng-deep {
+  .p-tabview-panels {
+    @apply p-0;
+  }
+  .p-tabview-nav {
+    @apply justify-around;
+  }
+
+  .p-tabview .p-tabview-nav li .p-tabview-nav-link:not(.p-disabled):focus {
+    @apply shadow-none;
+  }
+}
