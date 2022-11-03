@@ -12,7 +12,7 @@ export class TweetService {
   baseUrl = environment.baseUrl;
   tweet = new BehaviorSubject<ITweet | null>(null);
 
-  constructor(private http: HttpClient, private router: Router) {}
+  constructor(private http: HttpClient) {}
 
   createTweet(tweetText: string) {
     const hashTags = tweetText.match(/#\w+/g);

@@ -20,6 +20,7 @@ import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { BadgeModule } from 'primeng/badge';
 import { SkeletonModule } from 'primeng/skeleton';
 import { OverlayPanelModule } from 'primeng/overlaypanel';
+import { SidebarModule } from 'primeng/sidebar';
 
 @NgModule({
   declarations: [],
@@ -45,6 +46,7 @@ import { OverlayPanelModule } from 'primeng/overlaypanel';
     BadgeModule,
     SkeletonModule,
     OverlayPanelModule,
+    SidebarModule,
   ],
 })
 export class NgPrimeModule {}

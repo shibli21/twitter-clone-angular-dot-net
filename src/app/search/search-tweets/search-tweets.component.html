@@ -1,32 +1,18 @@
-<div
-  class="p-4 border rounded-md overflow-hidden"
-  *ngIf="tweetSearchQuery.length <= 1"
->
-  <h3 class="text-xl font-bold leading-none text-gray-900">
-    Please enter a search query
-  </h3>
+<app-top-nav title="Search"></app-top-nav>
+
+<div class="p-4" *ngIf="tweetSearchQuery.length === 0">
+  <h1 class="text-lg text-center">Please enter a search query!!</h1>
 </div>
 
 <div
   class="w-full space-y-2"
   *ngIf="searchedTweets && tweetSearchQuery.length > 1"
 >
-  <div class="p-4 border rounded-md overflow-hidden">
-    <div class="flex justify-between items-center">
-      <h3 class="text-xl font-bold leading-none text-gray-900">
-        Search results for
-        <span class="font-extrabold text-indigo-700">
-          {{ tweetSearchQuery }}
-        </span>
-      </h3>
-    </div>
-  </div>
-
   <div
     infinite-scroll
     (scrolled)="loadMore()"
     [immediateCheck]="true"
-    class="w-full space-y-2"
+    class="divide-y"
   >
     <div class="space-y-2" *ngFor="let tweet of searchedTweets.tweets">
       <app-tweet-card [tweet]="tweet"></app-tweet-card>

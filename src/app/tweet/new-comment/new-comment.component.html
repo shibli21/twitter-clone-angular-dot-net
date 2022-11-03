@@ -1,10 +1,11 @@
-<form (ngSubmit)="addComment()" #form="ngForm">
-  <div class="my-2">
+<form class="px-4 border-y" (ngSubmit)="addComment()" #form="ngForm">
+  <div class="py-4">
     <input
       name="newComment"
       [(ngModel)]="comment"
       placeholder="Tweet your reply"
       pInputText
+      class="p-intput-rounded"
     />
   </div>
 

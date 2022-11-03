@@ -6,7 +6,6 @@ import {
   PaginatedUsers,
 } from 'src/app/core/models/user.model';
 import { environment } from './../../../environments/environment';
-import { FollowService } from './follow.service';
 
 @Injectable({
   providedIn: 'root',
@@ -16,17 +15,10 @@ export class BlockService {
   blockedUsers = new BehaviorSubject<IPaginatedUsers>(new PaginatedUsers());
   isLoadingBlockedUsers = new BehaviorSubject<boolean>(false);
 
-  constructor(private http: HttpClient, private followService: FollowService) {}
+  constructor(private http: HttpClient) {}
 
   blockUserByUser(userId: string) {
     return this.http.post(`${this.baseUrl}block/by-user/${userId}`, {}).pipe(
-      tap(() => {
-        this.followService.myFollowers.next(new PaginatedUsers());
-        this.followService.getMyFollowers();
-
-        this.followService.myFollowings.next(new PaginatedUsers());
-        this.followService.getMyFollowings();
-      }),
       catchError((err) => {
         return throwError(() => err);
       })
@@ -52,7 +44,7 @@ export class BlockService {
           this.isLoadingBlockedUsers.next(false);
         }),
         catchError((err) => {
-          return throwError(err);
+          return throwError(() => err);
         })
       )
       .subscribe();

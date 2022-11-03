@@ -1,0 +1,28 @@
+<div *ngIf="followers">
+  <div
+    class="px-4 md:p-8 text-center"
+    *ngIf="followers.users.length === 0 && !isLoadingFollowers"
+  >
+    No followers yet.
+  </div>
+  <div
+    *ngIf="followers.users && followers.users.length > 0"
+    infinite-scroll
+    (scrolled)="loadMoreFollowers()"
+    [fromRoot]="true"
+    [immediateCheck]="true"
+  >
+    <ul *ngFor="let user of followers.users">
+      <li>
+        <app-user-card [user]="user"></app-user-card>
+      </li>
+    </ul>
+  </div>
+  <div *ngIf="isLoadingFollowers" class="">
+    <app-user-card-skeleton></app-user-card-skeleton>
+    <app-user-card-skeleton></app-user-card-skeleton>
+    <app-user-card-skeleton></app-user-card-skeleton>
+    <app-user-card-skeleton></app-user-card-skeleton>
+    <app-user-card-skeleton></app-user-card-skeleton>
+  </div>
+</div>

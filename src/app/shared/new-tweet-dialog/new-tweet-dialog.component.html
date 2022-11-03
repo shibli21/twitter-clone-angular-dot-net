@@ -1,0 +1,42 @@
+<p-dialog
+  header="Search"
+  [(visible)]="display"
+  [modal]="true"
+  position="top"
+  [resizable]="false"
+  [dismissableMask]="true"
+  [draggable]="false"
+  [style]="{ width: '100%', maxWidth: '600px' }"
+  (onHide)="onHide()"
+>
+  <ng-template pTemplate="header">
+    <app-name-and-time-header [user]="user"></app-name-and-time-header>
+  </ng-template>
+
+  <div class="w-full relative">
+    <quill-editor
+      class="ql-editor-main"
+      name="tweet"
+      placeholder="What's happening?"
+      [(ngModel)]="tweet"
+    >
+      <div quill-editor-toolbar class="flex justify-between items-center">
+        <span class="ql-formats flex-1">
+          <button class="ql-bold" [title]="'Bold'"></button>
+          <button class="ql-italic" [title]="'italic'"></button>
+          <button class="ql-header" [title]="'header'" value="1"></button>
+          <button class="ql-header" [title]="'header'" value="2"></button>
+        </span>
+        <a
+          pButton
+          [loading]="isLoading"
+          label="Tweet"
+          [ngClass]="tweet ? '' : 'p-disabled'"
+          class="reply-button rounded-full px-6 py-2 w-auto"
+          (click)="tweet ? onSubmit() : null"
+        >
+        </a>
+      </div>
+    </quill-editor>
+  </div>
+</p-dialog>

@@ -34,7 +34,7 @@ export class NewTweetComponent implements OnInit {
         this.isLoading = false;
       },
       error: (error) => {
-        this.toastr.error(error.error.message);
+        this.toastr.error(error.message);
         this.isLoading = false;
       },
     });

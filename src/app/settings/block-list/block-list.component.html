@@ -1,0 +1,30 @@
+<div *ngIf="blockedUsers">
+  <app-top-nav title="Blocked users list"></app-top-nav>
+
+  <div
+    class="px-4 md:p-8 text-center"
+    *ngIf="blockedUsers.users.length === 0 && !isLoading"
+  >
+    You have blocked zero user so far.
+  </div>
+  <div
+    *ngIf="blockedUsers.users && blockedUsers.users.length > 0"
+    infinite-scroll
+    (scrolled)="loadMoreUser()"
+    [fromRoot]="true"
+    [immediateCheck]="true"
+  >
+    <ul *ngFor="let user of blockedUsers.users">
+      <li>
+        <app-block-user-card [user]="user"></app-block-user-card>
+      </li>
+    </ul>
+  </div>
+  <div *ngIf="isLoading" class="">
+    <app-user-card-skeleton></app-user-card-skeleton>
+    <app-user-card-skeleton></app-user-card-skeleton>
+    <app-user-card-skeleton></app-user-card-skeleton>
+    <app-user-card-skeleton></app-user-card-skeleton>
+    <app-user-card-skeleton></app-user-card-skeleton>
+  </div>
+</div>
