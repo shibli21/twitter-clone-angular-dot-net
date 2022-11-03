@@ -21,6 +21,7 @@ import { BadgeModule } from 'primeng/badge';
 import { SkeletonModule } from 'primeng/skeleton';
 import { OverlayPanelModule } from 'primeng/overlaypanel';
 import { SidebarModule } from 'primeng/sidebar';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
 
 @NgModule({
   declarations: [],
@@ -47,6 +48,7 @@ import { SidebarModule } from 'primeng/sidebar';
     SkeletonModule,
     OverlayPanelModule,
     SidebarModule,
+    ConfirmDialogModule,
   ],
 })
 export class NgPrimeModule {}

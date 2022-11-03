@@ -1,3 +1,4 @@
+import { ConfirmationService } from 'primeng/api';
 import { SearchService } from './../../core/services/search.service';
 import { NavService } from './../../core/services/nav.service';
 import { AuthService } from './../../auth/auth.service';
@@ -9,6 +10,7 @@ import { Location } from '@angular/common';
   selector: 'app-top-nav',
   templateUrl: './top-nav.component.html',
   styleUrls: ['./top-nav.component.scss'],
+  providers: [ConfirmationService],
 })
 export class TopNavComponent implements OnInit {
   @Input() title: string = '';
@@ -21,6 +23,7 @@ export class TopNavComponent implements OnInit {
     private location: Location,
     private authService: AuthService,
     private searchService: SearchService,
+    private confirmationService: ConfirmationService,
     private navService: NavService
   ) {}
 
@@ -63,7 +66,14 @@ export class TopNavComponent implements OnInit {
   }
 
   logout() {
-    this.authService.logout();
+    this.sidenavDisplay = false;
+    this.confirmationService.confirm({
+      key: 'top-logout',
+      message: 'Are you sure that you want to logout?',
+      accept: () => {
+        this.authService.logout();
+      },
+    });
   }
 
   isAdmin() {

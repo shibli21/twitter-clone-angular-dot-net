@@ -45,3 +45,11 @@ body {
 .p-overflow-hidden {
   overflow: initial !important;
 }
+
+.p-dialog.p-confirm-dialog .p-confirm-dialog-message {
+  margin-left: 0 !important;
+}
+
+.p-dialog .p-dialog-footer button {
+  @apply px-4 py-1.5 shadow-none text-sm w-full;
+}

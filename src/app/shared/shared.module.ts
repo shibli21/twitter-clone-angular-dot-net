@@ -1,3 +1,4 @@
+import { ConfirmationDialogComponent } from './confirmation-dialog/confirmation-dialog.component';
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -20,6 +21,7 @@ import { RetweetCardComponent } from './tweet/retweet-card/retweet-card.componen
 import { TweetCardComponent } from './tweet/tweet-card/tweet-card.component';
 import { UserCardSkeletonComponent } from './user-card-skeleton/user-card-skeleton.component';
 import { UserCardComponent } from './user-card/user-card.component';
+import { ConfirmationService } from 'primeng/api';
 
 @NgModule({
   declarations: [
@@ -38,6 +40,7 @@ import { UserCardComponent } from './user-card/user-card.component';
     TopNavComponent,
     SearchDialogComponent,
     NewTweetDialogComponent,
+    ConfirmationDialogComponent,
   ],
   imports: [
     CommonModule,
@@ -70,6 +73,7 @@ import { UserCardComponent } from './user-card/user-card.component';
     TopNavComponent,
     NewTweetDialogComponent,
     SearchDialogComponent,
+    ConfirmationDialogComponent,
   ],
 })
 export class SharedModule {}

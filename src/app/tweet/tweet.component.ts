@@ -1,3 +1,4 @@
+import { ConfirmationService } from 'primeng/api';
 import { IUser } from 'src/app/core/models/user.model';
 import { AuthService } from './../auth/auth.service';
 import { Component, OnInit } from '@angular/core';
@@ -13,6 +14,7 @@ import { RetweetService } from './../core/services/retweet.service';
   selector: 'app-tweet',
   templateUrl: './tweet.component.html',
   styleUrls: ['./tweet.component.scss'],
+  providers: [ConfirmationService],
 })
 export class TweetComponent implements OnInit {
   display = false;
@@ -30,8 +32,9 @@ export class TweetComponent implements OnInit {
 
   constructor(
     private tweetService: TweetService,
-    private router: Router,
+    private confirmationService: ConfirmationService,
     private route: ActivatedRoute,
+    private router: Router,
     private commentService: CommentService,
     private authService: AuthService,
     private toastr: ToastrService
@@ -107,10 +110,16 @@ export class TweetComponent implements OnInit {
   }
 
   deleteTweet() {
-    this.tweetService.deleteTweet(this.tweetId).subscribe({
-      next: (res) => {
-        this.router.navigate(['/profile', this.currentUser.id]);
-        this.toastr.success('Tweet deleted successfully');
+    this.confirmationService.confirm({
+      key: 'deleteSingleTweet',
+      message: 'Are you sure that you want to delete?',
+      accept: () => {
+        this.tweetService.deleteTweet(this.tweetId).subscribe({
+          next: (res) => {
+            this.router.navigate(['/profile', this.currentUser.id]);
+            this.toastr.success('Tweet deleted successfully');
+          },
+        });
       },
     });
   }
