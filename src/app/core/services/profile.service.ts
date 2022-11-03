@@ -30,16 +30,21 @@ export class ProfileService {
       this.isUserLoading.next(true);
 
       if (id === this.authService.userId()) {
-        return this.authService.currentUser().subscribe({
-          next: (res) => {
+        return this.authService
+          .currentUser()
+          .subscribe({
+            next: (res) => {
+              this.isUserLoading.next(false);
+              this.user.next(res);
+            },
+            error: (err) => {
+              this.isUserLoading.next(false);
+              this.user.next(null);
+            },
+          })
+          .add(() => {
             this.isUserLoading.next(false);
-            this.user.next(res);
-          },
-          error: (err) => {
-            this.isUserLoading.next(false);
-            // this.router.navigate(['/not-found']);
-          },
-        });
+          });
       } else {
         return this.http
           .get<IUser>(this.baseUrl + 'users/' + id)
@@ -55,8 +60,11 @@ export class ProfileService {
             },
             error: (err) => {
               this.isUserLoading.next(false);
-              // this.router.navigate(['/not-found']);
+              this.user.next(null);
             },
+          })
+          .add(() => {
+            this.isUserLoading.next(false);
           });
       }
     }

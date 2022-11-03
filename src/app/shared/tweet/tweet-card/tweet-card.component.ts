@@ -1,3 +1,4 @@
+import { ConfirmationService } from 'primeng/api';
 import { TimelineService } from './../../../core/services/timeline.service';
 import { IUser } from './../../../core/models/user.model';
 import { Component, Input, OnInit } from '@angular/core';
@@ -11,6 +12,7 @@ import { AuthService } from './../../../auth/auth.service';
   selector: 'app-tweet-card',
   templateUrl: './tweet-card.component.html',
   styleUrls: ['./tweet-card.component.scss'],
+  providers: [ConfirmationService],
 })
 export class TweetCardComponent implements OnInit {
   @Input() tweet!: ITweet;
@@ -29,7 +31,8 @@ export class TweetCardComponent implements OnInit {
     private commentService: CommentService,
     private toastr: ToastrService,
     private authService: AuthService,
-    private timelineService: TimelineService
+    private timelineService: TimelineService,
+    private confirmationService: ConfirmationService
   ) {}
 
   ngOnInit() {
@@ -82,10 +85,18 @@ export class TweetCardComponent implements OnInit {
   }
 
   deleteTweet() {
-    this.tweetService.deleteTweet(this.tweet.id).subscribe({
-      next: (res) => {
-        this.toastr.success('Tweet deleted successfully');
-        this.timelineService.updateProfileTimelineAfterDelete(this.tweet.id);
+    this.confirmationService.confirm({
+      key: 'deleteTweet',
+      message: 'Are you sure that you want to delete?',
+      accept: () => {
+        this.tweetService.deleteTweet(this.tweet.id).subscribe({
+          next: (res) => {
+            this.toastr.success('Tweet deleted successfully');
+            this.timelineService.updateProfileTimelineAfterDelete(
+              this.tweet.id
+            );
+          },
+        });
       },
     });
   }

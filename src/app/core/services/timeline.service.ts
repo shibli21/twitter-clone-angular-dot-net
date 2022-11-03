@@ -62,19 +62,22 @@ export class TimelineService {
         `${this.baseUrl}user-timeline/${userId}?page=${page}&size=${size}`
       )
       .pipe(
-        tap((IPaginatedTweets) => {
+        tap((paginatedTweets) => {
           const userTimeline = this.userTimeline.getValue();
           if (userTimeline) {
-            IPaginatedTweets.tweets = [
+            paginatedTweets.tweets = [
               ...userTimeline.tweets,
-              ...IPaginatedTweets.tweets,
+              ...paginatedTweets.tweets,
             ];
           }
-          this.userTimeline.next(IPaginatedTweets);
+          this.userTimeline.next(paginatedTweets);
           this.isLoadingUserTimeline.next(false);
         })
       )
-      .subscribe();
+      .subscribe()
+      .add(() => {
+        this.isLoadingUserTimeline.next(false);
+      });
   }
 
   loadMoreUserTimeline(userId: string) {

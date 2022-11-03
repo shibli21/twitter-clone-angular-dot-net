@@ -1,15 +1,15 @@
-import { LiveNotificationService } from './../core/services/live-notification.service';
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { environment } from 'src/environments/environment';
+import { LiveNotificationService } from './../core/services/live-notification.service';
 
 import { BehaviorSubject, catchError, tap, throwError } from 'rxjs';
 
 import {
+  ILoginResponse,
   ILoginUser,
   IRegisterUser,
-  ILoginResponse,
   IUser,
 } from '../core/models/user.model';
 

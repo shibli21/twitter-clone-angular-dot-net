@@ -1,3 +1,4 @@
+import { ConfirmationService } from 'primeng/api';
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { SharedModule } from './../shared/shared.module';

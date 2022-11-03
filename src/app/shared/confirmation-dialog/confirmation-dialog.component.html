@@ -1,0 +1,22 @@
+<p-confirmDialog #cd appendTo="body" [key]="key">
+  <ng-template pTemplate="header">
+    <h3 class="text-xl font-bold">Confirmation</h3>
+  </ng-template>
+  <ng-template pTemplate="footer">
+    <button
+      pButton
+      class="p-button-danger"
+      icon="pi pi-times"
+      label="No"
+      (click)="cd.reject()"
+    ></button>
+
+    <button
+      icon="pi pi-undo"
+      pButton
+      icon="pi pi-check"
+      label="Yes"
+      (click)="cd.accept()"
+    ></button>
+  </ng-template>
+</p-confirmDialog>
