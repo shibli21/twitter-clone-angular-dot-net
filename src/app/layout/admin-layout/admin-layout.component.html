@@ -1,5 +1,13 @@
-<app-admin-nav></app-admin-nav>
-
-<div class="container mx-auto">
-  <router-outlet></router-outlet>
+<div class="flex flex-grow">
+  <header
+    class="border-r max-w-[200px] min-w-[200px] md:max-w-[250px] md:min-w-[250px] flex-grow items-end sticky top-0 h-screen hidden md:block"
+  >
+    <app-admin-side-nav></app-admin-side-nav>
+  </header>
+  <main class="flex-grow gap-4">
+    <div class="flex-1">
+      <app-admin-top-nav></app-admin-top-nav>
+      <router-outlet></router-outlet>
+    </div>
+  </main>
 </div>

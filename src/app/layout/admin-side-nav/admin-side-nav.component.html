@@ -1,0 +1,30 @@
+<div class="">
+  <ul class="px-4 space-y-2">
+    <li class="flex p-4 gap-4 items-center cursor-pointer" [routerLink]="['/']">
+      <div class="icon w-7 h-7 rounded-full bg-slate-800"></div>
+      <div class="font-semibold text-2xl text-slate-800">Geeky</div>
+    </li>
+    <li class="sidenav-item" [routerLink]="['/admin']">
+      <app-home-icon></app-home-icon>
+      <div class="label">Dashboard</div>
+    </li>
+    <li class="sidenav-item" [routerLink]="['/admin/users-list']">
+      <app-profile-icon></app-profile-icon>
+      <div class="label">Users</div>
+    </li>
+    <li class="sidenav-item" [routerLink]="['/admin/admins-list']">
+      <app-admin-icon></app-admin-icon>
+      <div class="label">Admins</div>
+    </li>
+    <li class="sidenav-item" [routerLink]="['/admin/blocked-users-list']">
+      <app-block-icon></app-block-icon>
+      <div class="label">Blocked Users</div>
+    </li>
+    <li class="sidenav-item" (click)="logout()">
+      <app-logout-icon></app-logout-icon>
+      <div class="label">Logout</div>
+    </li>
+  </ul>
+</div>
+
+<app-confirmation-dialog key="side-logout"></app-confirmation-dialog>
