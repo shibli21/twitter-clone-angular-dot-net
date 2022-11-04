@@ -45,10 +45,21 @@ export class LiveNotificationService {
         let audio: HTMLAudioElement = new Audio('/assets/toast_sound.mp3');
         audio.play();
         const prevNotifications = this.notificationService.notifications.value;
-        this.notificationService.notifications.next({
+
+        // check if the notification is already in the list and if it is, remove it
+        const newNotifications = {
           ...prevNotifications,
-          notifications: [notification, ...prevNotifications.notifications],
-          totalUnread: prevNotifications.totalUnread + 1,
+          notifications: [
+            ...prevNotifications.notifications.filter(
+              (n) => n.id !== notification.id
+            ),
+          ],
+        };
+
+        this.notificationService.notifications.next({
+          ...newNotifications,
+          notifications: [notification, ...newNotifications.notifications],
+          totalUnread: newNotifications.totalUnread + 1,
         });
         this.toastr
           .success(notification.message, 'New notification', {
