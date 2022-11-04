@@ -316,6 +316,6 @@ public class AuthController : ControllerBase
 
     private string CreatePasswordResetToken()
     {
-        return Convert.ToBase64String(RandomNumberGenerator.GetBytes(64));
+        return Convert.ToBase64String(RandomNumberGenerator.GetBytes(64)).Replace("/", "_").Replace("+", "-");
     }
 }
