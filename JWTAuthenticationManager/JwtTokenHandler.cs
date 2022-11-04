@@ -2,17 +2,16 @@
 using System.Security.Claims;
 using System.Text;
 using Core.Dtos;
-using Core.Models;
 using Microsoft.IdentityModel.Tokens;
 
 namespace JWTAuthenticationManager
 {
     public class JwtTokenHandler
     {
-        public const string JWT_SECRET_KEY = "This is my custom Secret key for authnetication";
+        public const string JWT_SECRET_KEY = "This is my custom Secret key for authentication";
         public const int JWT_TOKEN_VALIDITY_MINS = 20;
 
-        public JWTResponse GenerateJwtToken(User user)
+        public JWTResponse GenerateJwtToken(UserResponseDto user)
         {
             var tokenExpiryTimeStamp = DateTime.Now.AddMinutes(JWT_TOKEN_VALIDITY_MINS);
             var tokenKey = Encoding.ASCII.GetBytes(JWT_SECRET_KEY);
