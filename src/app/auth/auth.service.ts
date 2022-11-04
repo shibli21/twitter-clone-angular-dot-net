@@ -42,25 +42,20 @@ export class AuthService {
         withCredentials: true,
       })
       .pipe(
-        tap((ILoginResponse) => {
-          localStorage.setItem('userData', JSON.stringify(ILoginResponse));
-          this.currentUser().subscribe({
-            next: (user) => {
-              if (user.role === 'admin') {
-                this.router.navigate(['/admin']);
-              } else {
-                this.router.navigate(['/']);
-              }
-              this.isLoggingInLoading.next(false);
-            },
-            error: (err) => {
-              this.isLoggingInLoading.next(false);
-              this.logout();
-            },
-          });
+        tap((loginResponse) => {
+          localStorage.setItem('userData', JSON.stringify(loginResponse));
+          if (loginResponse.role === 'admin') {
+            this.router.navigate(['/admin']);
+          } else {
+            this.router.navigate(['/']);
+          }
+
+          this.user.next(loginResponse);
+
+          this.isLoggingInLoading.next(false);
         }),
         catchError((err) => {
-          return throwError(err);
+          return throwError(() => err);
         })
       );
   }
@@ -120,9 +115,9 @@ export class AuthService {
         }
       )
       .pipe(
-        tap((ILoginResponse) => {
-          localStorage.setItem('userData', JSON.stringify(ILoginResponse));
-          this.currentUser().subscribe();
+        tap((loginResponse) => {
+          localStorage.setItem('userData', JSON.stringify(loginResponse));
+          this.user.next(loginResponse);
         }),
         catchError((error) => {
           this.logout();
@@ -134,33 +129,23 @@ export class AuthService {
   logout() {
     this.http
       .delete(this.baseUrl + 'auth/logout', { withCredentials: true })
-      .subscribe();
-
-    this.user.next(null);
-    localStorage.clear();
-    this.deleteAllCookies();
-    this.router.navigate(['/login']);
-    this.liveNotificationService.stopConnection();
+      .subscribe({
+        next: () => {
+          this.user.next(null);
+          localStorage.clear();
+          this.router.navigate(['/login']);
+          this.liveNotificationService.stopConnection();
+        },
+      });
   }
 
   autoLogin() {
     const userAuthData = localStorage.getItem('userData');
 
-    if (!userAuthData) {
+    if (userAuthData) {
       return this.getRefreshToken().subscribe();
     }
 
-    return this.currentUser().subscribe();
-  }
-
-  private deleteAllCookies() {
-    var cookies = document.cookie.split(';');
-
-    for (var i = 0; i < cookies.length; i++) {
-      var cookie = cookies[i];
-      var eqPos = cookie.indexOf('=');
-      var name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
-      document.cookie = name + '=;expires=Thu, 01 Jan 1970 00:00:00 GMT';
-    }
+    return;
   }
 }

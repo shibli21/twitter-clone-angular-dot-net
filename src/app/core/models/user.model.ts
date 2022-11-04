@@ -14,8 +14,7 @@ export interface ILoginUser {
   password: string;
 }
 
-export interface ILoginResponse {
-  userName: string;
+export interface ILoginResponse extends IUser {
   jwtToken: string;
   refreshToken: string;
   jwtExpiresIn: number;

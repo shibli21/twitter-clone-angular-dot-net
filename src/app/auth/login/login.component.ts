@@ -22,9 +22,7 @@ export class LoginComponent implements OnInit {
     private toastr: ToastrService
   ) {}
 
-  ngOnInit(): void {
-    console.log(this.authService.user.value);
-  }
+  ngOnInit(): void {}
 
   onSubmit() {
     if (!this.loginForm.valid) {

@@ -49,9 +49,7 @@ export class SideNavComponent implements OnInit {
       }
     );
 
-    this.authService.currentUser().subscribe((user) => {
-      this.user = user;
-    });
+    this.authService.user.subscribe((user) => (this.user = user!));
     this.searchService.isSearchDialogOpen.subscribe((isOpen) => {
       this.display = isOpen;
     });
