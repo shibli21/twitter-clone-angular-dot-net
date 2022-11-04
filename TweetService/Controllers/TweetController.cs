@@ -428,11 +428,7 @@ namespace Core.Controllers
             {
                 return Unauthorized();
             }
-            User? user = await _usersService.GetUserAsync(userId);
-            if (user == null || user.DeletedAt != null || user.BlockedAt != null)
-            {
-                return Unauthorized();
-            }
+
             CommentResponseDto? comment = await _iLikeCommentService.UpdateComment(commentId, commentRequest.Comment);
             if (comment == null)
             {
