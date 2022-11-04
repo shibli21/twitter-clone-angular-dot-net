@@ -404,6 +404,10 @@ namespace Core.Controllers
             Tweets? tweet = await _tweetService.GetTweetById(comment.TweetId);
             if (tweet != null && tweet.DeletedAt == null)
             {
+                if (user.Id != comment.UserId && user.Id != tweet.UserId)
+                {
+                    return Unauthorized();
+                }
                 bool isDeleted = await _iLikeCommentService.DeleteComment(comment, tweet);
                 if (isDeleted)
                 {
@@ -424,11 +428,7 @@ namespace Core.Controllers
             {
                 return Unauthorized();
             }
-            User? user = await _usersService.GetUserAsync(userId);
-            if (user == null || user.DeletedAt != null || user.BlockedAt != null)
-            {
-                return Unauthorized();
-            }
+
             CommentResponseDto? comment = await _iLikeCommentService.UpdateComment(commentId, commentRequest.Comment);
             if (comment == null)
             {
