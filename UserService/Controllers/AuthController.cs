@@ -1,13 +1,13 @@
+using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
+using Core.Dtos;
 using Core.Interfaces;
 using Core.Models;
-using Core.Dtos;
 using JWTAuthenticationManager;
+using MassTransit;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
-using MassTransit;
 
 namespace UserService.Controllers;
 
@@ -25,7 +25,7 @@ public class AuthController : ControllerBase
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IBus _bus;
 
-    public AuthController(IUsersService usersService, JwtTokenHandler jwtTokenHandler, IRefreshTokenService refreshTokenService, IHttpContextAccessor httpContextAccessor, IForgotPasswordService forgotPasswordService , IBus bus)
+    public AuthController(IUsersService usersService, JwtTokenHandler jwtTokenHandler, IRefreshTokenService refreshTokenService, IHttpContextAccessor httpContextAccessor, IForgotPasswordService forgotPasswordService, IBus bus)
     {
         _usersService = usersService;
         _jwtTokenHandler = jwtTokenHandler;
@@ -61,18 +61,18 @@ public class AuthController : ControllerBase
     [Route("login")]
     public async Task<ActionResult<AuthenticationResponse>> LoginUser([FromBody] UserLoginDto userLogin)
     {
-        User? user = await _usersService.GetUserByEmailAsync(userLogin.Email);
-        if (user == null)
+        User? userFromDb = await _usersService.GetUserByEmailAsync(userLogin.Email);
+        if (userFromDb == null)
             return BadRequest(new { field = "email", message = "User not found" });
-        if (!this.VerifyPasswordHash(userLogin.Password, user.Password))
+        if (!this.VerifyPasswordHash(userLogin.Password, userFromDb.Password))
             return BadRequest(new { field = "password", message = "Wrong password" });
-        if (user.DeletedAt != null)
+        if (userFromDb.DeletedAt != null)
             return BadRequest(new { field = "email", message = "User is deleted" });
-        if (user.BlockedAt != null)
+        if (userFromDb.BlockedAt != null)
             return BadRequest(new { field = "email", message = "User is blocked" });
 
         var refreshTokenString = Request.Cookies["refreshToken"];
-        RefreshToken refreshToken = this.CreateRefreshToken(user);
+        RefreshToken refreshToken = this.CreateRefreshToken(userFromDb);
         RefreshToken newRefreshToken;
 
         if (string.IsNullOrEmpty(refreshTokenString))
@@ -82,7 +82,7 @@ public class AuthController : ControllerBase
         else
         {
             RefreshToken oldToken = await _refreshTokenService.GetTokenByToken(refreshTokenString);
-            if (oldToken == null || oldToken.Expires < DateTime.Now || oldToken.UserId != user.Id)
+            if (oldToken == null || oldToken.Expires < DateTime.Now || oldToken.UserId != userFromDb.Id)
             {
                 newRefreshToken = await _refreshTokenService.StoreToken(refreshToken);
             }
@@ -94,6 +94,12 @@ public class AuthController : ControllerBase
         }
 
         this.SetRefreshToken(newRefreshToken);
+
+
+
+        UserResponseDto user = userFromDb.AsDto();
+        user.Followers = await _usersService.GetFollowerCount(user.Id);
+        user.Following = await _usersService.GetFollowingCount(user.Id);
 
         return Ok(CreateAuthenticationResponse(user, newRefreshToken));
     }
@@ -164,7 +170,8 @@ public class AuthController : ControllerBase
         {
             To = user.Email,
             Subject = "Reset Password",
-            Body = $"Hi {user.FirstName} {user.LastName}, <br/> <br/> Please click on the link below to reset your password <br/> <br/> <a href='{ forgotPasswordDto.ResetPasswordUrl}?token={token}'>Reset Password</a> <br/> <br/> If you did not request a password reset, please ignore this email."
+            ResetPasswordUrl = $"{forgotPasswordDto.ResetPasswordUrl}?token={token}",
+            User = user
         };
         await _bus.Publish(mailDto);
         return Ok(new { message = "Reset password email sent" });
@@ -202,24 +209,29 @@ public class AuthController : ControllerBase
         if (oldToken.Expires < DateTime.Now)
             return Unauthorized(new { field = "refreshToken", message = "Refresh token is expired." });
 
-        User? user = await _usersService.GetUserAsync(oldToken.UserId);
+        User? userFromDb = await _usersService.GetUserAsync(oldToken.UserId);
 
-        if (user == null)
+        if (userFromDb == null)
             return Unauthorized(new { field = "refreshToken", message = "User not found." });
-        if(user.DeletedAt != null)
-            return Unauthorized(new { field = "refreshToken", message = "User is deleted." });
-        if(user.BlockedAt != null)
+        if (userFromDb.BlockedAt != null)
             return Unauthorized(new { field = "refreshToken", message = "User is blocked." });
-        RefreshToken refreshToken = this.CreateRefreshToken(user);
+
+
+        RefreshToken refreshToken = this.CreateRefreshToken(userFromDb);
         refreshToken.Id = oldToken.Id;
         RefreshToken newRefreshToken = await _refreshTokenService.UpdateToken(oldToken.Id, refreshToken);
         this.SetRefreshToken(newRefreshToken);
+
+
+        UserResponseDto user = userFromDb.AsDto();
+        user.Followers = await _usersService.GetFollowerCount(user.Id);
+        user.Following = await _usersService.GetFollowingCount(user.Id);
 
         return Ok(CreateAuthenticationResponse(user, newRefreshToken));
     }
 
 
-    private AuthenticationResponse CreateAuthenticationResponse(User user, RefreshToken refreshToken)
+    private AuthenticationResponse CreateAuthenticationResponse(UserResponseDto user, RefreshToken refreshToken)
     {
         JWTResponse jwtResponse = _jwtTokenHandler.GenerateJwtToken(user);
 
@@ -229,7 +241,22 @@ public class AuthController : ControllerBase
             JwtToken = jwtResponse.JwtToken,
             RefreshToken = refreshToken.Token,
             RefreshTokenExpiresIn = (int)REFRESH_TOKEN_EXPIRY.Subtract(DateTime.Now).TotalSeconds,
-            UserName = user.UserName
+            UserName = user.UserName,
+            FirstName = user.FirstName,
+            LastName = user.LastName,
+            Email = user.Email,
+            Role = user.Role,
+            Address = user.Address,
+            Bio = user.Bio,
+            CoverPictureUrl = user.CoverPictureUrl,
+            ProfilePictureUrl = user.ProfilePictureUrl,
+            CreatedAt = user.CreatedAt,
+            Id = user.Id,
+            DateOfBirth = user.DateOfBirth,
+            Gender = user.Gender,
+            Followers = user.Followers,
+            Following = user.Following,
+
         };
     }
 

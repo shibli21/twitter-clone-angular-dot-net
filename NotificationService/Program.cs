@@ -87,10 +87,7 @@ app.UseAuthentication();
 
 app.UseAuthorization();
 
-app.MapHub<NotificationHub>("/live-notification", (option) =>
-{
-    option.Transports = HttpTransportType.LongPolling;
-});
+app.MapHub<NotificationHub>("/live-notification");
 
 app.UseUserBlockedMiddleware();
 
