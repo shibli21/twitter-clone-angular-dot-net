@@ -404,6 +404,10 @@ namespace Core.Controllers
             Tweets? tweet = await _tweetService.GetTweetById(comment.TweetId);
             if (tweet != null && tweet.DeletedAt == null)
             {
+                if (user.Id != comment.UserId && user.Id != tweet.UserId)
+                {
+                    return Unauthorized();
+                }
                 bool isDeleted = await _iLikeCommentService.DeleteComment(comment, tweet);
                 if (isDeleted)
                 {
