@@ -33,16 +33,31 @@ namespace NotificationService.Consumers
                 NotificationCreateDto notificationCreateDto = cacheNotificationConsumerDto.Notification;
                 if (notificationCreateDto.UserId != notificationCreateDto.RefUserId)
                 {
-                    var notification = new Notifications
+                    Notifications? notification = null;
+                    if(notificationCreateDto.Type == "Like" || notificationCreateDto.Type == "Comment")
                     {
-                        Type = notificationCreateDto.Type,
-                        UserId = notificationCreateDto.UserId,
-                        RefUserId = notificationCreateDto.RefUserId,
-                        TweetId = notificationCreateDto.TweetId,
-                        IsRead = false,
-                        CreatedAt = DateTime.Now
-                    };
-                    await _notificationCollection.InsertOneAsync(notification);
+                        notification = await _notificationCollection.Find(x => x.UserId == notificationCreateDto.UserId && x.RefUserId == notificationCreateDto.RefUserId && x.Type == notificationCreateDto.Type && x.TweetId == notificationCreateDto.TweetId).FirstOrDefaultAsync();
+                    }
+
+                    if(notification == null)
+                    {
+                        notification = new Notifications
+                        {
+                            UserId = notificationCreateDto.UserId,
+                            RefUserId = notificationCreateDto.RefUserId,
+                            Type = notificationCreateDto.Type,
+                            TweetId = notificationCreateDto.TweetId,
+                            IsRead = false,
+                            CreatedAt = DateTime.Now
+                        };
+                        await _notificationCollection.InsertOneAsync(notification);
+                    }
+                    else
+                    {
+                        notification.IsRead = false;
+                        notification.CreatedAt = DateTime.Now;
+                        await _notificationCollection.ReplaceOneAsync(x => x.Id == notification.Id, notification);
+                    }
 
                     var connectionIds = await _connectionsCollection.Find(x => x.UserId == notification.UserId).Project(x => x.ConnectionId).ToListAsync();
                     NotificationResponseDto notificationResponse = notification.AsDto();
