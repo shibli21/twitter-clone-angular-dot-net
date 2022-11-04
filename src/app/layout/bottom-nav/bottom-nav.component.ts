@@ -26,9 +26,7 @@ export class BottomNavComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.authService.currentUser().subscribe((user) => {
-      this.user = user;
-    });
+    this.authService.user.subscribe((user) => (this.user = user!));
 
     if (this.router.url !== '/notifications') {
       this.notificationService.getNotifications();

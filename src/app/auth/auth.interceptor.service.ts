@@ -1,4 +1,3 @@
-import { ToastrService } from 'ngx-toastr';
 import {
   HttpErrorResponse,
   HttpEvent,
@@ -7,14 +6,13 @@ import {
   HttpRequest,
 } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { ToastrService } from 'ngx-toastr';
 import { catchError, Observable, switchMap, throwError } from 'rxjs';
 import { ILoginResponse } from '../core/models/user.model';
 import { AuthService } from './auth.service';
 
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
-  private isRefreshing = false;
-
   constructor(
     private authService: AuthService,
     private toastr: ToastrService
@@ -50,30 +48,24 @@ export class AuthInterceptor implements HttpInterceptor {
   }
 
   private handle401Error(request: HttpRequest<unknown>, next: HttpHandler) {
-    if (!this.isRefreshing) {
-      this.isRefreshing = true;
+    if (this.authService.isAuthenticated()) {
+      return this.authService.getRefreshToken().pipe(
+        switchMap((response) => {
+          return next.handle(this.addToken(request, response));
+        }),
+        catchError((error) => {
+          if (error.status == '403') {
+            this.authService.logout();
+          }
 
-      if (this.authService.isAuthenticated()) {
-        return this.authService.getRefreshToken().pipe(
-          switchMap((response) => {
-            this.isRefreshing = false;
-            return next.handle(this.addToken(request, response));
-          }),
-          catchError((error) => {
-            this.isRefreshing = false;
-
-            if (error.status == '403') {
-              this.authService.logout();
-            }
-
-            return throwError(() => error);
-          })
-        );
-      }
+          return throwError(() => error);
+        })
+      );
     }
 
     return next.handle(request);
   }
+
   addToken(
     request: HttpRequest<unknown>,
     response: ILoginResponse

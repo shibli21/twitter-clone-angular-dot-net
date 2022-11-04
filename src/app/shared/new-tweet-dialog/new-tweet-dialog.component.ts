@@ -23,11 +23,9 @@ export class NewTweetDialogComponent implements OnInit {
     this.newTweetService.isTweetDialogOpen.subscribe((isOpen) => {
       this.display = isOpen;
     });
-    this.authService.user.subscribe((user) => {
-      if (user) {
-        this.user = user;
-      }
-    });
+
+    this.authService.user.subscribe((user) => (this.user = user!));
+
     this.newTweetService.isTweeting.subscribe((isTweeting) => {
       this.isLoading = isTweeting;
     });
