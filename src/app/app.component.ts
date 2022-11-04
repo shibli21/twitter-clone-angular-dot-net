@@ -1,3 +1,4 @@
+import { LiveNotificationService } from './core/services/live-notification.service';
 import { Component } from '@angular/core';
 import { AuthService } from './auth/auth.service';
 

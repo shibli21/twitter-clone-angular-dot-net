@@ -33,12 +33,6 @@ export class SideNavComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.liveNotificationService
-      .startConnection(this.authService.userId()!)
-      .then(() => {
-        this.liveNotificationService.addReceiveNotificationListener();
-      });
-
     if (this.router.url !== '/notifications') {
       this.notificationService.getNotifications();
     }

@@ -53,6 +53,12 @@ export class AuthService {
           this.user.next(loginResponse);
 
           this.isLoggingInLoading.next(false);
+
+          this.liveNotificationService
+            .startConnection(loginResponse.id)
+            .then(() => {
+              this.liveNotificationService.addReceiveNotificationListener();
+            });
         }),
         catchError((err) => {
           return throwError(() => err);
@@ -131,11 +137,13 @@ export class AuthService {
       .delete(this.baseUrl + 'auth/logout', { withCredentials: true })
       .subscribe({
         next: () => {
-          this.user.next(null);
-          localStorage.clear();
-          this.router.navigate(['/login']);
           this.liveNotificationService.stopConnection();
+          localStorage.clear();
+          this.user.next(null);
         },
+      })
+      .add(() => {
+        this.router.navigate(['/login']);
       });
   }
 
@@ -143,6 +151,12 @@ export class AuthService {
     const userAuthData = localStorage.getItem('userData');
 
     if (userAuthData) {
+      const { id } = JSON.parse(userAuthData) as ILoginResponse;
+
+      this.liveNotificationService.startConnection(id).then(() => {
+        this.liveNotificationService.addReceiveNotificationListener();
+      });
+
       return this.getRefreshToken().subscribe();
     }
 
