@@ -170,7 +170,8 @@ public class AuthController : ControllerBase
         {
             To = user.Email,
             Subject = "Reset Password",
-            Body = $"Hi {user.FirstName} {user.LastName}, <br/> <br/> Please click on the link below to reset your password <br/> <br/> <a href='{forgotPasswordDto.ResetPasswordUrl}?token={token}'>Reset Password</a> <br/> <br/> If you did not request a password reset, please ignore this email."
+            ResetPasswordUrl = $"{forgotPasswordDto.ResetPasswordUrl}?token={token}",
+            User = user
         };
         await _bus.Publish(mailDto);
         return Ok(new { message = "Reset password email sent" });
