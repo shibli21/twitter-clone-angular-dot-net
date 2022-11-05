@@ -167,6 +167,6 @@ public class UsersService : IUsersService
         List<User> authors = await _usersCollection.Find(user => authorEmails.Contains(user.Email)).ToListAsync();
         string[] authorIds = authors.Select(author => author.Id).ToArray();
         string[] FollowingAuthorIds = (await _followCollection.Find(follow => follow.UserId == userId && authorIds.Contains(follow.FollowingId)).ToListAsync()).Select(follow => follow.FollowingId).ToArray();
-        return  authors.Where(author => !FollowingAuthorIds.Contains(author.Id)).Select(author => author.AsDto()).ToList();
+        return  authors.Where(author => !FollowingAuthorIds.Contains(author.Id) && author.Id != userId ).Select(author => author.AsDto()).ToList();
     }
 }
