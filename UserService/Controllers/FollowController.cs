@@ -31,9 +31,9 @@ public class FollowController : ControllerBase
         {
             return Unauthorized();
         }
-        if(userId == followingId)
+        if (userId == followingId)
         {
-            return BadRequest("You can't follow yourself");
+            return BadRequest(new { message = "You can't follow yourself" });
         }
         var msg = await _followerService.FollowByUserId(userId, followingId);
         if (msg == "Followed")
