@@ -49,10 +49,12 @@
             *ngIf="profileUser.coverPictureUrl"
             class="object-cover w-full h-full"
             [src]="profileUser.coverPictureUrl"
+            appMediumZoom
           />
         </div>
         <div class="flex justify-between p-4">
           <img
+            appMediumZoom
             class="bg-white w-24 h-24 sm:w-32 sm:h-32 object-cover rounded-full -mt-16 sm:-mt-20 border-4"
             [src]="
               profileUser.profilePictureUrl

@@ -1,3 +1,4 @@
+import { MediumZoomDirective } from './../core/directive/mediumZoom.directive';
 import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { SharedModule } from './../shared/shared.module';
@@ -15,6 +16,7 @@ import { FollowingListComponent } from './follow-list/following-list/following-l
     FollowListComponent,
     FollowersListComponent,
     FollowingListComponent,
+    MediumZoomDirective,
   ],
   imports: [
     CommonModule,
