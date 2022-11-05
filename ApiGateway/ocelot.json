@@ -295,6 +295,20 @@
       ]
     },
     {
+      "UpstreamPathTemplate": "/users/follow-author",
+      "UpstreamHttpMethod": [
+        "Get"
+      ],
+      "DownstreamPathTemplate": "/users/follow-author",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5211
+        }
+      ]
+    },
+    {
       "UpstreamPathTemplate": "/tweet/create",
       "UpstreamHttpMethod": [
         "Post"
