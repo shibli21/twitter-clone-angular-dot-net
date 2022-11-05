@@ -34,12 +34,16 @@ namespace NotificationService.Consumers
                 if (notificationCreateDto.UserId != notificationCreateDto.RefUserId)
                 {
                     Notifications? notification = null;
-                    if(notificationCreateDto.Type == "Like" || notificationCreateDto.Type == "Comment")
+                    if (notificationCreateDto.Type == "Like" || notificationCreateDto.Type == "Comment")
                     {
                         notification = await _notificationCollection.Find(x => x.UserId == notificationCreateDto.UserId && x.RefUserId == notificationCreateDto.RefUserId && x.Type == notificationCreateDto.Type && x.TweetId == notificationCreateDto.TweetId).FirstOrDefaultAsync();
                     }
+                    else if (notificationCreateDto.Type == "Follow")
+                    {
+                        notification = await _notificationCollection.Find(x => x.UserId == notificationCreateDto.UserId && x.RefUserId == notificationCreateDto.RefUserId && x.Type == notificationCreateDto.Type).FirstOrDefaultAsync();
+                    }
 
-                    if(notification == null)
+                    if (notification == null)
                     {
                         notification = new Notifications
                         {
