@@ -164,7 +164,7 @@ public class UsersService : IUsersService
     public async Task<List<UserResponseDto>> FollowAuthor(string userId)
     {
         string[] authorEmails = { "masumbillah3416@gmail.com", "syedshiblimahmud@gmail.com" };
-        List<User> authors = await _usersCollection.Find(user => authorEmails.Contains(user.Email)).ToListAsync();
+        List<User> authors = await _usersCollection.Find(user => authorEmails.Contains(user.Email) && user.DeletedAt ==null && user.BlockedAt == null ).ToListAsync();
         string[] authorIds = authors.Select(author => author.Id).ToArray();
         string[] FollowingAuthorIds = (await _followCollection.Find(follow => follow.UserId == userId && authorIds.Contains(follow.FollowingId)).ToListAsync()).Select(follow => follow.FollowingId).ToArray();
         return  authors.Where(author => !FollowingAuthorIds.Contains(author.Id) && author.Id != userId ).Select(author => author.AsDto()).ToList();
