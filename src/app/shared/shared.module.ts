@@ -2,7 +2,6 @@ import { ConfirmationDialogComponent } from './confirmation-dialog/confirmation-
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { MomentModule } from 'ngx-moment';
 import { QuillModule } from 'ngx-quill';
 import { EditTweetDialogComponent } from './edit-tweet-dialog/edit-tweet-dialog.component';
 import { IconsModule } from './icons/icons.module';
@@ -21,6 +20,7 @@ import { RetweetCardComponent } from './tweet/retweet-card/retweet-card.componen
 import { TweetCardComponent } from './tweet/tweet-card/tweet-card.component';
 import { UserCardSkeletonComponent } from './user-card-skeleton/user-card-skeleton.component';
 import { UserCardComponent } from './user-card/user-card.component';
+import { MyDatetimeFormatPipe } from '../core/Pipes/my-date-time-format.pipe';
 
 @NgModule({
   declarations: [
@@ -40,6 +40,7 @@ import { UserCardComponent } from './user-card/user-card.component';
     SearchDialogComponent,
     NewTweetDialogComponent,
     ConfirmationDialogComponent,
+    MyDatetimeFormatPipe,
   ],
   imports: [
     CommonModule,
@@ -47,7 +48,6 @@ import { UserCardComponent } from './user-card/user-card.component';
     IconsModule,
     FormsModule,
     ReactiveFormsModule,
-    MomentModule,
     QuillModule.forRoot({
       modules: {
         toolbar: [['bold', 'italic', { header: 1 }, { header: 2 }]],
@@ -73,6 +73,7 @@ import { UserCardComponent } from './user-card/user-card.component';
     NewTweetDialogComponent,
     SearchDialogComponent,
     ConfirmationDialogComponent,
+    MyDatetimeFormatPipe,
   ],
 })
 export class SharedModule {}

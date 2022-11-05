@@ -19,7 +19,8 @@
       {{ user.firstName }} {{ user.lastName }}
     </h1>
     <p class="text-gray-600 text-sm">
-      @{{ user.userName }} <span *ngIf="date"> · {{ date | amTimeAgo }} </span>
+      @{{ user.userName }}
+      <span *ngIf="date"> · {{ date | dateTimeFormat }} </span>
     </p>
   </div>
 </div>
