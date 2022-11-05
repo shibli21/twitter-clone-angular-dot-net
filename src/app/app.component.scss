@@ -62,4 +62,7 @@
   .ql-editor.ql-blank::before {
     @apply text-[20px] text-slate-800 font-serif;
   }
+  .ql-editor {
+    @apply pt-0 pr-0 pb-0;
+  }
 }

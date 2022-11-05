@@ -25,11 +25,23 @@
               <button class="ql-header" [title]="'header'" value="1"></button>
               <button class="ql-header" [title]="'header'" value="2"></button>
             </span>
+            <div *ngIf="tweet && tweet.length > 230">
+              <p
+                [ngClass]="
+                  tweet.length > 230 && tweet.length < 269
+                    ? 'bg-yellow-500'
+                    : 'bg-rose-600'
+                "
+                class="rounded-full mr-2 text-sm text-white px-2 p-1"
+              >
+                {{ remainingCharacters }}
+              </p>
+            </div>
             <a
               pButton
               [loading]="isLoading"
               label="Tweet"
-              [ngClass]="tweet ? '' : 'p-disabled'"
+              [ngClass]="tweet && checkIsTweetValid ? '' : 'p-disabled'"
               class="reply-button rounded-full px-6 py-2 w-auto"
               (click)="tweet ? onSubmit() : null"
             >

@@ -40,10 +40,10 @@
           </div>
         </div>
       </div>
-      <div class="p-4">
+      <div class="p-4 pb-2">
         <quill-view-html
+          *ngIf="tweet.tweet"
           [content]="tweet.tweet"
-          theme="bubble"
         ></quill-view-html>
 
         <div *ngIf="tweet.type === 'Retweet'" class="">

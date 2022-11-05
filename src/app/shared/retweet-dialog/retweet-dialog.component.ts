@@ -18,8 +18,9 @@ export class RetweetDialogComponent implements OnInit {
   @Input() tweet!: ITweet;
   @Output() onCloseEvent = new EventEmitter();
 
-  retweetText!: string;
+  retweetText: string | undefined = '';
   isRetweeting = false;
+  retweetLimit = 280;
 
   constructor(
     private router: Router,
@@ -36,6 +37,9 @@ export class RetweetDialogComponent implements OnInit {
   }
 
   retweet() {
+    if (this.checkIsTweetValid) {
+      return;
+    }
     this.isRetweeting = true;
     let retweetId = this.tweet.id;
 
@@ -68,5 +72,19 @@ export class RetweetDialogComponent implements OnInit {
   onHide() {
     this.retweetText = '';
     this.onCloseEvent.emit();
+  }
+
+  get checkIsTweetValid() {
+    if (this.retweetText) {
+      return this.retweetText.length > this.retweetLimit;
+    }
+    return false;
+  }
+
+  get remainingCharacters() {
+    if (this.retweetText) {
+      return this.retweetLimit - this.retweetText.length;
+    }
+    return this.retweetLimit;
   }
 }

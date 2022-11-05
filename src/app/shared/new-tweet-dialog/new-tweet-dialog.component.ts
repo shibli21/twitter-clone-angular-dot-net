@@ -13,6 +13,7 @@ export class NewTweetDialogComponent implements OnInit {
   tweet: string = '';
   user!: IUser;
   isLoading = false;
+  tweetLimit = 280;
 
   constructor(
     private newTweetService: NewTweetService,
@@ -38,5 +39,13 @@ export class NewTweetDialogComponent implements OnInit {
   onSubmit() {
     this.newTweetService.tweet(this.tweet);
     this.tweet = '';
+  }
+
+  get checkIsTweetValid() {
+    return this.tweet.length > 0 && this.tweet.length <= this.tweetLimit;
+  }
+
+  get remainingCharacters() {
+    return this.tweetLimit - this.tweet.length;
   }
 }

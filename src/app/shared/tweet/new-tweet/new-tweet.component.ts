@@ -13,6 +13,7 @@ import { Component, OnInit } from '@angular/core';
 export class NewTweetComponent implements OnInit {
   tweet = '';
   isLoading = false;
+  tweetLimit = 280;
 
   constructor(
     private tweetService: TweetService,
@@ -42,5 +43,13 @@ export class NewTweetComponent implements OnInit {
 
   get user() {
     return this.authService.currentUserValue()!;
+  }
+
+  get checkIsTweetValid() {
+    return this.tweet.length > 0 && this.tweet.length <= this.tweetLimit;
+  }
+
+  get remainingCharacters() {
+    return this.tweetLimit - this.tweet.length;
   }
 }
