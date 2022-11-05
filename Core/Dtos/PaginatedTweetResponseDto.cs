@@ -7,7 +7,7 @@ namespace Core.Dtos
         public long TotalElements { get; set; }
         public int LastPage { get; set; } = 0;
         public int TotalPages { get; set; } = 0;
-        public List<TweetResponseDto>? Tweets { get; set; }
+        public List<TweetResponseDto>? Tweets { get; set; } = null;
     }
 
 }
