@@ -10,6 +10,7 @@ export class LikeReplyRetweetButtonComponent implements OnInit {
   @Output() onRetweetEvent = new EventEmitter();
   @Output() onCommentEvent = new EventEmitter();
   @Input() isLiked = false;
+  @Input() isRetweeted = false;
   @Input() likeCount = 0;
   @Input() commentCount = 0;
   @Input() retweetCount = 0;
