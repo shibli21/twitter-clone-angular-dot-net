@@ -1,0 +1,42 @@
+<div class="w-full mb-4" *ngIf="users.length > 0">
+  <div class="bg-slate-50 rounded-md">
+    <div class="flex justify-between items-center">
+      <h3 class="p-4 text-xl font-bold leading-none text-gray-900">
+        Follow authors
+      </h3>
+    </div>
+    <div *ngIf="!isLoading" class="w-full">
+      <div *ngFor="let user of users" role="list">
+        <div
+          class="p-4 hover:bg-gray-100 cursor-pointer transition"
+          [routerLink]="['/profile', user.id]"
+        >
+          <div class="flex w-full">
+            <img
+              class="w-10 h-10 object-cover rounded-full"
+              [src]="
+                user.profilePictureUrl
+                  ? user.profilePictureUrl
+                  : 'https://avatars.dicebear.com/api/open-peeps/' +
+                    user.userName +
+                    '.svg'
+              "
+              alt="Neil image"
+            />
+            <div class="px-4" style="width: calc(100% - 2.5rem)">
+              <p class="text-sm font-medium text-gray-900 truncate">
+                {{ user.firstName }} {{ user.lastName }}
+              </p>
+              <p class="text-sm truncate text-gray-500">{{ user.email }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <p *ngIf="users.length === 0">You are following all users.</p>
+    </div>
+    <div *ngIf="isLoading" class="space-y-2">
+      <app-user-card-skeleton></app-user-card-skeleton>
+      <app-user-card-skeleton></app-user-card-skeleton>
+    </div>
+  </div>
+</div>

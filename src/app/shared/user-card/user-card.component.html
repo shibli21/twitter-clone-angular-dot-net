@@ -23,7 +23,7 @@
       </p>
       <p class="text-sm truncate text-gray-500">{{ user.email }}</p>
     </div>
-    <div class="">
+    <div *ngIf="currentUserId !== user.id">
       <button
         class="p-button-sm"
         pButton

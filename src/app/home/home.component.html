@@ -26,4 +26,11 @@
   >
     No more tweets to show
   </p>
+
+  <div
+    class="font-bold text-center p-4 py-10 text-lg"
+    *ngIf="newsFeed.tweets.length === 0"
+  >
+    Follow users to see their tweets in your news feed
+  </div>
 </div>

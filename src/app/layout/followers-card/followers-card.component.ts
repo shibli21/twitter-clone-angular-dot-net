@@ -29,4 +29,16 @@ export class FollowersCardComponent implements OnInit {
       },
     });
   }
+
+  getAuthors() {
+    this.userService.getAuthors().subscribe({
+      next: (users) => {
+        this.users = users;
+        this.isLoading = false;
+      },
+      error: (err) => {
+        this.isLoading = false;
+      },
+    });
+  }
 }

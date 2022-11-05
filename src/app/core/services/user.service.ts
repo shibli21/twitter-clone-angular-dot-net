@@ -35,8 +35,16 @@ export class UserService {
       .get<IUser[]>(this.baseUrl + 'users/may-follow' + `?size=${8}`)
       .pipe(
         catchError((err) => {
-          return throwError(err);
+          return throwError(() => err);
         })
       );
+  }
+
+  getAuthors() {
+    return this.http.get<IUser[]>(this.baseUrl + 'users/follow-author').pipe(
+      catchError((err) => {
+        return throwError(() => err);
+      })
+    );
   }
 }

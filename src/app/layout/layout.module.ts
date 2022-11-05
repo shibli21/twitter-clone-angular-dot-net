@@ -9,6 +9,7 @@ import { SideNavComponent } from './side-nav/side-nav.component';
 import { BottomNavComponent } from './bottom-nav/bottom-nav.component';
 import { AdminSideNavComponent } from './admin-side-nav/admin-side-nav.component';
 import { AdminTopNavComponent } from './admin-top-nav/admin-top-nav.component';
+import { AuthorsCardComponent } from './authors-card/authors-card.component';
 
 @NgModule({
   declarations: [
@@ -19,6 +20,7 @@ import { AdminTopNavComponent } from './admin-top-nav/admin-top-nav.component';
     BottomNavComponent,
     AdminSideNavComponent,
     AdminTopNavComponent,
+    AuthorsCardComponent,
   ],
   imports: [CommonModule, SharedModule, FormsModule],
 })
