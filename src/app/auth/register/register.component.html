@@ -66,11 +66,19 @@
               />
               <div *ngIf="isInvalidTouchedDirty('username')">
                 <div
+                  *ngIf="registerUserFormControl['username'].touched && registerUserFormControl['username'].errors?.['validUsername']"
+                  class="input-error"
+                >
+                  Username is not valid.
+                </div>
+
+                <div
                   *ngIf="registerUserFormControl['username'].errors?.['required']"
                   class="input-error"
                 >
                   Username is required.
                 </div>
+
                 <div
                   *ngIf="registerUserFormControl['username'].errors?.['username']"
                   class="input-error"

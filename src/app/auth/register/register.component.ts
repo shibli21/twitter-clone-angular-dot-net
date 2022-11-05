@@ -27,6 +27,7 @@ export class RegisterComponent implements OnInit {
       username: new FormControl('', [
         Validators.required,
         Validators.minLength(4),
+        Validation.validUsername,
       ]),
       firstName: new FormControl('', [Validators.required]),
       lastName: new FormControl('', [Validators.required]),
@@ -58,6 +59,8 @@ export class RegisterComponent implements OnInit {
   ngOnInit(): void {}
 
   onSubmit() {
+    console.log(this.registerUserForm);
+
     this.registerUserForm.markAllAsTouched();
     if (!this.registerUserForm.valid) {
       return;
@@ -134,5 +137,15 @@ export default class Validation {
         return null;
       }
     };
+  }
+
+  static validUsername(control: AbstractControl) {
+    if (control.value) {
+      const regex = new RegExp('^[a-zA-Z0-9]+$');
+      if (!regex.test(control.value)) {
+        return { validUsername: true };
+      }
+    }
+    return null;
   }
 }
