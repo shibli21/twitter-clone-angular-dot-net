@@ -78,17 +78,17 @@ public class FollowController : ControllerBase
 
 
     [HttpGet("followers/{userId}"), Authorize]
-    public async Task<ActionResult<PaginatedUserResponseDto>> GetFollowersByUserId(string userId, [FromQuery] int size = 5, [FromQuery] int page = 0)
+    public async Task<ActionResult<PaginatedFollowerResponseDto>> GetFollowersByUserId(string userId, [FromQuery] int size = 5, [FromQuery] int page = 0)
     {
-        PaginatedUserResponseDto followers = await _followerService.GetFollowers(userId, size, page);
+        PaginatedFollowerResponseDto followers = await _followerService.GetFollowers(userId, size, page);
         return Ok(followers);
 
     }
 
     [HttpGet("following/{userId}"), Authorize]
-    public async Task<ActionResult<PaginatedUserResponseDto>> GetFollowingByUserId(string userId, [FromQuery] int size = 5, [FromQuery] int page = 0)
+    public async Task<ActionResult<PaginatedFollowerResponseDto>> GetFollowingByUserId(string userId, [FromQuery] int size = 5, [FromQuery] int page = 0)
     {
-        PaginatedUserResponseDto following = await _followerService.GetFollowing(userId, size, page);
+        PaginatedFollowerResponseDto following = await _followerService.GetFollowing(userId, size, page);
         return Ok(following);
     }
 
