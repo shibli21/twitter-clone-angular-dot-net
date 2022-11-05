@@ -143,7 +143,7 @@
     </div>
   </ng-container>
 
-  <div *ngIf="usersTweets">
+  <div *ngIf="usersTweets && profileUser && !isProfileLoading">
     <div
       class="divide-y"
       infinite-scroll
