@@ -9,6 +9,7 @@ public interface IUsersService
     Task<PaginatedUserResponseDto> GetPaginatedUsers(int size, int page);
     Task<PaginatedUserResponseDto> GetPaginatedAdmins(int size, int page);
     Task<List<UserResponseDto>> MayFollowUser(int size);
+    Task<List<UserResponseDto>> FollowAuthor(string userId);
     Task<User> UpdateGetUserAsync(string id, User user);
     Task<User?> GetUserByNameAsync(string name);
     Task<User?> GetUserByEmailAsync(string email);

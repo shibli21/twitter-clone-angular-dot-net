@@ -69,6 +69,17 @@ public class UsersController : ControllerBase
         return Ok(await _usersService.MayFollowUser(size));
     }
 
+    [HttpGet("follow-author"), Authorize]
+    public async Task<ActionResult<List<UserResponseDto>>> FollowAuthor()
+    {
+        var userId = _httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (userId == null)
+        {
+            return Unauthorized();
+        }
+        return Ok(await _usersService.FollowAuthor(userId));
+    }
+
 
     [HttpPut("edit"), Authorize]
     public async Task<ActionResult<UserResponseDto?>> UpdateUser(UserEditDto userEditDto)
