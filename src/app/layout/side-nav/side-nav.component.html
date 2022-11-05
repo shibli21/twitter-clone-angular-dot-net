@@ -4,17 +4,32 @@
       <div class="icon w-7 h-7 rounded-full bg-slate-800"></div>
       <div class="font-semibold text-2xl text-slate-800">Geeky</div>
     </li>
-    <li class="sidenav-item" (click)="navigateToHomeAndRefresh()">
+    <li
+      class="sidenav-item"
+      (click)="navigateToHomeAndRefresh()"
+      [routerLink]="['/home']"
+      routerLinkActive="font-bold"
+    >
       <app-home-icon [isActive]="isActive('home')"></app-home-icon>
-      <div class="label">Home</div>
+      <div>Home</div>
     </li>
-    <li class="sidenav-item" (click)="navigateToProfileAndRefresh()">
+    <li
+      class="sidenav-item"
+      (click)="navigateToProfileAndRefresh()"
+      routerLink="/profile/{{ user.id }}"
+      routerLinkActive="font-bold"
+      [routerLinkActiveOptions]="{ exact: true }"
+    >
       <app-profile-icon
         [isActive]="isMyProfileRouteActive()"
       ></app-profile-icon>
-      <div class="label">Profile</div>
+      <div>Profile</div>
     </li>
-    <li class="sidenav-item" [routerLink]="['/notifications']">
+    <li
+      class="sidenav-item"
+      [routerLink]="['/notifications']"
+      routerLinkActive="font-bold"
+    >
       <div
         pBadge
         *ngIf="totalUnreadNotifications !== 0"
@@ -28,16 +43,23 @@
         *ngIf="totalUnreadNotifications === 0"
         [isActive]="isActive('notifications')"
       ></app-notification-icon>
-      <div class="label">Notifications</div>
+      <div>Notifications</div>
     </li>
 
     <li class="sidenav-item" (click)="toggleSearchDialog()">
       <app-search-icon></app-search-icon>
-      <div class="label">Search</div>
+      <div [ngClass]="isActive('search') ? 'label-active' : 'label'">
+        Search
+      </div>
     </li>
-    <li class="sidenav-item" [routerLink]="['/settings']">
+    <li
+      class="sidenav-item"
+      [routerLink]="['/settings']"
+      routerLinkActive="font-bold"
+      [routerLinkActiveOptions]="{ exact: true }"
+    >
       <app-settings-icon></app-settings-icon>
-      <div class="label">Settings</div>
+      <div>Settings</div>
     </li>
     <li *ngIf="isAdmin()" class="sidenav-item" [routerLink]="['/admin']">
       <app-admin-icon></app-admin-icon>

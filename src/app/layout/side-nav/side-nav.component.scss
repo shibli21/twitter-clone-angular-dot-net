@@ -1,14 +1,12 @@
 :host::ng-deep {
   .sidenav-item {
-    @apply text-gray-700 flex gap-4 items-center px-4 py-2 rounded-md cursor-pointer hover:bg-gray-100;
+    @apply flex gap-4 items-center px-4 py-2 rounded-md cursor-pointer hover:bg-gray-100;
 
-    .label {
-      @apply text-gray-500;
+    .label-active {
+      @apply text-gray-900 font-bold;
     }
     .pi {
       @apply text-[28px];
-    }
-    .p-badge-hide {
     }
   }
 }

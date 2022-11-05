@@ -1,3 +1,4 @@
+import { Router } from '@angular/router';
 import { AuthService } from './../../auth/auth.service';
 import { ConfirmationService } from 'primeng/api';
 import { Component, OnInit } from '@angular/core';
@@ -11,7 +12,8 @@ import { Component, OnInit } from '@angular/core';
 export class AdminSideNavComponent implements OnInit {
   constructor(
     private confirmationService: ConfirmationService,
-    private authService: AuthService
+    private authService: AuthService,
+    private router: Router
   ) {}
 
   ngOnInit(): void {}
@@ -24,5 +26,9 @@ export class AdminSideNavComponent implements OnInit {
         this.authService.logout();
       },
     });
+  }
+
+  isActive(route: string) {
+    return this.router.url.includes(route);
   }
 }

@@ -4,29 +4,45 @@
       <div class="icon w-7 h-7 rounded-full bg-slate-800"></div>
       <div class="font-semibold text-2xl text-slate-800">Geeky</div>
     </li>
-    <li class="sidenav-item" [routerLink]="['/admin']">
+    <li
+      class="sidenav-item"
+      [routerLink]="['/admin/dashboard']"
+      routerLinkActive="label-active"
+    >
       <app-home-icon></app-home-icon>
-      <div class="label">Dashboard</div>
+      <div>Dashboard</div>
     </li>
-    <li class="sidenav-item" [routerLink]="['/admin/users-list']">
+    <li
+      class="sidenav-item"
+      [routerLink]="['/admin/users-list']"
+      routerLinkActive="label-active"
+    >
       <app-profile-icon></app-profile-icon>
-      <div class="label">Users</div>
+      <div>Users</div>
     </li>
-    <li class="sidenav-item" [routerLink]="['/admin/admins-list']">
+    <li
+      class="sidenav-item"
+      [routerLink]="['/admin/admins-list']"
+      routerLinkActive="label-active"
+    >
       <app-admin-icon></app-admin-icon>
-      <div class="label">Admins</div>
+      <div>Admins</div>
     </li>
-    <li class="sidenav-item" [routerLink]="['/admin/blocked-users-list']">
+    <li
+      class="sidenav-item"
+      [routerLink]="['/admin/blocked-users-list']"
+      routerLinkActive="label-active"
+    >
       <app-block-icon></app-block-icon>
-      <div class="label">Blocked Users</div>
+      <div>Blocked Users</div>
     </li>
     <li class="sidenav-item" [routerLink]="['/']">
       <app-tweet-icon fillClass="fill-slate-800"></app-tweet-icon>
-      <div class="label">Twitter</div>
+      <div>Twitter</div>
     </li>
     <li class="sidenav-item" (click)="logout()">
       <app-logout-icon></app-logout-icon>
-      <div class="label">Logout</div>
+      <div>Logout</div>
     </li>
   </ul>
 </div>
