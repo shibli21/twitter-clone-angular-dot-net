@@ -1,3 +1,4 @@
+import { Meta, Title } from '@angular/platform-browser';
 import { LiveNotificationService } from './core/services/live-notification.service';
 import { Component } from '@angular/core';
 import { AuthService } from './auth/auth.service';
@@ -8,11 +9,26 @@ import { AuthService } from './auth/auth.service';
   styleUrls: ['./app.component.scss'],
 })
 export class AppComponent {
-  title = 'twitter-clone';
-
-  constructor(private authService: AuthService) {}
+  constructor(
+    private authService: AuthService,
+    private meta: Meta,
+    private title: Title
+  ) {}
 
   ngOnInit(): void {
+    this.meta.addTags([
+      { name: 'description', content: 'Twitter Clone' },
+      { name: 'keywords', content: 'Twitter Clone' },
+      { name: 'author', content: 'Syed shibli mahmud - Masum Billah' },
+      {
+        name: 'viewport',
+        content: 'width=device-width, initial-scale=1, shrink-to-fit=no',
+      },
+      { name: 'robots', content: 'index, follow' },
+      { charset: 'UTF-8' },
+    ]);
+    this.title.setTitle('Geeky - Twitter Clone');
+
     this.authService.autoLogin();
   }
 }
