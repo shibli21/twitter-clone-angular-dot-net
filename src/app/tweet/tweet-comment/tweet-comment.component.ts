@@ -1,3 +1,4 @@
+import { TweetService } from './../../core/services/tweet.service';
 import { ConfirmationService } from 'primeng/api';
 import { AuthService } from './../../auth/auth.service';
 import { Component, Input, OnInit } from '@angular/core';
@@ -16,7 +17,8 @@ export class TweetCommentComponent implements OnInit {
   constructor(
     private commentService: CommentService,
     private confirmationService: ConfirmationService,
-    private authService: AuthService
+    private authService: AuthService,
+    private tweetService: TweetService
   ) {}
 
   ngOnInit(): void {}
@@ -34,6 +36,9 @@ export class TweetCommentComponent implements OnInit {
   }
 
   get isCommentOwner() {
-    return this.authService.userId() === this.comment.userId;
+    return (
+      this.authService.userId() === this.comment.userId ||
+      this.authService.userId() === this.tweetService.tweet.value?.userId
+    );
   }
 }

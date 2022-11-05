@@ -9,7 +9,7 @@ import { environment } from '../../../environments/environment';
   providedIn: 'root',
 })
 export class TweetService {
-  baseUrl = environment.baseUrl;
+  private baseUrl = environment.baseUrl;
   tweet = new BehaviorSubject<ITweet | null>(null);
 
   constructor(private http: HttpClient) {}
