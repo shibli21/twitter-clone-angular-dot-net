@@ -86,19 +86,19 @@ export class CommentService {
       .pipe(
         tap((comment) => {
           if (this.router.url === '/home') {
-            const newsFeed = this.timelineService.newsFeed.getValue();
+            const newsFeed = this.timelineService.getNewsFeedValue;
             const tweetIndex = newsFeed.tweets.findIndex(
               (tweet) => tweet.id === tweetId
             );
             newsFeed.tweets[tweetIndex].commentCount++;
-            this.timelineService.newsFeed.next(newsFeed);
+            this.timelineService.setNewsFeed(newsFeed);
           } else {
-            const userTimeline = this.timelineService.userTimeline.getValue();
+            const userTimeline = this.timelineService.getUserTimelineValue;
             const tweetIndex = userTimeline.tweets.findIndex(
               (tweet) => tweet.id === tweetId
             );
             userTimeline.tweets[tweetIndex].commentCount++;
-            this.timelineService.userTimeline.next(userTimeline);
+            this.timelineService.setUserTimeline(userTimeline);
           }
           return comment;
         }),

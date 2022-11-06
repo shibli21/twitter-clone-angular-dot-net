@@ -16,17 +16,21 @@ import {
   providedIn: 'root',
 })
 export class TimelineService {
-  baseUrl = environment.baseUrl;
+  private baseUrl = environment.baseUrl;
 
-  isLoadingNewsFeed = new BehaviorSubject<boolean>(false);
-  isLoadingNewsFeedObservable = this.isLoadingNewsFeed.asObservable();
-  newsFeed = new BehaviorSubject<IPaginatedTweets>(new PaginatedTweets());
+  private isLoadingNewsFeed = new BehaviorSubject<boolean>(false);
+  private isLoadingUserTimeline = new BehaviorSubject<boolean>(false);
+  private newsFeed = new BehaviorSubject<IPaginatedTweets>(
+    new PaginatedTweets()
+  );
+  private userTimeline = new BehaviorSubject<IPaginatedTweets>(
+    new PaginatedTweets()
+  );
+
   newFeedObservable = this.newsFeed.asObservable();
-
-  userTimeline = new BehaviorSubject<IPaginatedTweets>(new PaginatedTweets());
   userTimelineObservable = this.userTimeline.asObservable();
-  isLoadingUserTimeline = new BehaviorSubject<boolean>(false);
   isLoadingUserTimelineObservable = this.isLoadingUserTimeline.asObservable();
+  isLoadingNewsFeedObservable = this.isLoadingNewsFeed.asObservable();
 
   constructor(private http: HttpClient, private router: Router) {}
 
@@ -153,5 +157,20 @@ export class TimelineService {
 
   public clearNewsFeed() {
     this.newsFeed.next(new PaginatedTweets());
+  }
+
+  public setNewsFeed(newsFeed: IPaginatedTweets) {
+    this.newsFeed.next(newsFeed);
+  }
+
+  public setUserTimeline(userTimeline: IPaginatedTweets) {
+    this.userTimeline.next(userTimeline);
+  }
+
+  get getNewsFeedValue() {
+    return this.newsFeed.getValue();
+  }
+  get getUserTimelineValue() {
+    return this.userTimeline.getValue();
   }
 }
