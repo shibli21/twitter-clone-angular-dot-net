@@ -8,9 +8,13 @@ import { Injectable } from '@angular/core';
   providedIn: 'root',
 })
 export class NewTweetService {
-  isTweetDialogOpen = new BehaviorSubject<boolean>(false);
-  isTweeting = new BehaviorSubject<boolean>(false);
-  baseUrl = environment.baseUrl;
+  private baseUrl = environment.baseUrl;
+
+  private isTweetDialogOpen = new BehaviorSubject<boolean>(false);
+  private isTweeting = new BehaviorSubject<boolean>(false);
+
+  isTweetDialogOpenObservable = this.isTweetDialogOpen.asObservable();
+  isTweetingObservable = this.isTweeting.asObservable();
 
   constructor(private http: HttpClient) {}
 
@@ -40,5 +44,9 @@ export class NewTweetService {
 
   toggleTweetDialog() {
     this.isTweetDialogOpen.next(!this.isTweetDialogOpen.value);
+  }
+
+  setTweetDialogDisplay(isOpen: boolean) {
+    this.isTweetDialogOpen.next(isOpen);
   }
 }
