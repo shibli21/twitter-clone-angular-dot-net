@@ -2,11 +2,11 @@
   <div class="">
     <ul class="px-4 space-y-2">
       <li
-        class="flex p-4 gap-4 items-center cursor-pointer"
+        class="flex p-4 gap-2 items-center cursor-pointer"
         [routerLink]="['/']"
       >
-        <div class="icon w-7 h-7 rounded-full bg-slate-800"></div>
-        <div class="font-semibold text-2xl text-slate-800">Geeky</div>
+        <app-logo fill="fill-indigo-700" [size]="8"></app-logo>
+        <a [routerLink]="['/home']" class="font-bold text-xl">Geeeky</a>
       </li>
       <li
         (click)="refreshNewsFeed()"

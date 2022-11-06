@@ -3,11 +3,11 @@
     class="w-full p-4 sticky flex gap-2 border-b items-center top-0 backdrop-blur-lg z-50 md:justify-end justify-between"
   >
     <div
-      class="md:hidden flex gap-4 items-center cursor-pointer"
+      class="md:hidden flex gap-2 items-center cursor-pointer"
       [routerLink]="['/']"
     >
-      <div class="icon w-7 h-7 rounded-full bg-slate-800"></div>
-      <div class="font-semibold text-2xl text-slate-800">Geeky</div>
+      <app-logo fill="fill-indigo-700" [size]="8"></app-logo>
+      <a [routerLink]="['/home']" class="font-bold text-xl">Geeky</a>
     </div>
     <a
       type="button"
