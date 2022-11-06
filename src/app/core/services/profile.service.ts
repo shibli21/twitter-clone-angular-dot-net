@@ -1,11 +1,9 @@
-import { FollowService } from './follow.service';
-import { AuthService } from './../../auth/auth.service';
-import { catchError, throwError, BehaviorSubject } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Router } from '@angular/router';
+import { BehaviorSubject, catchError, throwError } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { IUser } from '../models/user.model';
+import { AuthService } from './../../auth/auth.service';
 
 @Injectable({
   providedIn: 'root',
@@ -65,5 +63,9 @@ export class ProfileService {
           });
       }
     }
+  }
+
+  setUser(user: IUser) {
+    this.user.next(user);
   }
 }

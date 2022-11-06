@@ -1,3 +1,4 @@
+import { Observable } from 'rxjs';
 import { AuthService } from './../../auth/auth.service';
 import { IUser } from 'src/app/core/models/user.model';
 import { NewTweetService } from './../../core/services/new-tweet.service';
@@ -11,7 +12,7 @@ import { Component, OnInit } from '@angular/core';
 export class NewTweetDialogComponent implements OnInit {
   display = false;
   tweet: string = '';
-  user!: IUser;
+  user$ = new Observable<IUser | null>();
   isLoading = false;
   tweetLimit = 280;
 
@@ -25,7 +26,7 @@ export class NewTweetDialogComponent implements OnInit {
       this.display = isOpen;
     });
 
-    this.authService.user.subscribe((user) => (this.user = user!));
+    this.user$ = this.authService.userObservable;
 
     this.newTweetService.isTweeting.subscribe((isTweeting) => {
       this.isLoading = isTweeting;

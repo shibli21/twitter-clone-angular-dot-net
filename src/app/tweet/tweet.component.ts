@@ -1,3 +1,4 @@
+import { Observable } from 'rxjs';
 import { ConfirmationService } from 'primeng/api';
 import { IUser } from 'src/app/core/models/user.model';
 import { AuthService } from './../auth/auth.service';
@@ -25,7 +26,8 @@ export class TweetComponent implements OnInit {
   tweetId = '';
   isCommenting = false;
   isLoading = false;
-  currentUser!: IUser;
+  currentUser$ = new Observable<IUser | null>();
+
   notFound = false;
 
   tweetComments!: IPaginatedComments | null;
@@ -80,11 +82,7 @@ export class TweetComponent implements OnInit {
 
       this.commentService.getTweetComments(this.tweetId);
 
-      this.authService.user.subscribe((user) => {
-        if (user) {
-          this.currentUser = user;
-        }
-      });
+      this.currentUser$ = this.authService.userObservable;
     });
   }
 
@@ -100,7 +98,7 @@ export class TweetComponent implements OnInit {
 
   showRetweetDialog() {
     if (
-      this.tweet?.userId === this.currentUser.id &&
+      this.tweet?.userId === this.authService.userId()! &&
       this.tweet.type === 'Retweet'
     ) {
       this.retweetUndoDisplay = true;
@@ -116,7 +114,7 @@ export class TweetComponent implements OnInit {
       accept: () => {
         this.tweetService.deleteTweet(this.tweetId).subscribe({
           next: (res) => {
-            this.router.navigate(['/profile', this.currentUser.id]);
+            this.router.navigate(['/profile', this.authService.userId()]);
             this.toastr.success('Tweet deleted successfully');
           },
         });

@@ -1,3 +1,4 @@
+import { Observable } from 'rxjs';
 import { ConfirmationService } from 'primeng/api';
 import { SearchService } from './../../core/services/search.service';
 import { NavService } from './../../core/services/nav.service';
@@ -15,7 +16,7 @@ import { Location } from '@angular/common';
 export class TopNavComponent implements OnInit {
   @Input() title: string = '';
   @Input() showBackButton = true;
-  user!: IUser;
+  user$ = new Observable<IUser | null>();
   sidenavDisplay = false;
   searchQuery = '';
 
@@ -38,13 +39,7 @@ export class TopNavComponent implements OnInit {
       });
     }
 
-    this.authService.user.subscribe({
-      next: (res) => {
-        if (res) {
-          this.user = res;
-        }
-      },
-    });
+    this.user$ = this.authService.userObservable;
   }
 
   goBack() {
@@ -77,7 +72,7 @@ export class TopNavComponent implements OnInit {
   }
 
   isAdmin() {
-    return this.user.role === 'admin';
+    return this.authService.currentUserValue()?.role === 'admin';
   }
 
   onSearch() {

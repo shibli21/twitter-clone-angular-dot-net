@@ -1,3 +1,4 @@
+import { Observable } from 'rxjs';
 import { AuthService } from './../auth/auth.service';
 import { IUser } from 'src/app/core/models/user.model';
 import { Component, OnInit } from '@angular/core';
@@ -8,17 +9,11 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./settings.component.scss'],
 })
 export class SettingsComponent implements OnInit {
-  user!: IUser;
+  user$ = new Observable<IUser | null>();
 
   constructor(private authService: AuthService) {}
 
   ngOnInit(): void {
-    this.authService.user.subscribe({
-      next: (res) => {
-        if (res) {
-          this.user = res;
-        }
-      },
-    });
+    this.user$ = this.authService.userObservable;
   }
 }

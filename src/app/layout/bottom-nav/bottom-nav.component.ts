@@ -1,3 +1,4 @@
+import { Observable } from 'rxjs';
 import { NotificationService } from './../../core/services/notification.service';
 import { NewTweetService } from './../../core/services/new-tweet.service';
 import { SearchService } from './../../core/services/search.service';
@@ -13,7 +14,8 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./bottom-nav.component.scss'],
 })
 export class BottomNavComponent implements OnInit {
-  user!: IUser;
+  user$ = new Observable<IUser | null>();
+
   totalUnreadNotifications = 0;
 
   constructor(
@@ -26,7 +28,7 @@ export class BottomNavComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.authService.user.subscribe((user) => (this.user = user!));
+    this.user$ = this.authService.userObservable;
 
     if (this.router.url !== '/notifications') {
       this.notificationService.getNotifications();
@@ -48,7 +50,7 @@ export class BottomNavComponent implements OnInit {
   }
 
   isMyProfileRouteActive() {
-    return this.router.url.includes(this.user?.id);
+    return this.router.url.includes(this.authService.userId()!);
   }
 
   isActive(route: string) {

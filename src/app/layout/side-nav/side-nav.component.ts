@@ -1,3 +1,4 @@
+import { Observable } from 'rxjs';
 import { TimelineService } from './../../core/services/timeline.service';
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
@@ -17,7 +18,7 @@ import { SearchService } from './../../core/services/search.service';
   providers: [ConfirmationService],
 })
 export class SideNavComponent implements OnInit {
-  user!: IUser;
+  user$ = new Observable<IUser | null>();
   searchQuery = '';
   display = false;
   totalUnreadNotifications = 0;
@@ -28,10 +29,8 @@ export class SideNavComponent implements OnInit {
     private router: Router,
     private searchService: SearchService,
     private newTweetService: NewTweetService,
-    private liveNotificationService: LiveNotificationService,
     private notificationService: NotificationService,
-    private confirmationService: ConfirmationService,
-    private timelineService: TimelineService
+    private confirmationService: ConfirmationService
   ) {}
 
   ngOnInit(): void {
@@ -45,7 +44,8 @@ export class SideNavComponent implements OnInit {
       }
     );
 
-    this.authService.user.subscribe((user) => (this.user = user!));
+    this.user$ = this.authService.userObservable;
+
     this.searchService.isSearchDialogOpen.subscribe((isOpen) => {
       this.display = isOpen;
     });
@@ -64,7 +64,7 @@ export class SideNavComponent implements OnInit {
   }
 
   isMyProfileRouteActive() {
-    return this.router.url.includes(this.user?.id);
+    return this.router.url.includes(this.authService.userId()!);
   }
 
   isActive(route: string) {
@@ -86,6 +86,6 @@ export class SideNavComponent implements OnInit {
   }
 
   isAdmin() {
-    return this.user?.role === 'admin';
+    return this.authService.currentUserValue()?.role === 'admin';
   }
 }

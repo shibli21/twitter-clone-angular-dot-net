@@ -1,6 +1,6 @@
 <app-top-nav title="settings"></app-top-nav>
 
-<ul class="divide-y">
+<ul class="divide-y" *ngIf="user$ | async as user">
   <li
     [routerLink]="['/settings/edit', user.id]"
     class="px-4 md:px-8 py-4 flex gap-4 items-center cursor-pointer hover:bg-gray-100"

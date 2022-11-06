@@ -9,7 +9,7 @@
   [style]="{ width: '100%', maxWidth: '600px' }"
   (onHide)="onHide()"
 >
-  <ng-template pTemplate="header">
+  <ng-template pTemplate="header" *ngIf="user$ | async as user">
     <app-name-and-time-header [user]="user"></app-name-and-time-header>
   </ng-template>
 

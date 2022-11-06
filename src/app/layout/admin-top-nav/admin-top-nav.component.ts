@@ -1,3 +1,4 @@
+import { Observable } from 'rxjs';
 import { Router } from '@angular/router';
 import { ConfirmationService } from 'primeng/api';
 import { AuthService } from './../../auth/auth.service';
@@ -11,7 +12,7 @@ import { Component, OnInit } from '@angular/core';
   providers: [ConfirmationService],
 })
 export class AdminTopNavComponent implements OnInit {
-  user!: IUser;
+  user$ = new Observable<IUser | null>();
   sidenavDisplay = false;
 
   constructor(
@@ -21,14 +22,9 @@ export class AdminTopNavComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.authService.user.subscribe({
-      next: (res) => {
-        if (res) {
-          this.user = res;
-        }
-      },
-    });
+    this.user$ = this.authService.userObservable;
   }
+
   toggleSidebar() {
     this.sidenavDisplay = !this.sidenavDisplay;
   }

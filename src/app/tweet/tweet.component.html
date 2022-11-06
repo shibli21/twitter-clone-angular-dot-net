@@ -13,108 +13,100 @@
     <app-tweet-card-skeleton></app-tweet-card-skeleton>
   </div>
 
-  <ng-container *ngIf="tweet && !isLoading">
-    <div class="hover:bg-gray-50 cursor-pointer w-full transition">
-      <div class="border-b px-4 py-2 items-center justify-between flex">
-        <app-name-and-time-header
-          [date]="tweet.createdAt"
-          [user]="tweet.user"
-          [overlay]="true"
-        ></app-name-and-time-header>
-        <div *ngIf="currentUser.id === tweet.user.id">
-          <div class="flex items-center text-gray-600">
-            <button
-              pButton
-              type="button "
-              icon="pi pi-pencil"
-              class="p-button-sm p-button-text"
-              (click)="display = true"
-            ></button>
-            <button
-              pButton
-              type="button"
-              icon="pi pi-trash"
-              class="p-button-danger p-button-sm p-button-text"
-              (click)="deleteTweet()"
-            ></button>
+  <div *ngIf="currentUser$ | async as currentUser">
+    <ng-container *ngIf="tweet && !isLoading">
+      <div class="hover:bg-gray-50 cursor-pointer w-full transition">
+        <div class="border-b px-4 py-2 items-center justify-between flex">
+          <app-name-and-time-header
+            [date]="tweet.createdAt"
+            [user]="tweet.user"
+            [overlay]="true"
+          ></app-name-and-time-header>
+          <div *ngIf="currentUser.id === tweet.user.id">
+            <div class="flex items-center text-gray-600">
+              <button
+                pButton
+                type="button "
+                icon="pi pi-pencil"
+                class="p-button-sm p-button-text"
+                (click)="display = true"
+              ></button>
+              <button
+                pButton
+                type="button"
+                icon="pi pi-trash"
+                class="p-button-danger p-button-sm p-button-text"
+                (click)="deleteTweet()"
+              ></button>
+            </div>
+          </div>
+        </div>
+        <div class="p-4 pb-2">
+          <quill-view-html
+            *ngIf="tweet.tweet"
+            [content]="tweet.tweet"
+          ></quill-view-html>
+          <div *ngIf="tweet.type === 'Retweet'" class="">
+            <div *ngIf="tweet.refTweet">
+              <app-retweet-card [tweet]="tweet.refTweet"></app-retweet-card>
+            </div>
+            <div
+              class="text-gray-500 text-sm border border-gray-300 px-2 md:px-4 py-2 items-center justify-between flex"
+              *ngIf="!tweet.refTweet"
+            >
+              This tweet is no longer available.
+            </div>
+          </div>
+        </div>
+        <app-like-reply-retweet-button
+          (onLikeEvent)="likeUnlike()"
+          (onRetweetEvent)="showRetweetDialog()"
+          [isLiked]="tweet.isLiked"
+          [likeCount]="tweet.likeCount"
+          [commentCount]="tweet.commentCount"
+          [retweetCount]="tweet.retweetCount"
+        ></app-like-reply-retweet-button>
+      </div>
+      <app-new-comment [tweetId]="tweet.id"></app-new-comment>
+      <div *ngIf="tweetComments">
+        <div
+          class="search-results"
+          infinite-scroll
+          (scrolled)="loadMore()"
+          [immediateCheck]="true"
+        >
+          <div *ngFor="let comment of tweetComments.comments">
+            <app-tweet-comment [comment]="comment"></app-tweet-comment>
           </div>
         </div>
       </div>
-      <div class="p-4 pb-2">
-        <quill-view-html
-          *ngIf="tweet.tweet"
-          [content]="tweet.tweet"
-        ></quill-view-html>
-
-        <div *ngIf="tweet.type === 'Retweet'" class="">
-          <div *ngIf="tweet.refTweet">
-            <app-retweet-card [tweet]="tweet.refTweet"></app-retweet-card>
-          </div>
-          <div
-            class="text-gray-500 text-sm border border-gray-300 px-2 md:px-4 py-2 items-center justify-between flex"
-            *ngIf="!tweet.refTweet"
-          >
-            This tweet is no longer available.
-          </div>
-        </div>
-      </div>
-
-      <app-like-reply-retweet-button
-        (onLikeEvent)="likeUnlike()"
-        (onRetweetEvent)="showRetweetDialog()"
-        [isLiked]="tweet.isLiked"
-        [likeCount]="tweet.likeCount"
-        [commentCount]="tweet.commentCount"
-        [retweetCount]="tweet.retweetCount"
-      ></app-like-reply-retweet-button>
-    </div>
-
-    <app-new-comment [tweetId]="tweet.id"></app-new-comment>
-
-    <div *ngIf="tweetComments">
-      <div
-        class="search-results"
-        infinite-scroll
-        (scrolled)="loadMore()"
-        [immediateCheck]="true"
-      >
-        <div *ngFor="let comment of tweetComments.comments">
-          <app-tweet-comment [comment]="comment"></app-tweet-comment>
-        </div>
-      </div>
-    </div>
-
-    <!-- edit tweet dialog -->
-
-    <app-edit-tweet-dialog
-      [tweet]="tweet"
-      [currentUser]="currentUser"
-      [visible]="display"
-      (onCloseEvent)="display = false"
-    >
-    </app-edit-tweet-dialog>
-
-    <!-- retweet dialog -->
-
-    <app-retweet-dialog
-      [tweet]="tweet"
-      [currentUser]="currentUser"
-      [visible]="retweetDisplay"
-      (onCloseEvent)="retweetDisplay = false"
-    ></app-retweet-dialog>
-
-    <div *ngIf="tweet.userId === currentUser.id && tweet.type === 'Retweet'">
-      <app-retweet-undo-dialog
+      <!-- edit tweet dialog -->
+      <app-edit-tweet-dialog
         [tweet]="tweet"
         [currentUser]="currentUser"
-        [visible]="retweetUndoDisplay"
-        (onCloseEvent)="retweetUndoDisplay = false"
+        [visible]="display"
+        (onCloseEvent)="display = false"
       >
-      </app-retweet-undo-dialog>
-    </div>
-
-    <div *ngIf="!tweet">Tweet not found</div>
-  </ng-container>
+      </app-edit-tweet-dialog>
+      <!-- retweet dialog -->
+      <app-retweet-dialog
+        [tweet]="tweet"
+        [currentUser]="currentUser"
+        [visible]="retweetDisplay"
+        (onCloseEvent)="retweetDisplay = false"
+      ></app-retweet-dialog>
+      <div *ngIf="tweet.userId === currentUser.id && tweet.type === 'Retweet'">
+        <app-retweet-undo-dialog
+          [tweet]="tweet"
+          [currentUser]="currentUser"
+          [visible]="retweetUndoDisplay"
+          (onCloseEvent)="retweetUndoDisplay = false"
+        >
+        </app-retweet-undo-dialog>
+      </div>
+      <div *ngIf="!tweet">Tweet not found</div>
+    </ng-container>
+  </div>
 </div>
 
 <app-confirmation-dialog key="deleteSingleTweet"></app-confirmation-dialog>

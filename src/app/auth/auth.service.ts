@@ -18,7 +18,8 @@ import {
 })
 export class AuthService {
   baseUrl = environment.baseUrl;
-  user = new BehaviorSubject<IUser | null>(null);
+  private user = new BehaviorSubject<IUser | null>(null);
+  userObservable = this.user.asObservable();
   isLoggingInLoading = new BehaviorSubject<boolean>(false);
 
   constructor(
@@ -161,5 +162,12 @@ export class AuthService {
     }
 
     return;
+  }
+
+  public setUser(user: IUser) {
+    this.user.next({
+      ...this.user.value,
+      ...user,
+    });
   }
 }

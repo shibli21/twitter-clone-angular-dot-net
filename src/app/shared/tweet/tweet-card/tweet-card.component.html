@@ -1,145 +1,147 @@
-<div class="hover:bg-gray-50 cursor-pointer w-full transition">
-  <div class="border-b px-4 py-2 items-center justify-between flex">
-    <app-name-and-time-header
-      [date]="tweet.createdAt"
-      [user]="tweet.user"
-      [overlay]="true"
-    ></app-name-and-time-header>
-    <div *ngIf="currentUser.id === tweet.user.id">
-      <div class="flex items-center text-gray-600" *ngIf="!isRetweet">
-        <button
-          pButton
-          type="button "
-          icon="pi pi-pencil"
-          class="p-button-sm p-button-text"
-          (click)="showEditDialog()"
-        ></button>
-        <button
-          pButton
-          type="button"
-          icon="pi pi-trash"
-          class="p-button-danger p-button-sm p-button-text"
-          (click)="deleteTweet()"
-        ></button>
+<div *ngIf="currentUser$ | async as currentUser">
+  <div class="hover:bg-gray-50 cursor-pointer w-full transition">
+    <div class="border-b px-4 py-2 items-center justify-between flex">
+      <app-name-and-time-header
+        [date]="tweet.createdAt"
+        [user]="tweet.user"
+        [overlay]="true"
+      ></app-name-and-time-header>
+      <div *ngIf="currentUser.id === tweet.user.id">
+        <div class="flex items-center text-gray-600" *ngIf="!isRetweet">
+          <button
+            pButton
+            type="button "
+            icon="pi pi-pencil"
+            class="p-button-sm p-button-text"
+            (click)="showEditDialog()"
+          ></button>
+          <button
+            pButton
+            type="button"
+            icon="pi pi-trash"
+            class="p-button-danger p-button-sm p-button-text"
+            (click)="deleteTweet()"
+          ></button>
+        </div>
       </div>
     </div>
-  </div>
 
-  <div class="p-4 pb-2" [routerLink]="['/tweet', tweet.id]">
-    <quill-view-html
-      *ngIf="tweet.tweet"
-      [content]="tweet.tweet"
-    ></quill-view-html>
+    <div class="p-4 pb-2" [routerLink]="['/tweet', tweet.id]">
+      <quill-view-html
+        *ngIf="tweet.tweet"
+        [content]="tweet.tweet"
+      ></quill-view-html>
 
-    <div *ngIf="tweet.type === 'Retweet'" class="">
-      <div *ngIf="tweet.refTweet">
-        <app-retweet-card [tweet]="tweet.refTweet"></app-retweet-card>
-      </div>
-      <div
-        class="text-gray-500 text-sm border border-gray-300 px-2 md:px-4 py-2 items-center justify-between flex"
-        *ngIf="!tweet.refTweet"
-      >
-        This tweet is no longer available.
-      </div>
-    </div>
-  </div>
-
-  <app-like-reply-retweet-button
-    (onLikeEvent)="likeUnlike()"
-    (onCommentEvent)="showDialog()"
-    (onRetweetEvent)="showRetweetDialog()"
-    [isLiked]="tweet.isLiked"
-    [isRetweeted]="tweet.isRetweeted"
-    [likeCount]="tweet.likeCount"
-    [commentCount]="tweet.commentCount"
-    [retweetCount]="tweet.retweetCount"
-    *ngIf="!isRetweet"
-  ></app-like-reply-retweet-button>
-</div>
-
-<p-dialog
-  position="top"
-  [(visible)]="display"
-  [modal]="true"
-  [breakpoints]="{ '960px': '600px' }"
-  [style]="{ width: '600px' }"
-  [baseZIndex]="10000"
-  [draggable]="false"
-  [resizable]="false"
-  [dismissableMask]="true"
->
-  <ng-template pTemplate="header">
-    <app-name-and-time-header
-      [date]="tweet.createdAt"
-      [user]="tweet.user"
-    ></app-name-and-time-header>
-  </ng-template>
-
-  <div class="mb-4">
-    <quill-view-html [content]="tweet.tweet"></quill-view-html>
-
-    <div *ngIf="tweet.type === 'Retweet'" class="">
-      <div *ngIf="tweet.refTweet">
-        <app-retweet-card [tweet]="tweet.refTweet"></app-retweet-card>
-      </div>
-      <div
-        class="text-gray-500 text-sm border border-gray-300 px-2 md:px-4 py-2 items-center justify-between flex"
-        *ngIf="!tweet.refTweet"
-      >
-        This tweet is no longer available.
+      <div *ngIf="tweet.type === 'Retweet'" class="">
+        <div *ngIf="tweet.refTweet">
+          <app-retweet-card [tweet]="tweet.refTweet"></app-retweet-card>
+        </div>
+        <div
+          class="text-gray-500 text-sm border border-gray-300 px-2 md:px-4 py-2 items-center justify-between flex"
+          *ngIf="!tweet.refTweet"
+        >
+          This tweet is no longer available.
+        </div>
       </div>
     </div>
+
+    <app-like-reply-retweet-button
+      (onLikeEvent)="likeUnlike()"
+      (onCommentEvent)="showDialog()"
+      (onRetweetEvent)="showRetweetDialog()"
+      [isLiked]="tweet.isLiked"
+      [isRetweeted]="tweet.isRetweeted"
+      [likeCount]="tweet.likeCount"
+      [commentCount]="tweet.commentCount"
+      [retweetCount]="tweet.retweetCount"
+      *ngIf="!isRetweet"
+    ></app-like-reply-retweet-button>
   </div>
 
-  <form (ngSubmit)="commentOnTweet()">
-    <input
-      autofocus
-      name="newComment"
-      [(ngModel)]="comment"
-      placeholder="Tweet your reply"
-      pInputText
-    />
-  </form>
+  <p-dialog
+    position="top"
+    [(visible)]="display"
+    [modal]="true"
+    [breakpoints]="{ '960px': '600px' }"
+    [style]="{ width: '600px' }"
+    [baseZIndex]="10000"
+    [draggable]="false"
+    [resizable]="false"
+    [dismissableMask]="true"
+  >
+    <ng-template pTemplate="header">
+      <app-name-and-time-header
+        [date]="tweet.createdAt"
+        [user]="tweet.user"
+      ></app-name-and-time-header>
+    </ng-template>
 
-  <ng-template pTemplate="footer">
-    <p-button
-      [disabled]="comment.length === 0"
-      icon="pi pi-send"
-      (click)="commentOnTweet()"
-      label="Reply"
-      class="p-button-text -mr-2"
-      [loading]="isCommenting"
-    ></p-button>
-  </ng-template>
-</p-dialog>
+    <div class="mb-4">
+      <quill-view-html [content]="tweet.tweet"></quill-view-html>
 
-<!-- edit tweet dialog -->
+      <div *ngIf="tweet.type === 'Retweet'" class="">
+        <div *ngIf="tweet.refTweet">
+          <app-retweet-card [tweet]="tweet.refTweet"></app-retweet-card>
+        </div>
+        <div
+          class="text-gray-500 text-sm border border-gray-300 px-2 md:px-4 py-2 items-center justify-between flex"
+          *ngIf="!tweet.refTweet"
+        >
+          This tweet is no longer available.
+        </div>
+      </div>
+    </div>
 
-<app-edit-tweet-dialog
-  [tweet]="tweet"
-  [currentUser]="currentUser"
-  [visible]="displayEditDialog"
-  (onCloseEvent)="displayEditDialog = false"
->
-</app-edit-tweet-dialog>
+    <form (ngSubmit)="commentOnTweet()">
+      <input
+        autofocus
+        name="newComment"
+        [(ngModel)]="comment"
+        placeholder="Tweet your reply"
+        pInputText
+      />
+    </form>
 
-<!-- retweet dialog -->
+    <ng-template pTemplate="footer">
+      <p-button
+        [disabled]="comment.length === 0"
+        icon="pi pi-send"
+        (click)="commentOnTweet()"
+        label="Reply"
+        class="p-button-text -mr-2"
+        [loading]="isCommenting"
+      ></p-button>
+    </ng-template>
+  </p-dialog>
 
-<app-retweet-dialog
-  [tweet]="tweet"
-  [currentUser]="currentUser"
-  [visible]="retweetDisplay"
-  (onCloseEvent)="retweetDisplay = false"
-></app-retweet-dialog>
+  <!-- edit tweet dialog -->
 
-<div *ngIf="tweet.userId === currentUser.id && tweet.type === 'Retweet'">
-  <app-retweet-undo-dialog
+  <app-edit-tweet-dialog
     [tweet]="tweet"
     [currentUser]="currentUser"
-    [visible]="retweetUndoDisplay"
-    (onCloseEvent)="retweetUndoDisplay = false"
+    [visible]="displayEditDialog"
+    (onCloseEvent)="displayEditDialog = false"
   >
-  </app-retweet-undo-dialog>
-</div>
+  </app-edit-tweet-dialog>
 
-<app-confirmation-dialog key="deleteTweet"></app-confirmation-dialog>
+  <!-- retweet dialog -->
+
+  <app-retweet-dialog
+    [tweet]="tweet"
+    [currentUser]="currentUser"
+    [visible]="retweetDisplay"
+    (onCloseEvent)="retweetDisplay = false"
+  ></app-retweet-dialog>
+
+  <div *ngIf="tweet.userId === currentUser.id && tweet.type === 'Retweet'">
+    <app-retweet-undo-dialog
+      [tweet]="tweet"
+      [currentUser]="currentUser"
+      [visible]="retweetUndoDisplay"
+      (onCloseEvent)="retweetUndoDisplay = false"
+    >
+    </app-retweet-undo-dialog>
+  </div>
+
+  <app-confirmation-dialog key="deleteTweet"></app-confirmation-dialog>
+</div>

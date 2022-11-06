@@ -1,3 +1,4 @@
+import { ProfileService } from './../../core/services/profile.service';
 import { ToastrService } from 'ngx-toastr';
 import { UserService } from '../../core/services/user.service';
 import { AuthService } from '../../auth/auth.service';
@@ -37,12 +38,13 @@ export class EditProfileComponent implements OnInit {
 
   constructor(
     private authService: AuthService,
+    private profileService: ProfileService,
     private userService: UserService,
     private toastr: ToastrService
   ) {}
 
   ngOnInit(): void {
-    this.authService.user.subscribe((user) => {
+    this.authService.userObservable.subscribe((user) => {
       this.editProfileForm.patchValue({
         ...user!,
         dateOfBirth: new Date(user!.dateOfBirth),
@@ -60,12 +62,8 @@ export class EditProfileComponent implements OnInit {
       })
       .subscribe({
         next: (res) => {
-          this.authService.user.next({
-            ...this.authService.user.value,
-            ...res,
-            followers: this.authService.user.value!.followers,
-            following: this.authService.user.value!.following,
-          });
+          this.authService.setUser(res);
+          this.profileService.setUser(res);
           this.toastr.success('Profile updated successfully');
           this.isUpdating = false;
         },

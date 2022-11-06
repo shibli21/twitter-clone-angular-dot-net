@@ -1,63 +1,65 @@
-<div class="w-full h-[100px]">
-  <section
-    id="bottom-navigation"
-    class="block fixed inset-x-0 bottom-0 z-10 text-slate-700 bg-white shadow"
-  >
-    <div id="tabs" class="flex justify-between">
-      <a
-        class="w-full inline-flex items-center flex-col py-2"
-        (click)="navigateToHomeAndRefresh()"
-        routerLink="/home"
-        routerLinkActive="font-bold"
-      >
-        <app-home-icon [isActive]="isActive('home')"></app-home-icon>
-        <span class="tab tab-home block text-xs">Home</span>
-      </a>
-      <a
-        class="w-full inline-flex items-center flex-col py-2"
-        (click)="navigateToProfileAndRefresh()"
-        routerLink="/profile/{{ user.id }}"
-        routerLinkActive="font-bold"
-        [routerLinkActiveOptions]="{ exact: true }"
-      >
-        <app-profile-icon
-          [isActive]="isMyProfileRouteActive()"
-        ></app-profile-icon>
-        <span class="tab tab-kategori block text-xs">Profile</span>
-      </a>
-      <a
-        class="w-full inline-flex items-center flex-col py-2"
-        [routerLink]="['/notifications']"
-        routerLinkActive="font-bold"
-      >
-        <div
-          pBadge
-          *ngIf="totalUnreadNotifications !== 0"
-          [value]="totalUnreadNotifications.toString()"
+<div *ngIf="user$ | async as user">
+  <div class="w-full h-[100px]">
+    <section
+      id="bottom-navigation"
+      class="block fixed inset-x-0 bottom-0 z-10 text-slate-700 bg-white shadow"
+    >
+      <div id="tabs" class="flex justify-between">
+        <a
+          class="w-full inline-flex items-center flex-col py-2"
+          (click)="navigateToHomeAndRefresh()"
+          routerLink="/home"
+          routerLinkActive="font-bold"
         >
+          <app-home-icon [isActive]="isActive('home')"></app-home-icon>
+          <span class="tab tab-home block text-xs">Home</span>
+        </a>
+        <a
+          class="w-full inline-flex items-center flex-col py-2"
+          (click)="navigateToProfileAndRefresh()"
+          routerLink="/profile/{{ user.id }}"
+          routerLinkActive="font-bold"
+          [routerLinkActiveOptions]="{ exact: true }"
+        >
+          <app-profile-icon
+            [isActive]="isMyProfileRouteActive()"
+          ></app-profile-icon>
+          <span class="tab tab-kategori block text-xs">Profile</span>
+        </a>
+        <a
+          class="w-full inline-flex items-center flex-col py-2"
+          [routerLink]="['/notifications']"
+          routerLinkActive="font-bold"
+        >
+          <div
+            pBadge
+            *ngIf="totalUnreadNotifications !== 0"
+            [value]="totalUnreadNotifications.toString()"
+          >
+            <app-notification-icon
+              [isActive]="isActive('notifications')"
+            ></app-notification-icon>
+          </div>
           <app-notification-icon
+            *ngIf="totalUnreadNotifications === 0"
             [isActive]="isActive('notifications')"
           ></app-notification-icon>
-        </div>
-        <app-notification-icon
-          *ngIf="totalUnreadNotifications === 0"
-          [isActive]="isActive('notifications')"
-        ></app-notification-icon>
-        <span class="tab tab-explore block text-xs">Notification</span>
-      </a>
-      <a
-        class="w-full inline-flex items-center flex-col py-2"
-        (click)="toggleSearchDialog()"
+          <span class="tab tab-explore block text-xs">Notification</span>
+        </a>
+        <a
+          class="w-full inline-flex items-center flex-col py-2"
+          (click)="toggleSearchDialog()"
+        >
+          <app-search-icon></app-search-icon>
+          <span class="tab tab-whishlist block text-xs">Search</span>
+        </a>
+      </div>
+      <button
+        (click)="toggleNewTweetDialog()"
+        class="-top-[70px] right-4 absolute p-4 inline-flex items-center bg-indigo-600 rounded-full hover:bg-indigo-700 active:shadow-lg shadow-lg transition focus:outline-none"
       >
-        <app-search-icon></app-search-icon>
-        <span class="tab tab-whishlist block text-xs">Search</span>
-      </a>
-    </div>
-    <button
-      (click)="toggleNewTweetDialog()"
-      class="-top-[70px] right-4 absolute p-4 inline-flex items-center bg-indigo-600 rounded-full hover:bg-indigo-700 active:shadow-lg shadow-lg transition focus:outline-none"
-    >
-      <app-tweet-icon></app-tweet-icon>
-    </button>
-  </section>
+        <app-tweet-icon></app-tweet-icon>
+      </button>
+    </section>
+  </div>
 </div>
