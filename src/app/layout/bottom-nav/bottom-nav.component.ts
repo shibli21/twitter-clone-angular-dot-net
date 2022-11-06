@@ -1,3 +1,4 @@
+import { TimelineService } from './../../core/services/timeline.service';
 import { Observable, Subject, takeUntil } from 'rxjs';
 import { NotificationService } from './../../core/services/notification.service';
 import { NewTweetService } from './../../core/services/new-tweet.service';
@@ -19,13 +20,17 @@ export class BottomNavComponent implements OnInit {
   totalUnreadNotifications = 0;
   unsubscribe$ = new Subject();
 
+  isLoadingNewsFeed = false;
+  isLoadingUserTimeLine = false;
+
   constructor(
     private authService: AuthService,
     private navService: NavService,
     private searchService: SearchService,
     private newTweetService: NewTweetService,
     private router: Router,
-    private notificationService: NotificationService
+    private notificationService: NotificationService,
+    private timelineService: TimelineService
   ) {}
 
   ngOnDestroy(): void {
@@ -45,14 +50,30 @@ export class BottomNavComponent implements OnInit {
       .subscribe((paginatedNotifications) => {
         this.totalUnreadNotifications = paginatedNotifications.totalUnread;
       });
+
+    this.timelineService.isLoadingNewsFeedObservable
+      .pipe(takeUntil(this.unsubscribe$))
+      .subscribe((isLoading) => {
+        this.isLoadingNewsFeed = isLoading;
+      });
+
+    this.timelineService.isLoadingUserTimelineObservable
+      .pipe(takeUntil(this.unsubscribe$))
+      .subscribe((isLoading) => {
+        this.isLoadingUserTimeLine = isLoading;
+      });
   }
 
   navigateToHomeAndRefresh() {
-    this.navService.refreshHome();
+    if (!this.isLoadingNewsFeed) {
+      this.navService.refreshHome();
+    }
   }
 
   navigateToProfileAndRefresh() {
-    this.navService.refreshProfile();
+    if (!this.isLoadingUserTimeLine) {
+      this.navService.refreshProfile();
+    }
   }
 
   isMyProfileRouteActive() {

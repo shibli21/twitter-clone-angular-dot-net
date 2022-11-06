@@ -1,11 +1,7 @@
-import { Router } from '@angular/router';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Subject, takeUntil } from 'rxjs';
-import {
-  IPaginatedTweets,
-  PaginatedTweets,
-} from './../core/models/tweet.model';
+import { IPaginatedTweets } from './../core/models/tweet.model';
 import { TimelineService } from './../core/services/timeline.service';
-import { Component, OnInit, OnDestroy } from '@angular/core';
 
 @Component({
   selector: 'app-home',
@@ -17,10 +13,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   isLoading = false;
   private unsubscribe$: Subject<any> = new Subject<any>();
 
-  constructor(
-    private timelineService: TimelineService,
-    private router: Router
-  ) {}
+  constructor(private timelineService: TimelineService) {}
 
   ngOnDestroy(): void {
     this.unsubscribe$.next(null);

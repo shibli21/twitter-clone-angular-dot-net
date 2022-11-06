@@ -1,3 +1,4 @@
+import { TimelineService } from './../../core/services/timeline.service';
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { ConfirmationService } from 'primeng/api';
@@ -21,6 +22,8 @@ export class SideNavComponent implements OnInit, OnDestroy {
   display = false;
   totalUnreadNotifications = 0;
   unsubscribe$ = new Subject<any>();
+  isLoadingNewsFeed = false;
+  isLoadingUserTimeLine = false;
 
   constructor(
     private authService: AuthService,
@@ -29,7 +32,8 @@ export class SideNavComponent implements OnInit, OnDestroy {
     private searchService: SearchService,
     private newTweetService: NewTweetService,
     private notificationService: NotificationService,
-    private confirmationService: ConfirmationService
+    private confirmationService: ConfirmationService,
+    private timelineService: TimelineService
   ) {}
 
   ngOnDestroy(): void {
@@ -55,6 +59,18 @@ export class SideNavComponent implements OnInit, OnDestroy {
       .subscribe((isOpen) => {
         this.display = isOpen;
       });
+
+    this.timelineService.isLoadingNewsFeedObservable
+      .pipe(takeUntil(this.unsubscribe$))
+      .subscribe((isLoading) => {
+        this.isLoadingNewsFeed = isLoading;
+      });
+
+    this.timelineService.isLoadingUserTimelineObservable
+      .pipe(takeUntil(this.unsubscribe$))
+      .subscribe((isLoading) => {
+        this.isLoadingUserTimeLine = isLoading;
+      });
   }
 
   toggleSearchDialog() {
@@ -62,11 +78,15 @@ export class SideNavComponent implements OnInit, OnDestroy {
   }
 
   refreshNewsFeed() {
-    this.navService.refreshHome();
+    if (!this.isLoadingNewsFeed) {
+      this.navService.refreshHome();
+    }
   }
 
   navigateToProfileAndRefresh() {
-    this.navService.refreshProfile();
+    if (!this.isLoadingUserTimeLine) {
+      this.navService.refreshProfile();
+    }
   }
 
   isMyProfileRouteActive() {
