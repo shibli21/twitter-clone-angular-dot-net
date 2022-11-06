@@ -1,4 +1,12 @@
 :host ::ng-deep {
+  * {
+    @apply font-poppins;
+  }
+
+  .pi {
+    font-family: "PrimeIcons" !important;
+  }
+
   .p-button {
     @apply px-4 py-1.5 shadow-none text-sm w-full;
   }
