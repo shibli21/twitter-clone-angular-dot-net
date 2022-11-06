@@ -3,7 +3,6 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, catchError, tap, throwError } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { IPaginatedUsers, PaginatedUsers } from '../models/user.model';
-import { AuthService } from './../../auth/auth.service';
 
 @Injectable({
   providedIn: 'root',
@@ -11,17 +10,21 @@ import { AuthService } from './../../auth/auth.service';
 export class FollowService {
   baseUrl = environment.baseUrl;
 
-  followers = new BehaviorSubject<IPaginatedUsers | null>(new PaginatedUsers());
+  private followers = new BehaviorSubject<IPaginatedUsers | null>(
+    new PaginatedUsers()
+  );
   followersObservable = this.followers.asObservable();
-  isLoadingFollowers = new BehaviorSubject<boolean>(false);
+  private isLoadingFollowers = new BehaviorSubject<boolean>(false);
   isLoadingFollowersObservable = this.isLoadingFollowers.asObservable();
 
-  following = new BehaviorSubject<IPaginatedUsers | null>(new PaginatedUsers());
+  private following = new BehaviorSubject<IPaginatedUsers | null>(
+    new PaginatedUsers()
+  );
   followingObservable = this.following.asObservable();
-  isLoadingFollowing = new BehaviorSubject<boolean>(false);
+  private isLoadingFollowing = new BehaviorSubject<boolean>(false);
   isLoadingFollowingObservable = this.isLoadingFollowing.asObservable();
 
-  constructor(private http: HttpClient, private authService: AuthService) {}
+  constructor(private http: HttpClient) {}
 
   followUnfollowUser(id: string) {
     return this.http.post(this.baseUrl + 'follow/' + id, {}).pipe(
