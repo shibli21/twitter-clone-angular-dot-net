@@ -6,74 +6,67 @@ import {
   HttpRequest,
 } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { ToastrService } from 'ngx-toastr';
-import { catchError, Observable, switchMap, throwError } from 'rxjs';
-import { ILoginResponse } from '../core/models/user.model';
+import { BehaviorSubject, Observable, throwError } from 'rxjs';
+import { catchError, filter, switchMap, take } from 'rxjs/operators';
 import { AuthService } from './auth.service';
 
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
-  constructor(
-    private authService: AuthService,
-    private toastr: ToastrService
-  ) {}
+  private isRefreshing = false;
+
+  private refreshTokenSubject: BehaviorSubject<any> = new BehaviorSubject<any>(
+    null
+  );
+
+  constructor(public authService: AuthService) {}
 
   intercept(
-    request: HttpRequest<unknown>,
+    request: HttpRequest<any>,
     next: HttpHandler
-  ): Observable<HttpEvent<unknown>> {
-    request = request.clone({
-      headers: request.headers.set(
-        'Authorization',
-        'Bearer ' + this.authService.jwtToken()
-      ),
-    });
+  ): Observable<HttpEvent<any>> {
+    if (this.authService.getJwtToken()) {
+      request = this.addToken(request, this.authService.getJwtToken());
+    }
 
     return next.handle(request).pipe(
       catchError((error) => {
-        if (
-          error instanceof HttpErrorResponse &&
-          !request.url.includes('login') &&
-          error.status === 401
-        ) {
+        if (error instanceof HttpErrorResponse && error.status === 401) {
           return this.handle401Error(request, next);
-        } else if (error.status == '403') {
-          this.toastr.error(error.error.message);
-          this.authService.logout();
+        } else {
+          return throwError(() => error);
         }
-
-        return throwError(() => error);
       })
     );
   }
 
-  private handle401Error(request: HttpRequest<unknown>, next: HttpHandler) {
-    if (this.authService.isAuthenticated()) {
-      return this.authService.getRefreshToken().pipe(
-        switchMap((response) => {
-          return next.handle(this.addToken(request, response));
-        }),
-        catchError((error) => {
-          if (error.status == '403') {
-            this.authService.logout();
-          }
+  private addToken(request: HttpRequest<any>, token: string) {
+    return request.clone({
+      setHeaders: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+  }
 
-          return throwError(() => error);
+  private handle401Error(request: HttpRequest<any>, next: HttpHandler) {
+    if (!this.isRefreshing) {
+      this.isRefreshing = true;
+      this.refreshTokenSubject.next(null);
+
+      return this.authService.refreshToken().pipe(
+        switchMap((token) => {
+          this.isRefreshing = false;
+          this.refreshTokenSubject.next(token.jwtToken);
+          return next.handle(this.addToken(request, token.jwtToken));
+        })
+      );
+    } else {
+      return this.refreshTokenSubject.pipe(
+        filter((token) => token != null),
+        take(1),
+        switchMap((jwt) => {
+          return next.handle(this.addToken(request, jwt));
         })
       );
     }
-
-    return next.handle(request);
-  }
-
-  addToken(
-    request: HttpRequest<unknown>,
-    response: ILoginResponse
-  ): HttpRequest<any> {
-    return request.clone({
-      setHeaders: {
-        Authorization: `Bearer ${response.jwtToken}`,
-      },
-    });
   }
 }
