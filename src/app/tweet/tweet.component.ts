@@ -1,14 +1,14 @@
-import { ConfirmationService } from 'primeng/api';
-import { IUser } from 'src/app/core/models/user.model';
-import { AuthService } from './../auth/auth.service';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
+import { ConfirmationService } from 'primeng/api';
+import { Observable, Subject, takeUntil } from 'rxjs';
+import { IUser } from 'src/app/core/models/user.model';
 import { ITweet } from '../core/models/tweet.model';
 import { CommentService } from '../core/services/comment.service';
 import { TweetService } from '../core/services/tweet.service';
+import { AuthService } from './../auth/auth.service';
 import { IPaginatedComments } from './../core/models/tweet.model';
-import { RetweetService } from './../core/services/retweet.service';
 
 @Component({
   selector: 'app-tweet',
@@ -16,7 +16,7 @@ import { RetweetService } from './../core/services/retweet.service';
   styleUrls: ['./tweet.component.scss'],
   providers: [ConfirmationService],
 })
-export class TweetComponent implements OnInit {
+export class TweetComponent implements OnInit, OnDestroy {
   display = false;
   retweetDisplay = false;
   retweetUndoDisplay = false;
@@ -25,10 +25,13 @@ export class TweetComponent implements OnInit {
   tweetId = '';
   isCommenting = false;
   isLoading = false;
-  currentUser!: IUser;
+  currentUser$ = new Observable<IUser | null>();
+
   notFound = false;
 
   tweetComments!: IPaginatedComments | null;
+
+  unsubscribe$ = new Subject();
 
   constructor(
     private tweetService: TweetService,
@@ -39,13 +42,17 @@ export class TweetComponent implements OnInit {
     private authService: AuthService,
     private toastr: ToastrService
   ) {}
+  ngOnDestroy(): void {
+    this.unsubscribe$.next(null);
+    this.unsubscribe$.complete();
+  }
 
   ngOnInit() {
     this.isLoading = true;
     this.route.params.subscribe((params) => {
       this.tweetId = params['id'];
 
-      this.commentService.comments.next({
+      this.commentService.setComments({
         comments: [],
         page: 0,
         totalPages: 0,
@@ -66,25 +73,27 @@ export class TweetComponent implements OnInit {
         },
       });
 
-      this.tweetService.tweet.subscribe((res) => {
-        this.tweet = res;
-      });
+      this.tweetService.tweetObservable
+        .pipe(takeUntil(this.unsubscribe$))
+        .subscribe((res) => {
+          this.tweet = res;
+        });
 
-      this.commentService.isLoadingComment.subscribe((isLoading) => {
-        this.isCommenting = isLoading;
-      });
+      this.commentService.isLoadingCommentObservable
+        .pipe(takeUntil(this.unsubscribe$))
+        .subscribe((isLoading) => {
+          this.isCommenting = isLoading;
+        });
 
-      this.commentService.comments.subscribe((tweetComments) => {
-        this.tweetComments = tweetComments;
-      });
+      this.commentService.commentsObservable
+        .pipe(takeUntil(this.unsubscribe$))
+        .subscribe((tweetComments) => {
+          this.tweetComments = tweetComments;
+        });
 
       this.commentService.getTweetComments(this.tweetId);
 
-      this.authService.user.subscribe((user) => {
-        if (user) {
-          this.currentUser = user;
-        }
-      });
+      this.currentUser$ = this.authService.userObservable;
     });
   }
 
@@ -100,7 +109,7 @@ export class TweetComponent implements OnInit {
 
   showRetweetDialog() {
     if (
-      this.tweet?.userId === this.currentUser.id &&
+      this.tweet?.userId === this.authService.userId()! &&
       this.tweet.type === 'Retweet'
     ) {
       this.retweetUndoDisplay = true;
@@ -116,7 +125,7 @@ export class TweetComponent implements OnInit {
       accept: () => {
         this.tweetService.deleteTweet(this.tweetId).subscribe({
           next: (res) => {
-            this.router.navigate(['/profile', this.currentUser.id]);
+            this.router.navigate(['/profile', this.authService.userId()]);
             this.toastr.success('Tweet deleted successfully');
           },
         });

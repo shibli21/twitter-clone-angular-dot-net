@@ -11,14 +11,28 @@ import { IPaginatedTweets, PaginatedTweets } from './../models/tweet.model';
   providedIn: 'root',
 })
 export class SearchService {
-  baseUrl = environment.baseUrl;
-  isSearchingUsers = new BehaviorSubject<boolean>(false);
-  isSearchingTweets = new BehaviorSubject<boolean>(false);
-  searchedUsers = new BehaviorSubject<IPaginatedUsers>(new PaginatedUsers());
-  searchedTweets = new BehaviorSubject<IPaginatedTweets>(new PaginatedTweets());
-  searchQuery = new BehaviorSubject<string>('');
-  tweetSearchQuery = new BehaviorSubject<string>('');
-  isSearchDialogOpen = new BehaviorSubject<boolean>(false);
+  private baseUrl = environment.baseUrl;
+
+  private isSearchingUsers = new BehaviorSubject<boolean>(false);
+  private isSearchingTweets = new BehaviorSubject<boolean>(false);
+  private searchedUsers = new BehaviorSubject<IPaginatedUsers>(
+    new PaginatedUsers()
+  );
+  private searchedTweets = new BehaviorSubject<IPaginatedTweets>(
+    new PaginatedTweets()
+  );
+  private searchQuery = new BehaviorSubject<string>('');
+  private tweetSearchQuery = new BehaviorSubject<string>('');
+  private isSearchDialogOpen = new BehaviorSubject<boolean>(false);
+
+  isSearchingUsersObservable = this.isSearchingUsers.asObservable();
+  isSearchingTweetsObservable = this.isSearchingTweets.asObservable();
+
+  isSearchDialogOpenObservable = this.isSearchDialogOpen.asObservable();
+  searchedUsersObservable = this.searchedUsers.asObservable();
+  searchedTweetsObservable = this.searchedTweets.asObservable();
+  searchQueryObservable = this.searchQuery.asObservable();
+  tweetSearchQueryObservable = this.tweetSearchQuery.asObservable();
 
   constructor(private http: HttpClient, private router: Router) {}
 
@@ -124,5 +138,9 @@ export class SearchService {
 
       this.getSearchUsers();
     }
+  }
+
+  setIsSearchDialogOpen(isOpen: boolean) {
+    this.isSearchDialogOpen.next(isOpen);
   }
 }

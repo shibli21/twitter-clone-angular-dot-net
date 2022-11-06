@@ -1,27 +1,22 @@
-import { FollowService } from './follow.service';
-import { AuthService } from './../../auth/auth.service';
-import { catchError, throwError, BehaviorSubject } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Router } from '@angular/router';
+import { BehaviorSubject, catchError, throwError } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { IUser } from '../models/user.model';
+import { AuthService } from './../../auth/auth.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ProfileService {
-  user = new BehaviorSubject<IUser | null>(null);
-  isUserLoading = new BehaviorSubject<boolean>(false);
+  private user = new BehaviorSubject<IUser | null>(null);
+  public userObservable = this.user.asObservable();
+  private isUserLoading = new BehaviorSubject<boolean>(false);
+  public isUserLoadingObservable = this.isUserLoading.asObservable();
 
   baseUrl = environment.baseUrl;
 
-  constructor(
-    private http: HttpClient,
-    private router: Router,
-    private authService: AuthService,
-    private followService: FollowService
-  ) {}
+  constructor(private http: HttpClient, private authService: AuthService) {}
 
   getUserById(id: string) {
     if (id === this.user.value?.id) {
@@ -68,5 +63,9 @@ export class ProfileService {
           });
       }
     }
+  }
+
+  setUser(user: IUser) {
+    this.user.next(user);
   }
 }

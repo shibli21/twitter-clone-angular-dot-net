@@ -4,19 +4,19 @@
       <div
         class="hidden lg:flex flex-col justify-between bg-indigo-600 lg:p-8 xl:p-12 lg:max-w-sm xl:max-w-lg"
       >
-        <div class="flex items-center justify-start space-x-3">
-          <span class="bg-black rounded-full w-8 h-8"></span>
-          <a [routerLink]="['/home']" class="text-black font-medium text-2xl"
+        <div class="flex items-center justify-start space-x-2">
+          <app-logo fill="fill-black" [size]="10"></app-logo>
+          <a [routerLink]="['/home']" class="font-bold text-black text-3xl"
             >Geeeky</a
           >
         </div>
         <div class="space-y-5">
           <h1
-            class="lg:text-4xl xl:text-5xl xl:leading-1 font-extrabold text-black"
+            class="lg:text-4xl xl:text-5xl xl:leading-1 font-extrabold text-white"
           >
             Enter your account and discover new experiences
           </h1>
-          <p class="text-lg text-gray-50">Already have an account?</p>
+          <p class="text-lg text-black font-medium">Already have an account?</p>
           <button
             class="inline-block flex-none px-6 py-3 rounded font-medium bg-black text-white"
             [routerLink]="['/login']"
@@ -31,9 +31,9 @@
         class="flex flex-1 flex-col items-center justify-center px-4 relative"
       >
         <div class="flex lg:hidden justify-between items-center w-full py-4">
-          <div class="flex items-center justify-start space-x-3">
-            <span class="bg-black rounded-full w-6 h-6"></span>
-            <a [routerLink]="['/home']" class="font-medium text-lg">Geeky</a>
+          <div class="flex items-center justify-start space-x-2">
+            <app-logo fill="fill-indigo-700" [size]="10"></app-logo>
+            <a [routerLink]="['/home']" class="font-bold text-xl">Geeky</a>
           </div>
 
           <a

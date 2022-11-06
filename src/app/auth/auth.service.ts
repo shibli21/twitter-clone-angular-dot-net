@@ -17,9 +17,12 @@ import {
   providedIn: 'root',
 })
 export class AuthService {
-  baseUrl = environment.baseUrl;
-  user = new BehaviorSubject<IUser | null>(null);
-  isLoggingInLoading = new BehaviorSubject<boolean>(false);
+  private baseUrl = environment.baseUrl;
+  private user = new BehaviorSubject<IUser | null>(null);
+  private isLoggingInLoading = new BehaviorSubject<boolean>(false);
+
+  userObservable = this.user.asObservable();
+  isLoggingInLoadingObservable = this.isLoggingInLoading.asObservable();
 
   constructor(
     private http: HttpClient,
@@ -74,14 +77,6 @@ export class AuthService {
     return true;
   }
 
-  isAdmin() {
-    if (!this.user.value) {
-      return false;
-    }
-
-    return this.user.value.role === 'admin';
-  }
-
   userId() {
     return this.user.value?.id;
   }
@@ -90,7 +85,49 @@ export class AuthService {
     return this.user.value;
   }
 
-  jwtToken() {
+  currentUser() {
+    return this.http.get<IUser>(this.baseUrl + 'users/current-user').pipe(
+      tap((user) => {
+        this.user.next(user);
+      }),
+      catchError((err) => {
+        return throwError(() => err);
+      })
+    );
+  }
+
+  logout() {
+    this.http
+      .delete(this.baseUrl + 'auth/logout ', {
+        withCredentials: true,
+      })
+      .subscribe({
+        next: () => {
+          this.user.next(null);
+          localStorage.removeItem('userData');
+          this.router.navigate(['/login']);
+        },
+        error: (err) => {},
+      });
+  }
+
+  autoLogin() {
+    const userAuthData = localStorage.getItem('userData');
+    if (!userAuthData) {
+      return;
+    }
+    const { jwtToken, refreshToken, ...user } = JSON.parse(
+      userAuthData
+    ) as ILoginResponse;
+
+    this.user.next(user);
+
+    this.liveNotificationService.startConnection(user.id).then(() => {
+      this.liveNotificationService.addReceiveNotificationListener();
+    });
+  }
+
+  getJwtToken() {
     const userAuthData = localStorage.getItem('userData');
     if (!userAuthData) {
       return '';
@@ -99,19 +136,7 @@ export class AuthService {
     return jwtToken;
   }
 
-  currentUser() {
-    return this.http.get<IUser>(this.baseUrl + 'users/current-user').pipe(
-      tap((user) => {
-        this.user.next(user);
-      }),
-      catchError((err) => {
-        this.getRefreshToken().subscribe();
-        return throwError(() => err);
-      })
-    );
-  }
-
-  getRefreshToken() {
+  refreshToken() {
     return this.http
       .post<ILoginResponse>(
         this.baseUrl + 'auth/refresh-token',
@@ -124,42 +149,23 @@ export class AuthService {
         tap((loginResponse) => {
           localStorage.setItem('userData', JSON.stringify(loginResponse));
           this.user.next(loginResponse);
+
+          this.liveNotificationService
+            .startConnection(loginResponse.id)
+            .then(() => {
+              this.liveNotificationService.addReceiveNotificationListener();
+            });
         }),
         catchError((error) => {
-          this.logout();
           return throwError(() => error);
         })
       );
   }
 
-  logout() {
-    this.http
-      .delete(this.baseUrl + 'auth/logout', { withCredentials: true })
-      .subscribe({
-        next: () => {
-          this.liveNotificationService.stopConnection();
-          localStorage.clear();
-          this.user.next(null);
-        },
-      })
-      .add(() => {
-        this.router.navigate(['/login']);
-      });
-  }
-
-  autoLogin() {
-    const userAuthData = localStorage.getItem('userData');
-
-    if (userAuthData) {
-      const { id } = JSON.parse(userAuthData) as ILoginResponse;
-
-      this.liveNotificationService.startConnection(id).then(() => {
-        this.liveNotificationService.addReceiveNotificationListener();
-      });
-
-      return this.getRefreshToken().subscribe();
-    }
-
-    return;
+  public setUser(user: IUser) {
+    this.user.next({
+      ...this.user.value,
+      ...user,
+    });
   }
 }

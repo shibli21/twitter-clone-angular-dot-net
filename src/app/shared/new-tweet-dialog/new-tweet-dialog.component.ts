@@ -1,7 +1,8 @@
-import { AuthService } from './../../auth/auth.service';
-import { IUser } from 'src/app/core/models/user.model';
-import { NewTweetService } from './../../core/services/new-tweet.service';
 import { Component, OnInit } from '@angular/core';
+import { Observable, Subject, takeUntil } from 'rxjs';
+import { IUser } from 'src/app/core/models/user.model';
+import { AuthService } from './../../auth/auth.service';
+import { NewTweetService } from './../../core/services/new-tweet.service';
 
 @Component({
   selector: 'app-new-tweet-dialog',
@@ -11,9 +12,11 @@ import { Component, OnInit } from '@angular/core';
 export class NewTweetDialogComponent implements OnInit {
   display = false;
   tweet: string = '';
-  user!: IUser;
+  user$ = new Observable<IUser | null>();
   isLoading = false;
   tweetLimit = 280;
+
+  private unsubscribe$: Subject<any> = new Subject<any>();
 
   constructor(
     private newTweetService: NewTweetService,
@@ -21,19 +24,22 @@ export class NewTweetDialogComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.newTweetService.isTweetDialogOpen.subscribe((isOpen) => {
-      this.display = isOpen;
-    });
+    this.newTweetService.isTweetDialogOpenObservable
+      .pipe(takeUntil(this.unsubscribe$))
+      .subscribe((isOpen) => {
+        this.display = isOpen;
+      });
+    this.user$ = this.authService.userObservable;
 
-    this.authService.user.subscribe((user) => (this.user = user!));
-
-    this.newTweetService.isTweeting.subscribe((isTweeting) => {
-      this.isLoading = isTweeting;
-    });
+    this.newTweetService.isTweetingObservable
+      .pipe(takeUntil(this.unsubscribe$))
+      .subscribe((isTweeting) => {
+        this.isLoading = isTweeting;
+      });
   }
 
   onHide() {
-    this.newTweetService.isTweetDialogOpen.next(false);
+    this.newTweetService.setTweetDialogDisplay(false);
   }
 
   onSubmit() {

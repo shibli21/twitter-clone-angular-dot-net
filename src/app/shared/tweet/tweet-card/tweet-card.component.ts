@@ -1,3 +1,4 @@
+import { Observable } from 'rxjs';
 import { ConfirmationService } from 'primeng/api';
 import { TimelineService } from './../../../core/services/timeline.service';
 import { IUser } from './../../../core/models/user.model';
@@ -24,7 +25,7 @@ export class TweetCardComponent implements OnInit {
   displayEditDialog: boolean = false;
   retweetDisplay = false;
   retweetUndoDisplay = false;
-  currentUser!: IUser;
+  currentUser$ = new Observable<IUser | null>();
 
   constructor(
     private tweetService: TweetService,
@@ -36,11 +37,7 @@ export class TweetCardComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.authService.user.subscribe((res) => {
-      if (res) {
-        this.currentUser = res;
-      }
-    });
+    this.currentUser$ = this.authService.userObservable;
   }
 
   showDialog() {
@@ -53,7 +50,7 @@ export class TweetCardComponent implements OnInit {
 
   showRetweetDialog() {
     if (
-      this.tweet.userId === this.currentUser.id &&
+      this.tweet.userId === this.authService.userId() &&
       this.tweet.type === 'Retweet'
     ) {
       this.retweetUndoDisplay = true;

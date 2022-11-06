@@ -1,5 +1,6 @@
+import { Observable, Subject, takeUntil } from 'rxjs';
 import { Router } from '@angular/router';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
 import { ILoginUser } from '../../core/models/user.model';
@@ -10,17 +11,24 @@ import { AuthService } from './../auth.service';
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss'],
 })
-export class LoginComponent implements OnInit {
+export class LoginComponent implements OnInit, OnDestroy {
   loginForm = new FormGroup({
     email: new FormControl('', [Validators.required, Validators.email]),
     password: new FormControl('', [Validators.required]),
   });
-  isLoading: boolean = false;
+  isLoading = false;
+
+  private unsubscribe$: Subject<any> = new Subject<any>();
 
   constructor(
     private authService: AuthService,
     private toastr: ToastrService
   ) {}
+
+  ngOnDestroy(): void {
+    this.unsubscribe$.next(false);
+    this.unsubscribe$.complete();
+  }
 
   ngOnInit(): void {}
 
@@ -33,16 +41,23 @@ export class LoginComponent implements OnInit {
 
     const { email, password } = this.loginForm.value as ILoginUser;
 
-    this.authService.loginUser({ email, password }).subscribe({
-      error: (error) => {
+    this.authService
+      .loginUser({ email, password })
+      .subscribe({
+        error: (error) => {
+          this.isLoading = false;
+          this.toastr.error(error.error.message);
+        },
+      })
+      .add(() => {
         this.isLoading = false;
-        this.toastr.error(error.error.message);
-      },
-    });
+      });
 
-    this.authService.isLoggingInLoading.subscribe((isLoading) => {
-      this.isLoading = isLoading;
-    });
+    this.authService.isLoggingInLoadingObservable
+      .pipe(takeUntil(this.unsubscribe$))
+      .subscribe((isLoading) => {
+        this.isLoading = isLoading;
+      });
   }
 
   isInvalidTouchedDirty(key: string) {

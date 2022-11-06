@@ -3,16 +3,19 @@ import { ProfileService } from './../../core/services/profile.service';
 import { Router, ActivatedRoute } from '@angular/router';
 import { IUser, PaginatedUsers } from './../../core/models/user.model';
 import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Subject, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'app-follow-list',
   templateUrl: './follow-list.component.html',
   styleUrls: ['./follow-list.component.scss'],
 })
-export class FollowListComponent implements OnInit {
+export class FollowListComponent implements OnInit, OnDestroy {
   user: IUser | null = null;
   activeIndex = 1;
   userId = '';
+
+  unsubscribe$ = new Subject<any>();
 
   constructor(
     private profileService: ProfileService,
@@ -20,11 +23,13 @@ export class FollowListComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router
   ) {}
+  ngOnDestroy(): void {
+    this.unsubscribe$.next(null);
+    this.unsubscribe$.complete();
+    this.followService.clearFollowersAndFollowing();
+  }
 
   ngOnInit(): void {
-    this.followService.followers.next(new PaginatedUsers());
-    this.followService.following.next(new PaginatedUsers());
-
     this.route.params.subscribe((params) => {
       this.userId = params['userId'];
       this.profileService.getUserById(this.userId);
@@ -32,11 +37,13 @@ export class FollowListComponent implements OnInit {
       this.followService.getFollowersByUserId(this.userId);
     });
 
-    this.profileService.user.subscribe((user) => {
-      if (user) {
-        this.user = user;
-      }
-    });
+    this.profileService.userObservable
+      .pipe(takeUntil(this.unsubscribe$))
+      .subscribe((user) => {
+        if (user) {
+          this.user = user;
+        }
+      });
 
     this.route.queryParams.subscribe((params) => {
       this.activeIndex = params['type'] === 'following' ? 1 : 0;

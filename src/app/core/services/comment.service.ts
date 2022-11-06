@@ -1,20 +1,21 @@
-import { Router } from '@angular/router';
-import { TimelineService } from './timeline.service';
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { Router } from '@angular/router';
 import { BehaviorSubject, catchError, tap, throwError } from 'rxjs';
 import { environment } from 'src/environments/environment';
-import { AuthService } from '../../auth/auth.service';
 import { Comment } from '../models/tweet.model';
-import { TweetService } from './tweet.service';
 import { IPaginatedComments } from './../models/tweet.model';
+import { TimelineService } from './timeline.service';
+import { TweetService } from './tweet.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class CommentService {
-  isLoadingComment = new BehaviorSubject<boolean>(false);
-  comments = new BehaviorSubject<IPaginatedComments>({
+  private baseUrl = environment.baseUrl;
+
+  private isLoadingComment = new BehaviorSubject<boolean>(false);
+  private comments = new BehaviorSubject<IPaginatedComments>({
     comments: [],
     lastPage: 0,
     page: 0,
@@ -23,7 +24,8 @@ export class CommentService {
     totalPages: 0,
   });
 
-  baseUrl = environment.baseUrl;
+  isLoadingCommentObservable = this.isLoadingComment.asObservable();
+  commentsObservable = this.comments.asObservable();
 
   constructor(
     private http: HttpClient,
@@ -72,8 +74,7 @@ export class CommentService {
             comments.comments = [comment, ...comments.comments];
             this.comments.next(comments);
           }
-
-          this.tweetService.tweet.getValue()!.commentCount++;
+          this.tweetService.increaseCommentCount();
           return comment;
         }),
         catchError((err) => {
@@ -88,19 +89,19 @@ export class CommentService {
       .pipe(
         tap((comment) => {
           if (this.router.url === '/home') {
-            const newsFeed = this.timelineService.newsFeed.getValue();
+            const newsFeed = this.timelineService.getNewsFeedValue;
             const tweetIndex = newsFeed.tweets.findIndex(
               (tweet) => tweet.id === tweetId
             );
             newsFeed.tweets[tweetIndex].commentCount++;
-            this.timelineService.newsFeed.next(newsFeed);
+            this.timelineService.setNewsFeed(newsFeed);
           } else {
-            const userTimeline = this.timelineService.userTimeline.getValue();
+            const userTimeline = this.timelineService.getUserTimelineValue;
             const tweetIndex = userTimeline.tweets.findIndex(
               (tweet) => tweet.id === tweetId
             );
             userTimeline.tweets[tweetIndex].commentCount++;
-            this.timelineService.userTimeline.next(userTimeline);
+            this.timelineService.setUserTimeline(userTimeline);
           }
           return comment;
         }),
@@ -121,11 +122,15 @@ export class CommentService {
           comments.comments = updatedComments;
           this.comments.next(comments);
         }
-        this.tweetService.tweet.getValue()!.commentCount--;
+        this.tweetService.decreaseCommentCount();
       }),
       catchError((err) => {
         return throwError(() => err);
       })
     );
+  }
+
+  public setComments(comments: IPaginatedComments) {
+    this.comments.next(comments);
   }
 }

@@ -2,18 +2,20 @@ import { IUser } from './../../core/models/user.model';
 import { ToastrService } from 'ngx-toastr';
 import { EditUserService } from './../../core/services/edit-user.service';
 import { AdminService } from './../../core/services/admin.service';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Subject, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'app-users-list',
   templateUrl: './users-list.component.html',
   styleUrls: ['./users-list.component.scss'],
 })
-export class UsersListComponent implements OnInit {
+export class UsersListComponent implements OnInit, OnDestroy {
   page = new Page();
   rows = new Array<IUser>();
   editUserDialog!: boolean;
   editingUser!: IUser;
+  unsubscribe$ = new Subject<any>();
 
   constructor(
     private adminService: AdminService,
@@ -24,15 +26,22 @@ export class UsersListComponent implements OnInit {
     this.page.size = 10;
   }
 
+  ngOnDestroy(): void {
+    this.unsubscribe$.next(false);
+    this.unsubscribe$.complete();
+  }
+
   ngOnInit() {
-    this.editUserService.editingDialog.subscribe({
-      next: (val) => {
-        if (val === false) {
-          this.setPage({ offset: this.page.page });
-        }
-        this.editUserDialog = val;
-      },
-    });
+    this.editUserService.isEditingDialogObservable
+      .pipe(takeUntil(this.unsubscribe$))
+      .subscribe({
+        next: (val) => {
+          if (val === false) {
+            this.setPage({ offset: this.page.page });
+          }
+          this.editUserDialog = val;
+        },
+      });
 
     this.setPage({ offset: 0 });
   }
@@ -59,7 +68,7 @@ export class UsersListComponent implements OnInit {
 
   showEditUseDialog(user: IUser) {
     this.editingUser = user;
-    this.editUserService.editingDialog.next(true);
+    this.editUserService.setEditingDialog(true);
   }
 
   addAdmin(user: IUser) {
@@ -76,7 +85,7 @@ export class UsersListComponent implements OnInit {
   }
 
   closeEditUserDialog() {
-    this.editUserService.editingDialog.next(false);
+    this.editUserService.setEditingDialog(false);
   }
 }
 

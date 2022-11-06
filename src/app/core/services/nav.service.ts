@@ -15,10 +15,11 @@ export class NavService {
   ) {}
 
   refreshHome() {
-    this.router.navigate(['/home']);
     window.scrollTo(0, 0);
-    this.timelineService.newsFeed.next(new PaginatedTweets());
-    this.timelineService.getNewsFeed();
+    if (this.router.url === '/home') {
+      this.timelineService.clearNewsFeed();
+      this.timelineService.getNewsFeed();
+    }
   }
 
   refreshProfile() {

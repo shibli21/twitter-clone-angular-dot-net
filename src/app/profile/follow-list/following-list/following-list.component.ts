@@ -1,3 +1,4 @@
+import { Subject, takeUntil } from 'rxjs';
 import { Component, Input, OnInit, OnDestroy } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { PaginatedUsers } from 'src/app/core/models/user.model';
@@ -9,21 +10,31 @@ import { FollowService } from '../../../core/services/follow.service';
   templateUrl: './following-list.component.html',
   styleUrls: ['./following-list.component.scss'],
 })
-export class FollowingListComponent implements OnInit {
+export class FollowingListComponent implements OnInit, OnDestroy {
   @Input() userId = '';
   following: IPaginatedUsers | null = null;
   isLoadingFollowing = false;
+  private unsubscribe$: Subject<any> = new Subject<any>();
 
   constructor(private followService: FollowService, private router: Router) {}
 
-  ngOnInit(): void {
-    this.followService.following.subscribe((following) => {
-      this.following = following;
-    });
+  ngOnDestroy(): void {
+    this.unsubscribe$.next(null);
+    this.unsubscribe$.complete();
+  }
 
-    this.followService.isLoadingFollowing.subscribe((isLoading) => {
-      this.isLoadingFollowing = isLoading;
-    });
+  ngOnInit(): void {
+    this.followService.followingObservable
+      .pipe(takeUntil(this.unsubscribe$))
+      .subscribe((following) => {
+        this.following = following;
+      });
+
+    this.followService.isLoadingFollowingObservable
+      .pipe(takeUntil(this.unsubscribe$))
+      .subscribe((isLoading) => {
+        this.isLoadingFollowing = isLoading;
+      });
   }
 
   loadMoreFollowing() {

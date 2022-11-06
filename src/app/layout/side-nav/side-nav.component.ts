@@ -1,9 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { TimelineService } from './../../core/services/timeline.service';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { ConfirmationService } from 'primeng/api';
+import { Observable, Subject, takeUntil } from 'rxjs';
 import { IUser } from 'src/app/core/models/user.model';
 import { AuthService } from './../../auth/auth.service';
-import { LiveNotificationService } from './../../core/services/live-notification.service';
 import { NavService } from './../../core/services/nav.service';
 import { NewTweetService } from './../../core/services/new-tweet.service';
 import { NotificationService } from './../../core/services/notification.service';
@@ -15,11 +16,14 @@ import { SearchService } from './../../core/services/search.service';
   styleUrls: ['./side-nav.component.scss'],
   providers: [ConfirmationService],
 })
-export class SideNavComponent implements OnInit {
-  user!: IUser;
+export class SideNavComponent implements OnInit, OnDestroy {
+  user$ = new Observable<IUser | null>();
   searchQuery = '';
   display = false;
   totalUnreadNotifications = 0;
+  unsubscribe$ = new Subject<any>();
+  isLoadingNewsFeed = false;
+  isLoadingUserTimeLine = false;
 
   constructor(
     private authService: AuthService,
@@ -27,42 +31,66 @@ export class SideNavComponent implements OnInit {
     private router: Router,
     private searchService: SearchService,
     private newTweetService: NewTweetService,
-    private liveNotificationService: LiveNotificationService,
     private notificationService: NotificationService,
-    private confirmationService: ConfirmationService
+    private confirmationService: ConfirmationService,
+    private timelineService: TimelineService
   ) {}
+
+  ngOnDestroy(): void {
+    this.unsubscribe$.next(null);
+    this.unsubscribe$.complete();
+  }
 
   ngOnInit(): void {
     if (this.router.url !== '/notifications') {
       this.notificationService.getNotifications();
     }
 
-    this.notificationService.notifications.subscribe(
-      (paginatedNotifications) => {
+    this.notificationService.notificationsObservable
+      .pipe(takeUntil(this.unsubscribe$))
+      .subscribe((paginatedNotifications) => {
         this.totalUnreadNotifications = paginatedNotifications.totalUnread;
-      }
-    );
+      });
 
-    this.authService.user.subscribe((user) => (this.user = user!));
-    this.searchService.isSearchDialogOpen.subscribe((isOpen) => {
-      this.display = isOpen;
-    });
+    this.user$ = this.authService.userObservable;
+
+    this.searchService.isSearchDialogOpenObservable
+      .pipe(takeUntil(this.unsubscribe$))
+      .subscribe((isOpen) => {
+        this.display = isOpen;
+      });
+
+    this.timelineService.isLoadingNewsFeedObservable
+      .pipe(takeUntil(this.unsubscribe$))
+      .subscribe((isLoading) => {
+        this.isLoadingNewsFeed = isLoading;
+      });
+
+    this.timelineService.isLoadingUserTimelineObservable
+      .pipe(takeUntil(this.unsubscribe$))
+      .subscribe((isLoading) => {
+        this.isLoadingUserTimeLine = isLoading;
+      });
   }
 
   toggleSearchDialog() {
     this.searchService.toggleSearchDialog();
   }
 
-  navigateToHomeAndRefresh() {
-    this.navService.refreshHome();
+  refreshNewsFeed() {
+    if (!this.isLoadingNewsFeed) {
+      this.navService.refreshHome();
+    }
   }
 
   navigateToProfileAndRefresh() {
-    this.navService.refreshProfile();
+    if (!this.isLoadingUserTimeLine) {
+      this.navService.refreshProfile();
+    }
   }
 
   isMyProfileRouteActive() {
-    return this.router.url.includes(this.user?.id);
+    return this.router.url.includes(this.authService.userId()!);
   }
 
   isActive(route: string) {
@@ -84,6 +112,6 @@ export class SideNavComponent implements OnInit {
   }
 
   isAdmin() {
-    return this.user?.role === 'admin';
+    return this.authService.currentUserValue()?.role === 'admin';
   }
 }

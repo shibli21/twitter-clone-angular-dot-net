@@ -1,32 +1,46 @@
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { SearchService } from './../../core/services/search.service';
+import { Subject, takeUntil } from 'rxjs';
 import { IPaginatedUsers } from 'src/app/core/models/user.model';
-import { Component, OnInit } from '@angular/core';
+import { SearchService } from './../../core/services/search.service';
 
 @Component({
   selector: 'app-search-users',
   templateUrl: './search-users.component.html',
   styleUrls: ['./search-users.component.scss'],
 })
-export class SearchUsersComponent implements OnInit {
+export class SearchUsersComponent implements OnInit, OnDestroy {
   searchedUsers!: IPaginatedUsers | null;
   searchQuery!: string;
   isLoading = false;
 
+  private unsubscribe$: Subject<any> = new Subject<any>();
+
   constructor(private searchService: SearchService, private router: Router) {}
 
+  ngOnDestroy(): void {
+    this.unsubscribe$.next(null);
+    this.unsubscribe$.complete();
+  }
+
   ngOnInit(): void {
-    this.searchService.searchQuery.subscribe((query) => {
-      this.searchQuery = query;
-    });
+    this.searchService.searchQueryObservable
+      .pipe(takeUntil(this.unsubscribe$))
+      .subscribe((query) => {
+        this.searchQuery = query;
+      });
 
-    this.searchService.isSearchingUsers.subscribe((isLoading) => {
-      this.isLoading = isLoading;
-    });
+    this.searchService.isSearchingUsersObservable
+      .pipe(takeUntil(this.unsubscribe$))
+      .subscribe((isLoading) => {
+        this.isLoading = isLoading;
+      });
 
-    this.searchService.searchedUsers.subscribe((users) => {
-      this.searchedUsers = users;
-    });
+    this.searchService.searchedUsersObservable
+      .pipe(takeUntil(this.unsubscribe$))
+      .subscribe((users) => {
+        this.searchedUsers = users;
+      });
   }
 
   loadMore() {

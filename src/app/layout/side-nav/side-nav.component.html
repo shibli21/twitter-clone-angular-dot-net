@@ -1,84 +1,89 @@
-<div class="">
-  <ul class="px-4 space-y-2">
-    <li class="flex p-4 gap-4 items-center cursor-pointer" [routerLink]="['/']">
-      <div class="icon w-7 h-7 rounded-full bg-slate-800"></div>
-      <div class="font-semibold text-2xl text-slate-800">Geeky</div>
-    </li>
-    <li
-      class="sidenav-item"
-      (click)="navigateToHomeAndRefresh()"
-      [routerLink]="['/home']"
-      routerLinkActive="font-bold"
-    >
-      <app-home-icon [isActive]="isActive('home')"></app-home-icon>
-      <div>Home</div>
-    </li>
-    <li
-      class="sidenav-item"
-      (click)="navigateToProfileAndRefresh()"
-      routerLink="/profile/{{ user.id }}"
-      routerLinkActive="font-bold"
-      [routerLinkActiveOptions]="{ exact: true }"
-    >
-      <app-profile-icon
-        [isActive]="isMyProfileRouteActive()"
-      ></app-profile-icon>
-      <div>Profile</div>
-    </li>
-    <li
-      class="sidenav-item"
-      [routerLink]="['/notifications']"
-      routerLinkActive="font-bold"
-    >
-      <div
-        pBadge
-        *ngIf="totalUnreadNotifications !== 0"
-        [value]="totalUnreadNotifications.toString()"
+<div *ngIf="user$ | async as user">
+  <div class="">
+    <ul class="px-4 space-y-2">
+      <li
+        class="flex p-4 gap-2 items-center cursor-pointer"
+        [routerLink]="['/']"
       >
+        <app-logo fill="fill-indigo-700" [size]="10"></app-logo>
+        <a [routerLink]="['/home']" class="font-bold text-xl">Geeeky</a>
+      </li>
+      <li
+        (click)="refreshNewsFeed()"
+        class="sidenav-item"
+        [routerLink]="['/home']"
+        routerLinkActive="font-bold"
+      >
+        <app-home-icon [isActive]="isActive('home')"></app-home-icon>
+        <div>Home</div>
+      </li>
+      <li
+        class="sidenav-item"
+        (click)="navigateToProfileAndRefresh()"
+        routerLink="/profile/{{ user.id }}"
+        routerLinkActive="font-bold"
+        [routerLinkActiveOptions]="{ exact: true }"
+      >
+        <app-profile-icon
+          [isActive]="isMyProfileRouteActive()"
+        ></app-profile-icon>
+        <div>Profile</div>
+      </li>
+      <li
+        class="sidenav-item"
+        [routerLink]="['/notifications']"
+        routerLinkActive="font-bold"
+      >
+        <div
+          pBadge
+          *ngIf="totalUnreadNotifications !== 0"
+          [value]="totalUnreadNotifications.toString()"
+        >
+          <app-notification-icon
+            [isActive]="isActive('notifications')"
+          ></app-notification-icon>
+        </div>
         <app-notification-icon
+          *ngIf="totalUnreadNotifications === 0"
           [isActive]="isActive('notifications')"
         ></app-notification-icon>
-      </div>
-      <app-notification-icon
-        *ngIf="totalUnreadNotifications === 0"
-        [isActive]="isActive('notifications')"
-      ></app-notification-icon>
-      <div>Notifications</div>
-    </li>
+        <div>Notifications</div>
+      </li>
 
-    <li class="sidenav-item" (click)="toggleSearchDialog()">
-      <app-search-icon></app-search-icon>
-      <div [ngClass]="isActive('search') ? 'label-active' : 'label'">
-        Search
-      </div>
-    </li>
-    <li
-      class="sidenav-item"
-      [routerLink]="['/settings']"
-      routerLinkActive="font-bold"
-      [routerLinkActiveOptions]="{ exact: true }"
-    >
-      <app-settings-icon></app-settings-icon>
-      <div>Settings</div>
-    </li>
-    <li *ngIf="isAdmin()" class="sidenav-item" [routerLink]="['/admin']">
-      <app-admin-icon></app-admin-icon>
-      <div class="label">Admin</div>
-    </li>
-    <li class="sidenav-item" (click)="logout()">
-      <app-logout-icon></app-logout-icon>
-      <div class="label">Logout</div>
-    </li>
-
-    <li class="" (click)="newTweet()">
-      <button
-        class="rounded-full gap-4 mt-6 w-full flex items-center justify-center bg-indigo-600 text-white font-bold py-2 px-4 rounded-ful"
+      <li class="sidenav-item" (click)="toggleSearchDialog()">
+        <app-search-icon></app-search-icon>
+        <div [ngClass]="isActive('search') ? 'label-active' : 'label'">
+          Search
+        </div>
+      </li>
+      <li
+        class="sidenav-item"
+        [routerLink]="['/settings']"
+        routerLinkActive="font-bold"
+        [routerLinkActiveOptions]="{ exact: true }"
       >
-        <app-tweet-icon></app-tweet-icon>
-        <div class="label">Tweet</div>
-      </button>
-    </li>
-  </ul>
-</div>
+        <app-settings-icon></app-settings-icon>
+        <div>Settings</div>
+      </li>
+      <li *ngIf="isAdmin()" class="sidenav-item" [routerLink]="['/admin']">
+        <app-admin-icon></app-admin-icon>
+        <div class="label">Admin</div>
+      </li>
+      <li class="sidenav-item" (click)="logout()">
+        <app-logout-icon></app-logout-icon>
+        <div class="label">Logout</div>
+      </li>
 
-<app-confirmation-dialog key="side-logout"></app-confirmation-dialog>
+      <li class="" (click)="newTweet()">
+        <button
+          class="rounded-full gap-2 mt-6 w-full flex items-center justify-center text-lg bg-indigo-600 text-white py-2 rounded-ful"
+        >
+          <app-tweet-icon></app-tweet-icon>
+          <div class="label">Tweet</div>
+        </button>
+      </li>
+    </ul>
+  </div>
+
+  <app-confirmation-dialog key="side-logout"></app-confirmation-dialog>
+</div>

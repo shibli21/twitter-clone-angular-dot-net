@@ -8,6 +8,7 @@
 @tailwind utilities;
 
 * {
+  font-family: "Poppins", sans-serif !important;
   ::selection {
     @apply bg-indigo-600 text-white;
   }
@@ -19,8 +20,7 @@ html {
 
 html,
 body {
-  font-family: "Poppins";
-  @apply text-slate-800;
+  @apply text-slate-800 font-poppins;
 }
 
 // toast global style
@@ -46,10 +46,18 @@ body {
   overflow: initial !important;
 }
 
+.p-dialog.p-confirm-dialog {
+  font-family: "Poppins", sans-serif;
+}
+
 .p-dialog.p-confirm-dialog .p-confirm-dialog-message {
   margin-left: 0 !important;
 }
 
 .p-dialog .p-dialog-footer button {
-  @apply px-4 py-1.5 shadow-none text-sm w-full;
+  @apply px-4 py-1.5 shadow-none text-sm w-full font-poppins;
+}
+
+.pi {
+  font-family: "PrimeIcons" !important;
 }

@@ -5,6 +5,9 @@ module.exports = {
   content: ["./src/**/*.{html,ts}"],
   theme: {
     extend: {
+      fontFamily: {
+        poppins: ["Poppins", "sans-serif"],
+      },
       boxShadow: {
         inputRed: ["0 0 0 1px #ef4444"],
         input: ["0 0 0 1px #6366f1"],

@@ -16,12 +16,21 @@ import {
   providedIn: 'root',
 })
 export class TimelineService {
-  baseUrl = environment.baseUrl;
-  isLoadingNewsFeed = new BehaviorSubject<boolean>(false);
-  isLoadingUserTimeline = new BehaviorSubject<boolean>(false);
-  newsFeed = new BehaviorSubject<IPaginatedTweets>(new PaginatedTweets());
+  private baseUrl = environment.baseUrl;
 
-  userTimeline = new BehaviorSubject<IPaginatedTweets>(new PaginatedTweets());
+  private isLoadingNewsFeed = new BehaviorSubject<boolean>(false);
+  private isLoadingUserTimeline = new BehaviorSubject<boolean>(false);
+  private newsFeed = new BehaviorSubject<IPaginatedTweets>(
+    new PaginatedTweets()
+  );
+  private userTimeline = new BehaviorSubject<IPaginatedTweets>(
+    new PaginatedTweets()
+  );
+
+  newFeedObservable = this.newsFeed.asObservable();
+  userTimelineObservable = this.userTimeline.asObservable();
+  isLoadingUserTimelineObservable = this.isLoadingUserTimeline.asObservable();
+  isLoadingNewsFeedObservable = this.isLoadingNewsFeed.asObservable();
 
   constructor(private http: HttpClient, private router: Router) {}
 
@@ -33,15 +42,15 @@ export class TimelineService {
         `${this.baseUrl}news-feed?page=${page}&size=${size}`
       )
       .pipe(
-        tap((IPaginatedTweets) => {
+        tap((paginatedTweets) => {
           const newsFeed = this.newsFeed.getValue();
           if (newsFeed) {
-            IPaginatedTweets.tweets = [
+            paginatedTweets.tweets = [
               ...newsFeed.tweets,
-              ...IPaginatedTweets.tweets,
+              ...paginatedTweets.tweets,
             ];
           }
-          this.newsFeed.next(IPaginatedTweets);
+          this.newsFeed.next(paginatedTweets);
           this.isLoadingNewsFeed.next(false);
         })
       )
@@ -140,5 +149,28 @@ export class TimelineService {
       }
       this.userTimeline.next(userTimeline);
     }
+  }
+
+  public clearUserTimeLine() {
+    this.userTimeline.next(new PaginatedTweets());
+  }
+
+  public clearNewsFeed() {
+    this.newsFeed.next(new PaginatedTweets());
+  }
+
+  public setNewsFeed(newsFeed: IPaginatedTweets) {
+    this.newsFeed.next(newsFeed);
+  }
+
+  public setUserTimeline(userTimeline: IPaginatedTweets) {
+    this.userTimeline.next(userTimeline);
+  }
+
+  get getNewsFeedValue() {
+    return this.newsFeed.getValue();
+  }
+  get getUserTimelineValue() {
+    return this.userTimeline.getValue();
   }
 }
