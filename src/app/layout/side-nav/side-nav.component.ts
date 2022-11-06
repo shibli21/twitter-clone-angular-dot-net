@@ -1,11 +1,9 @@
-import { Observable, Subject, takeUntil } from 'rxjs';
-import { TimelineService } from './../../core/services/timeline.service';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { ConfirmationService } from 'primeng/api';
+import { Observable, Subject, takeUntil } from 'rxjs';
 import { IUser } from 'src/app/core/models/user.model';
 import { AuthService } from './../../auth/auth.service';
-import { LiveNotificationService } from './../../core/services/live-notification.service';
 import { NavService } from './../../core/services/nav.service';
 import { NewTweetService } from './../../core/services/new-tweet.service';
 import { NotificationService } from './../../core/services/notification.service';
@@ -17,7 +15,7 @@ import { SearchService } from './../../core/services/search.service';
   styleUrls: ['./side-nav.component.scss'],
   providers: [ConfirmationService],
 })
-export class SideNavComponent implements OnInit {
+export class SideNavComponent implements OnInit, OnDestroy {
   user$ = new Observable<IUser | null>();
   searchQuery = '';
   display = false;
@@ -34,6 +32,11 @@ export class SideNavComponent implements OnInit {
     private confirmationService: ConfirmationService
   ) {}
 
+  ngOnDestroy(): void {
+    this.unsubscribe$.next(null);
+    this.unsubscribe$.complete();
+  }
+
   ngOnInit(): void {
     if (this.router.url !== '/notifications') {
       this.notificationService.getNotifications();
@@ -47,9 +50,11 @@ export class SideNavComponent implements OnInit {
 
     this.user$ = this.authService.userObservable;
 
-    this.searchService.isSearchDialogOpen.subscribe((isOpen) => {
-      this.display = isOpen;
-    });
+    this.searchService.isSearchDialogOpenObservable
+      .pipe(takeUntil(this.unsubscribe$))
+      .subscribe((isOpen) => {
+        this.display = isOpen;
+      });
   }
 
   toggleSearchDialog() {
