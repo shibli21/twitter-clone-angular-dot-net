@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Subject, takeUntil } from 'rxjs';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import {
   Notification,
@@ -10,9 +11,10 @@ import { NotificationService } from './../core/services/notification.service';
   templateUrl: './notifications.component.html',
   styleUrls: ['./notifications.component.scss'],
 })
-export class NotificationsComponent implements OnInit {
+export class NotificationsComponent implements OnInit, OnDestroy {
   paginatedNotifications!: IPaginatedNotifications | null;
   isLoading = false;
+  unsubscribe$ = new Subject();
 
   constructor(
     private notificationService: NotificationService,
@@ -20,11 +22,16 @@ export class NotificationsComponent implements OnInit {
     private router: Router
   ) {}
 
+  ngOnDestroy(): void {
+    this.unsubscribe$.next(null);
+    this.unsubscribe$.complete();
+  }
+
   ngOnInit(): void {
     this.route.data.subscribe((data) => {
-      const prevNot = this.notificationService.notifications.getValue();
+      const prevNot = this.notificationService.notificationValue;
 
-      this.notificationService.notifications.next({
+      this.notificationService.setNotifications({
         notifications: [],
         lastPage: 0,
         page: 0,
@@ -34,19 +41,19 @@ export class NotificationsComponent implements OnInit {
         totalUnread: prevNot.totalUnread,
       });
 
-      this.notificationService.isLoadingNotifications.subscribe((isLoading) => {
-        this.isLoading = isLoading;
-      });
+      this.notificationService.isLoadingNotificationsObservable
+        .pipe(takeUntil(this.unsubscribe$))
+        .subscribe((isLoading) => {
+          this.isLoading = isLoading;
+        });
 
-      this.notificationService.notifications.subscribe(
-        (IPaginatedNotifications) => {
-          this.paginatedNotifications = IPaginatedNotifications;
-        }
-      );
+      this.notificationService.notificationsObservable
+        .pipe(takeUntil(this.unsubscribe$))
+        .subscribe((paginatedNotifications) => {
+          this.paginatedNotifications = paginatedNotifications;
+        });
 
-      this.notificationService.getNotifications(
-        this.paginatedNotifications?.page
-      );
+      this.notificationService.getNotifications();
     });
   }
 

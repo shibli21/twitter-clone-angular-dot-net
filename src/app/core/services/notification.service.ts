@@ -8,8 +8,8 @@ import { environment } from 'src/environments/environment';
   providedIn: 'root',
 })
 export class NotificationService {
-  baseUrl = environment.baseUrl;
-  notifications = new BehaviorSubject<IPaginatedNotifications>({
+  private baseUrl = environment.baseUrl;
+  private notifications = new BehaviorSubject<IPaginatedNotifications>({
     page: 0,
     size: 0,
     totalElements: 0,
@@ -18,7 +18,10 @@ export class NotificationService {
     notifications: [],
     totalUnread: 0,
   });
-  isLoadingNotifications = new BehaviorSubject<boolean>(false);
+  private isLoadingNotifications = new BehaviorSubject<boolean>(false);
+
+  notificationsObservable = this.notifications.asObservable();
+  isLoadingNotificationsObservable = this.isLoadingNotifications.asObservable();
 
   constructor(private http: HttpClient) {}
 
@@ -68,5 +71,13 @@ export class NotificationService {
           return notification;
         })
       );
+  }
+
+  get notificationValue() {
+    return this.notifications.getValue();
+  }
+
+  public setNotifications(value: IPaginatedNotifications) {
+    this.notifications.next(value);
   }
 }

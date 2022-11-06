@@ -1,4 +1,4 @@
-import { Observable } from 'rxjs';
+import { Observable, Subject, takeUntil } from 'rxjs';
 import { TimelineService } from './../../core/services/timeline.service';
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
@@ -22,6 +22,7 @@ export class SideNavComponent implements OnInit {
   searchQuery = '';
   display = false;
   totalUnreadNotifications = 0;
+  unsubscribe$ = new Subject<any>();
 
   constructor(
     private authService: AuthService,
@@ -38,11 +39,11 @@ export class SideNavComponent implements OnInit {
       this.notificationService.getNotifications();
     }
 
-    this.notificationService.notifications.subscribe(
-      (paginatedNotifications) => {
+    this.notificationService.notificationsObservable
+      .pipe(takeUntil(this.unsubscribe$))
+      .subscribe((paginatedNotifications) => {
         this.totalUnreadNotifications = paginatedNotifications.totalUnread;
-      }
-    );
+      });
 
     this.user$ = this.authService.userObservable;
 

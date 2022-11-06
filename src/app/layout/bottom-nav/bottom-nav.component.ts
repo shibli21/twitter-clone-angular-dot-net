@@ -1,4 +1,4 @@
-import { Observable } from 'rxjs';
+import { Observable, Subject, takeUntil } from 'rxjs';
 import { NotificationService } from './../../core/services/notification.service';
 import { NewTweetService } from './../../core/services/new-tweet.service';
 import { SearchService } from './../../core/services/search.service';
@@ -17,6 +17,7 @@ export class BottomNavComponent implements OnInit {
   user$ = new Observable<IUser | null>();
 
   totalUnreadNotifications = 0;
+  unsubscribe$ = new Subject();
 
   constructor(
     private authService: AuthService,
@@ -27,6 +28,11 @@ export class BottomNavComponent implements OnInit {
     private notificationService: NotificationService
   ) {}
 
+  ngOnDestroy(): void {
+    this.unsubscribe$.next(null);
+    this.unsubscribe$.complete();
+  }
+
   ngOnInit(): void {
     this.user$ = this.authService.userObservable;
 
@@ -34,11 +40,11 @@ export class BottomNavComponent implements OnInit {
       this.notificationService.getNotifications();
     }
 
-    this.notificationService.notifications.subscribe(
-      (IPaginatedNotifications) => {
-        this.totalUnreadNotifications = IPaginatedNotifications.totalUnread;
-      }
-    );
+    this.notificationService.notificationsObservable
+      .pipe(takeUntil(this.unsubscribe$))
+      .subscribe((paginatedNotifications) => {
+        this.totalUnreadNotifications = paginatedNotifications.totalUnread;
+      });
   }
 
   navigateToHomeAndRefresh() {
