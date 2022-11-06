@@ -5,7 +5,12 @@ import { Injectable } from '@angular/core';
   providedIn: 'root',
 })
 export class EditUserService {
-  editingDialog = new BehaviorSubject<boolean>(false);
+  private editingDialog = new BehaviorSubject<boolean>(false);
+  isEditingDialogObservable = this.editingDialog.asObservable();
 
   constructor() {}
+
+  public setEditingDialog(val: boolean) {
+    this.editingDialog.next(val);
+  }
 }

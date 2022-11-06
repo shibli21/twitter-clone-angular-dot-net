@@ -2,19 +2,21 @@ import { ToastrService } from 'ngx-toastr';
 import { EditUserService } from './../../core/services/edit-user.service';
 import { AdminService } from './../../core/services/admin.service';
 import { Page } from './../users-list/users-list.component';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { IUser } from 'src/app/core/models/user.model';
+import { Subject, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'app-admins-list',
   templateUrl: './admins-list.component.html',
   styleUrls: ['./admins-list.component.scss'],
 })
-export class AdminsListComponent implements OnInit {
+export class AdminsListComponent implements OnInit, OnDestroy {
   page = new Page();
   rows = new Array<IUser>();
   editUserDialog!: boolean;
   editingUser!: IUser;
+  private unsubscribe$: Subject<any> = new Subject<any>();
 
   constructor(
     private adminService: AdminService,
@@ -24,16 +26,22 @@ export class AdminsListComponent implements OnInit {
     this.page.page = 0;
     this.page.size = 10;
   }
+  ngOnDestroy(): void {
+    this.unsubscribe$.next(null);
+    this.unsubscribe$.complete();
+  }
 
   ngOnInit() {
-    this.editUserService.editingDialog.subscribe({
-      next: (val) => {
-        if (val === false) {
-          this.setPage({ offset: this.page.page });
-        }
-        this.editUserDialog = val;
-      },
-    });
+    this.editUserService.isEditingDialogObservable
+      .pipe(takeUntil(this.unsubscribe$))
+      .subscribe({
+        next: (val) => {
+          if (val === false) {
+            this.setPage({ offset: this.page.page });
+          }
+          this.editUserDialog = val;
+        },
+      });
 
     this.setPage({ offset: 0 });
   }
@@ -60,7 +68,7 @@ export class AdminsListComponent implements OnInit {
 
   showEditUseDialog(user: IUser) {
     this.editingUser = user;
-    this.editUserService.editingDialog.next(true);
+    this.editUserService.setEditingDialog(true);
   }
 
   removeAdmin(user: IUser) {
@@ -71,6 +79,6 @@ export class AdminsListComponent implements OnInit {
   }
 
   closeEditUserDialog() {
-    this.editUserService.editingDialog.next(false);
+    this.editUserService.setEditingDialog(false);
   }
 }

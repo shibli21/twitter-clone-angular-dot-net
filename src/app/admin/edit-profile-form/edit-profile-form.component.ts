@@ -62,7 +62,7 @@ export class EditProfileFormComponent implements OnInit {
         next: (res) => {
           this.toastr.success('Profile updated successfully');
           this.isUpdating = false;
-          this.editUserService.editingDialog.next(false);
+          this.editUserService.setEditingDialog(false);
         },
         error: (err) => {
           this.isUpdating = false;

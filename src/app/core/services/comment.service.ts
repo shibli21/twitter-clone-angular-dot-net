@@ -1,13 +1,12 @@
-import { Router } from '@angular/router';
-import { TimelineService } from './timeline.service';
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { Router } from '@angular/router';
 import { BehaviorSubject, catchError, tap, throwError } from 'rxjs';
 import { environment } from 'src/environments/environment';
-import { AuthService } from '../../auth/auth.service';
 import { Comment } from '../models/tweet.model';
-import { TweetService } from './tweet.service';
 import { IPaginatedComments } from './../models/tweet.model';
+import { TimelineService } from './timeline.service';
+import { TweetService } from './tweet.service';
 
 @Injectable({
   providedIn: 'root',
