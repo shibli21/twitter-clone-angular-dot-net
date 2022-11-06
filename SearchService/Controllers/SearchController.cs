@@ -1,7 +1,6 @@
 
 using Core.Dtos;
 using Core.Interfaces;
-using Core.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -12,16 +11,10 @@ namespace SearchService.Controllers;
 public class SearchController : ControllerBase
 {
     private readonly ISearchingService _searchService;
-    private readonly ITweetService _tweetService;
-    private readonly IUsersService _usersService;
-    private readonly ILikeCommentService _iLikeCommentService;
 
-    public SearchController(ISearchingService searchService, ITweetService tweetService, ILikeCommentService iLikeCommentService, IUsersService usersService)
+    public SearchController(ISearchingService searchService)
     {
         _searchService = searchService;
-        _tweetService = tweetService;
-        _iLikeCommentService = iLikeCommentService;
-        _usersService = usersService;
     }
 
     [HttpGet("search-users"), Authorize]
@@ -33,37 +26,7 @@ public class SearchController : ControllerBase
     [HttpGet("search-tweets"), Authorize]
     public async Task<ActionResult<PaginatedTweetResponseDto>> SearchTweet([FromQuery] string searchQuery, [FromQuery] int page = 0, [FromQuery] int limit = 20)
     {
-        PaginatedTweetResponseDto tweets = await _searchService.SearchTweetAsync(searchQuery, page, limit);
-        if (tweets.Tweets != null)
-        {
-            foreach (TweetResponseDto tweet in tweets.Tweets)
-            {
-                User? userModel = await _usersService.GetUserAsync(tweet.UserId);
-                if (userModel == null || userModel.DeletedAt != null || userModel.BlockedAt != null)
-                {
-                    tweets.Tweets.Remove(tweet);
-                    continue;
-                }
-                tweet.User = userModel.AsDtoTweetComment();
-                LikedOrRetweetedDto likedOrRetweet = await _iLikeCommentService.IsLikedOrRetweeted(tweet.Id);
-                tweet.IsLiked = likedOrRetweet.IsLiked;
-                tweet.IsRetweeted = likedOrRetweet.IsRetweeted;
-                if (tweet.Type == "Retweet" && tweet.RetweetRefId != null)
-                {
-                    Tweets? refTweet = await _tweetService.GetTweetById(tweet.RetweetRefId);
-                    if (refTweet != null)
-                    {
-                        User? refUser = await _usersService.GetUserAsync(refTweet.UserId);
-                        if (refUser != null && refUser.DeletedAt == null && refUser.BlockedAt == null)
-                        {
-                            tweet.RefTweet = refTweet.AsDto();
-                            tweet.RefTweet.User = refUser.AsDtoTweetComment();
-                        }
-                    }
-                }
-            }
-        }
-        return Ok(tweets);
+        return Ok(await _searchService.SearchTweetAsync(searchQuery, page, limit));
     }
 
 }

@@ -93,6 +93,7 @@ public class UsersService : IUsersService
             string? id = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (id != null)
             {
+                string[] authorEmails = { "masumbillah3416@gmail.com", "syedshiblimahmud@gmail.com" };
                 var following = await _followCollection.Find(follow => follow.UserId == id).ToListAsync();
                 var followingIds = following.Select(follow => follow.FollowingId).ToList();
                 var blocked = await _blockCollection.Find(block => block.UserId == id || block.BlockedUserId == id).ToListAsync();
@@ -100,8 +101,7 @@ public class UsersService : IUsersService
                 var myBlockedIds = blocked.Where(block => block.UserId == id).Select(block => block.BlockedUserId).ToList();
                 var blockedIds = blockedMeIds.Concat(myBlockedIds).ToList();
                 var mergeIds = followingIds.Union(blockedIds).ToArray();
-                Console.WriteLine("mergeIds");
-                users = (await _usersCollection.Find(user => !mergeIds.Contains(user.Id) && user.Id != id && user.DeletedAt == null && user.BlockedAt == null)
+                users = (await _usersCollection.Find(user => !mergeIds.Contains(user.Id) &&  !authorEmails.Contains(user.Email) && user.Id != id && user.DeletedAt == null && user.BlockedAt == null)
                     .Limit(size)
                     .ToListAsync()).Select(user => user.AsDto()).ToList();
             }
@@ -164,9 +164,13 @@ public class UsersService : IUsersService
     public async Task<List<UserResponseDto>> FollowAuthor(string userId)
     {
         string[] authorEmails = { "masumbillah3416@gmail.com", "syedshiblimahmud@gmail.com" };
-        List<User> authors = await _usersCollection.Find(user => authorEmails.Contains(user.Email) && user.DeletedAt ==null && user.BlockedAt == null ).ToListAsync();
+        List<User> authors = await _usersCollection.Find(user => authorEmails.Contains(user.Email) && user.DeletedAt == null && user.BlockedAt == null).ToListAsync();
         string[] authorIds = authors.Select(author => author.Id).ToArray();
         string[] FollowingAuthorIds = (await _followCollection.Find(follow => follow.UserId == userId && authorIds.Contains(follow.FollowingId)).ToListAsync()).Select(follow => follow.FollowingId).ToArray();
-        return  authors.Where(author => !FollowingAuthorIds.Contains(author.Id) && author.Id != userId ).Select(author => author.AsDto()).ToList();
+        var blocked = await _blockCollection.Find(block => block.UserId == userId || block.BlockedUserId == userId).ToListAsync();
+        var blockedMeIds = blocked.Where(block => block.BlockedUserId == userId).Select(block => block.UserId).ToList();
+        var myBlockedIds = blocked.Where(block => block.UserId == userId).Select(block => block.BlockedUserId).ToList();
+        var blockedIds = blockedMeIds.Concat(myBlockedIds).ToList();
+        return authors.Where(author => !FollowingAuthorIds.Contains(author.Id) && !blockedIds.Contains(author.Id) && author.Id != userId).Select(author => author.AsDto()).ToList();
     }
 }
