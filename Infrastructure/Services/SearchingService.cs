@@ -16,6 +16,7 @@ namespace Infrastructure.Services
         private readonly IMongoCollection<Blocks> _blockCollection;
         private readonly IMongoCollection<HashTags> _hashTagCollection;
         private readonly IMongoCollection<Tweets> _tweetCollection;
+        private readonly IMongoCollection<LikeRetweets> _likeRetweetCollection;
         private IHttpContextAccessor _httpContextAccessor;
 
         public SearchingService(IOptions<TwitterCloneDbConfig> twitterCloneDatabaseSettings,
@@ -27,6 +28,7 @@ namespace Infrastructure.Services
             _blockCollection = mongoDatabase.GetCollection<Blocks>(twitterCloneDatabaseSettings.Value.BlockCollectionName);
             _hashTagCollection = mongoDatabase.GetCollection<HashTags>(twitterCloneDatabaseSettings.Value.HashTagCollectionName);
             _tweetCollection = mongoDatabase.GetCollection<Tweets>(twitterCloneDatabaseSettings.Value.TweetCollectionName);
+            _likeRetweetCollection = mongoDatabase.GetCollection<LikeRetweets>(twitterCloneDatabaseSettings.Value.LikeRetweetCollectionName);
             _httpContextAccessor = httpContextAccessor;
         }
         public async Task<PaginatedTweetResponseDto> SearchTweetAsync(string searchQuery, int page, int limit)
@@ -36,7 +38,7 @@ namespace Infrastructure.Services
                 string? userId = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
                 if (userId != null)
                 {
-                    var filter = _hashTagCollection.Find(x => x.HashTag.Contains(searchQuery));
+                    var filter = _hashTagCollection.Find(x => x.HashTag.ToLower().Contains(searchQuery.ToLower()));
                     var totalElements = await filter.CountDocumentsAsync();
                     int LastPage = (int)Math.Ceiling((double)totalElements / limit) - 1;
                     LastPage = LastPage < 0 ? 0 : LastPage;
@@ -49,8 +51,8 @@ namespace Infrastructure.Services
                     var blockedIds = blockedMeIds.Concat(myBlockedIds).ToList();
 
                     var tweets = await _tweetCollection.Find(tweet => tweetIds.Contains(tweet.Id) && tweet.DeletedAt == null && !blockedIds.Contains(tweet.UserId)).ToListAsync();
-                    
-                    return new PaginatedTweetResponseDto()
+
+                    PaginatedTweetResponseDto resDto = new PaginatedTweetResponseDto()
                     {
                         TotalElements = totalElements,
                         Page = page,
@@ -59,6 +61,51 @@ namespace Infrastructure.Services
                         TotalPages = LastPage + 1,
                         Tweets = tweets.Select(tweet => tweet.AsDto()).ToList()
                     };
+                    if (resDto.Tweets != null)
+                    {
+                        foreach (TweetResponseDto tweet in resDto.Tweets)
+                        {
+                            User? userModel = await _usersCollection.Find(user => user.Id == tweet.UserId).FirstOrDefaultAsync();
+                            if (userModel == null || userModel.DeletedAt != null || userModel.BlockedAt != null)
+                            {
+                                resDto.Tweets.Remove(tweet);
+                                continue;
+                            }
+                            tweet.User = userModel.AsDtoTweetComment();
+                            LikeRetweets likedOrRetweet = await _likeRetweetCollection.Find(x => x.UserId == userId && x.TweetId == tweet.Id).FirstOrDefaultAsync();
+                            if (likedOrRetweet != null)
+                            {
+                                tweet.IsLiked = likedOrRetweet.IsLiked;
+                                tweet.IsRetweeted = likedOrRetweet.IsRetweeted;
+                            }
+                            else
+                            {
+                                tweet.IsLiked = false;
+                                tweet.IsRetweeted = false;
+                            }
+                            if (tweet.Type == "Retweet" && tweet.RetweetRefId != null)
+                            {
+                                Tweets? refTweet = await _tweetCollection.Find(x => x.Id == tweet.RetweetRefId).FirstOrDefaultAsync();
+                                if (refTweet != null && refTweet.DeletedAt == null)
+                                {
+                                    User? refUser = await _usersCollection.Find(user => user.Id == refTweet.UserId).FirstOrDefaultAsync();
+                                    if (refUser != null && refUser.DeletedAt == null && refUser.BlockedAt == null && !blockedIds.Contains(refUser.Id))
+                                    {
+                                        tweet.RefTweet = refTweet.AsDto();
+                                        tweet.RefTweet.User = refUser.AsDtoTweetComment();
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+
+
+                    return resDto;
+
+
+
+
                 }
             }
             return new PaginatedTweetResponseDto();
@@ -77,11 +124,11 @@ namespace Infrastructure.Services
                     var blockedMeIds = blocked.Where(block => block.BlockedUserId == id).Select(block => block.UserId).ToList();
                     var myBlockedIds = blocked.Where(block => block.UserId == id).Select(block => block.BlockedUserId).ToList();
                     var blockedIds = blockedMeIds.Concat(myBlockedIds).ToList();
-                    var filter = _usersCollection.Find(user => (user.UserName.Contains(searchQuery) || user.FirstName.Contains(searchQuery) || user.LastName.Contains(searchQuery)) && user.Id != id && !blockedIds.Contains(user.Id) && user.DeletedAt == null && user.BlockedAt == null);
+                    var filter = _usersCollection.Find(user => (user.UserName.ToLower().Contains(searchQuery.ToLower()) || user.FirstName.ToLower().Contains(searchQuery.ToLower()) || user.LastName.ToLower().Contains(searchQuery.ToLower())) && user.Id != id && !blockedIds.Contains(user.Id) && user.DeletedAt == null && user.BlockedAt == null);
                     long totalElements = await filter.CountDocumentsAsync();
                     int lastPage = (int)Math.Ceiling((double)totalElements / limit) - 1;
                     lastPage = lastPage < 0 ? 0 : lastPage;
-                    
+
                     int totalPages = lastPage + 1;
                     List<SearchedUserResponseDto> users = (await filter.Skip((page) * limit)
                         .Limit(limit)

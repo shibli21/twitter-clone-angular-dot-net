@@ -81,7 +81,7 @@ namespace TimelineService.Controllers
                     if (tweet.Type == "Retweet" && tweet.RetweetRefId != null)
                     {
                         Tweets? refTweet = await _tweetService.GetTweetById(tweet.RetweetRefId);
-                        if (refTweet != null)
+                        if (refTweet != null && refTweet.DeletedAt ==null )
                         {
                             User? refUser = await _usersService.GetUserAsync(refTweet.UserId);
                             if (refUser != null && refUser.DeletedAt == null && refUser.BlockedAt == null && !blockedIds.Contains(refUser.Id))
@@ -144,7 +144,7 @@ namespace TimelineService.Controllers
                     if (tweet.Type == "Retweet" && tweet.RetweetRefId != null)
                     {
                         Tweets? refTweet = await _tweetService.GetTweetById(tweet.RetweetRefId);
-                        if (refTweet != null)
+                        if (refTweet != null && refTweet.DeletedAt == null)
                         {
                             User? refUser = await _usersService.GetUserAsync(refTweet.UserId);
                             if (refUser != null && refUser.DeletedAt == null && refUser.BlockedAt == null && !blockedIds.Contains(refUser.Id))
@@ -178,7 +178,7 @@ namespace TimelineService.Controllers
                     if (tweet.Type == "Retweet" && tweet.RetweetRefId != null)
                     {
                         Tweets? refTweet = await _tweetService.GetTweetById(tweet.RetweetRefId);
-                        if (refTweet != null)
+                        if (refTweet != null && refTweet.DeletedAt == null)
                         {
                             User? refUser;
                             if (user != null && user.Id == refTweet.UserId)

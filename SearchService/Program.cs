@@ -20,10 +20,7 @@ builder.Services.AddSingleton<IMongoClient>(sp =>
     new MongoClient(builder.Configuration.GetValue<string>("TwitterCloneDatabaseSettings:ConnectionString")));
 
 
-builder.Services.AddSingleton<IUsersService, UsersService>();
 builder.Services.AddSingleton<ISearchingService, SearchingService>();
-builder.Services.AddSingleton<ITweetService, TweetService>();
-builder.Services.AddSingleton<ILikeCommentService, LikeCommentService>();
 
 builder.Services.AddControllers();
 
