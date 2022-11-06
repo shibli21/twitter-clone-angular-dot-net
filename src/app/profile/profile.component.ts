@@ -1,13 +1,14 @@
-import { ProfileService } from './../core/services/profile.service';
-import { tap } from 'rxjs';
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
-import { IPaginatedTweets, PaginatedTweets } from '../core/models/tweet.model';
-import { PaginatedUsers, IUser } from '../core/models/user.model';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
+import { IPaginatedTweets } from '../core/models/tweet.model';
+import { IUser } from '../core/models/user.model';
 import { FollowService } from '../core/services/follow.service';
 import { AuthService } from './../auth/auth.service';
 import { BlockService } from './../core/services/block.service';
+import { ProfileService } from './../core/services/profile.service';
 import { TimelineService } from './../core/services/timeline.service';
 
 @Component({
@@ -25,6 +26,8 @@ export class ProfileComponent implements OnInit, OnDestroy {
   isFollowUnFollowing = false;
   notFound = false;
 
+  private unsubscribe$: Subject<any> = new Subject<any>();
+
   constructor(
     private authService: AuthService,
     private route: ActivatedRoute,
@@ -35,8 +38,13 @@ export class ProfileComponent implements OnInit, OnDestroy {
     private timelineService: TimelineService,
     private profileService: ProfileService
   ) {}
+
   ngOnDestroy(): void {
     this.profileUser = null;
+    this.usersTweets = null;
+    this.unsubscribe$.next(null);
+    this.unsubscribe$.complete();
+    this.timelineService.clearUserTimeLine();
   }
 
   ngOnInit(): void {
@@ -47,23 +55,30 @@ export class ProfileComponent implements OnInit, OnDestroy {
 
       this.profileService.getUserById(this.userId);
 
-      this.profileService.user.subscribe((user) => {
-        this.profileUser = user;
-      });
+      this.profileService.userObservable
+        .pipe(takeUntil(this.unsubscribe$))
+        .subscribe((user) => {
+          this.profileUser = user;
+        });
 
-      this.profileService.isUserLoading.subscribe((isLoading) => {
-        this.isProfileLoading = isLoading;
-      });
+      this.profileService.isUserLoadingObservable
+        .pipe(takeUntil(this.unsubscribe$))
+        .subscribe((isLoading) => {
+          this.isProfileLoading = isLoading;
+        });
 
-      this.timelineService.userTimeline.next(new PaginatedTweets());
+      this.timelineService.isLoadingUserTimelineObservable.subscribe(
+        (isLoading) => {
+          this.isLoading = isLoading;
+        }
+      );
 
-      this.timelineService.isLoadingUserTimeline.subscribe((isLoading) => {
-        this.isLoading = isLoading;
-      });
+      this.timelineService.userTimelineObservable
+        .pipe(takeUntil(this.unsubscribe$))
+        .subscribe((userTweets) => {
+          this.usersTweets = userTweets;
+        });
 
-      this.timelineService.userTimeline.subscribe((userTweets) => {
-        this.usersTweets = userTweets;
-      });
       this.timelineService.getUserTimeline(this.userId, this.usersTweets?.page);
     });
   }

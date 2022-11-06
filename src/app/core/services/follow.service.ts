@@ -12,10 +12,14 @@ export class FollowService {
   baseUrl = environment.baseUrl;
 
   followers = new BehaviorSubject<IPaginatedUsers | null>(new PaginatedUsers());
+  followersObservable = this.followers.asObservable();
   isLoadingFollowers = new BehaviorSubject<boolean>(false);
+  isLoadingFollowersObservable = this.isLoadingFollowers.asObservable();
 
   following = new BehaviorSubject<IPaginatedUsers | null>(new PaginatedUsers());
+  followingObservable = this.following.asObservable();
   isLoadingFollowing = new BehaviorSubject<boolean>(false);
+  isLoadingFollowingObservable = this.isLoadingFollowing.asObservable();
 
   constructor(private http: HttpClient, private authService: AuthService) {}
 
@@ -77,5 +81,10 @@ export class FollowService {
     if (userFollowings && userFollowings.page < userFollowings.totalPages) {
       this.getFollowingByUserId(id, userFollowings.page + 1);
     }
+  }
+
+  clearFollowersAndFollowing() {
+    this.followers.next(new PaginatedUsers());
+    this.following.next(new PaginatedUsers());
   }
 }

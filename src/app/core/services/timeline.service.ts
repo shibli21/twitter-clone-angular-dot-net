@@ -17,11 +17,16 @@ import {
 })
 export class TimelineService {
   baseUrl = environment.baseUrl;
+
   isLoadingNewsFeed = new BehaviorSubject<boolean>(false);
-  isLoadingUserTimeline = new BehaviorSubject<boolean>(false);
+  isLoadingNewsFeedObservable = this.isLoadingNewsFeed.asObservable();
   newsFeed = new BehaviorSubject<IPaginatedTweets>(new PaginatedTweets());
+  newFeedObservable = this.newsFeed.asObservable();
 
   userTimeline = new BehaviorSubject<IPaginatedTweets>(new PaginatedTweets());
+  userTimelineObservable = this.userTimeline.asObservable();
+  isLoadingUserTimeline = new BehaviorSubject<boolean>(false);
+  isLoadingUserTimelineObservable = this.isLoadingUserTimeline.asObservable();
 
   constructor(private http: HttpClient, private router: Router) {}
 
@@ -33,15 +38,15 @@ export class TimelineService {
         `${this.baseUrl}news-feed?page=${page}&size=${size}`
       )
       .pipe(
-        tap((IPaginatedTweets) => {
+        tap((paginatedTweets) => {
           const newsFeed = this.newsFeed.getValue();
           if (newsFeed) {
-            IPaginatedTweets.tweets = [
+            paginatedTweets.tweets = [
               ...newsFeed.tweets,
-              ...IPaginatedTweets.tweets,
+              ...paginatedTweets.tweets,
             ];
           }
-          this.newsFeed.next(IPaginatedTweets);
+          this.newsFeed.next(paginatedTweets);
           this.isLoadingNewsFeed.next(false);
         })
       )
@@ -140,5 +145,13 @@ export class TimelineService {
       }
       this.userTimeline.next(userTimeline);
     }
+  }
+
+  public clearUserTimeLine() {
+    this.userTimeline.next(new PaginatedTweets());
+  }
+
+  public clearNewsFeed() {
+    this.newsFeed.next(new PaginatedTweets());
   }
 }

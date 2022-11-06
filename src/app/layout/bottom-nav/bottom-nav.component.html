@@ -7,6 +7,8 @@
       <a
         class="w-full inline-flex items-center flex-col py-2"
         (click)="navigateToHomeAndRefresh()"
+        routerLink="/home"
+        routerLinkActive="font-bold"
       >
         <app-home-icon [isActive]="isActive('home')"></app-home-icon>
         <span class="tab tab-home block text-xs">Home</span>
@@ -14,6 +16,9 @@
       <a
         class="w-full inline-flex items-center flex-col py-2"
         (click)="navigateToProfileAndRefresh()"
+        routerLink="/profile/{{ user.id }}"
+        routerLinkActive="font-bold"
+        [routerLinkActiveOptions]="{ exact: true }"
       >
         <app-profile-icon
           [isActive]="isMyProfileRouteActive()"
@@ -23,6 +28,7 @@
       <a
         class="w-full inline-flex items-center flex-col py-2"
         [routerLink]="['/notifications']"
+        routerLinkActive="font-bold"
       >
         <div
           pBadge

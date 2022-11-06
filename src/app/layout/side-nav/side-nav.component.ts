@@ -1,3 +1,4 @@
+import { TimelineService } from './../../core/services/timeline.service';
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { ConfirmationService } from 'primeng/api';
@@ -29,7 +30,8 @@ export class SideNavComponent implements OnInit {
     private newTweetService: NewTweetService,
     private liveNotificationService: LiveNotificationService,
     private notificationService: NotificationService,
-    private confirmationService: ConfirmationService
+    private confirmationService: ConfirmationService,
+    private timelineService: TimelineService
   ) {}
 
   ngOnInit(): void {
@@ -53,7 +55,7 @@ export class SideNavComponent implements OnInit {
     this.searchService.toggleSearchDialog();
   }
 
-  navigateToHomeAndRefresh() {
+  refreshNewsFeed() {
     this.navService.refreshHome();
   }
 

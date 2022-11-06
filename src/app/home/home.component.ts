@@ -1,3 +1,5 @@
+import { Router } from '@angular/router';
+import { Subject, takeUntil } from 'rxjs';
 import {
   IPaginatedTweets,
   PaginatedTweets,
@@ -13,22 +15,33 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 export class HomeComponent implements OnInit, OnDestroy {
   newsFeed!: IPaginatedTweets | null;
   isLoading = false;
-  constructor(private timelineService: TimelineService) {}
+  private unsubscribe$: Subject<any> = new Subject<any>();
+
+  constructor(
+    private timelineService: TimelineService,
+    private router: Router
+  ) {}
 
   ngOnDestroy(): void {
-    this.timelineService.newsFeed.next(new PaginatedTweets());
+    this.unsubscribe$.next(null);
+    this.unsubscribe$.complete();
+    this.timelineService.clearNewsFeed();
   }
 
   ngOnInit(): void {
-    this.timelineService.isLoadingNewsFeed.subscribe((isLoading) => {
-      this.isLoading = isLoading;
-    });
+    this.timelineService.isLoadingNewsFeedObservable
+      .pipe(takeUntil(this.unsubscribe$))
+      .subscribe((isLoading) => {
+        this.isLoading = isLoading;
+      });
 
-    this.timelineService.newsFeed.subscribe((newsFeed) => {
-      this.newsFeed = newsFeed;
-    });
+    this.timelineService.newFeedObservable
+      .pipe(takeUntil(this.unsubscribe$))
+      .subscribe((newsFeed) => {
+        this.newsFeed = newsFeed;
+      });
 
-    this.timelineService.getNewsFeed(this.newsFeed?.page);
+    this.timelineService.getNewsFeed();
   }
 
   loadMore() {

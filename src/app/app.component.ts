@@ -1,6 +1,5 @@
-import { Meta, Title } from '@angular/platform-browser';
-import { LiveNotificationService } from './core/services/live-notification.service';
 import { Component } from '@angular/core';
+import { Meta, Title } from '@angular/platform-browser';
 import { AuthService } from './auth/auth.service';
 
 @Component({

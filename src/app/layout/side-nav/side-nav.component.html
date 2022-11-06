@@ -5,8 +5,8 @@
       <div class="font-semibold text-2xl text-slate-800">Geeky</div>
     </li>
     <li
+      (click)="refreshNewsFeed()"
       class="sidenav-item"
-      (click)="navigateToHomeAndRefresh()"
       [routerLink]="['/home']"
       routerLinkActive="font-bold"
     >

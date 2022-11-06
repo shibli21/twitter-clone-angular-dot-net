@@ -11,17 +11,14 @@ import { IUser } from '../models/user.model';
   providedIn: 'root',
 })
 export class ProfileService {
-  user = new BehaviorSubject<IUser | null>(null);
-  isUserLoading = new BehaviorSubject<boolean>(false);
+  private user = new BehaviorSubject<IUser | null>(null);
+  public userObservable = this.user.asObservable();
+  private isUserLoading = new BehaviorSubject<boolean>(false);
+  public isUserLoadingObservable = this.isUserLoading.asObservable();
 
   baseUrl = environment.baseUrl;
 
-  constructor(
-    private http: HttpClient,
-    private router: Router,
-    private authService: AuthService,
-    private followService: FollowService
-  ) {}
+  constructor(private http: HttpClient, private authService: AuthService) {}
 
   getUserById(id: string) {
     if (id === this.user.value?.id) {
