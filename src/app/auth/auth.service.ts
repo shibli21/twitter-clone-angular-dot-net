@@ -17,10 +17,12 @@ import {
   providedIn: 'root',
 })
 export class AuthService {
-  baseUrl = environment.baseUrl;
+  private baseUrl = environment.baseUrl;
   private user = new BehaviorSubject<IUser | null>(null);
+  private isLoggingInLoading = new BehaviorSubject<boolean>(false);
+
   userObservable = this.user.asObservable();
-  isLoggingInLoading = new BehaviorSubject<boolean>(false);
+  isLoggingInLoadingObservable = this.isLoggingInLoading.asObservable();
 
   constructor(
     private http: HttpClient,
