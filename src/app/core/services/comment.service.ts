@@ -12,8 +12,10 @@ import { TweetService } from './tweet.service';
   providedIn: 'root',
 })
 export class CommentService {
-  isLoadingComment = new BehaviorSubject<boolean>(false);
-  comments = new BehaviorSubject<IPaginatedComments>({
+  private baseUrl = environment.baseUrl;
+
+  private isLoadingComment = new BehaviorSubject<boolean>(false);
+  private comments = new BehaviorSubject<IPaginatedComments>({
     comments: [],
     lastPage: 0,
     page: 0,
@@ -22,7 +24,8 @@ export class CommentService {
     totalPages: 0,
   });
 
-  baseUrl = environment.baseUrl;
+  isLoadingCommentObservable = this.isLoadingComment.asObservable();
+  commentsObservable = this.comments.asObservable();
 
   constructor(
     private http: HttpClient,
@@ -125,5 +128,9 @@ export class CommentService {
         return throwError(() => err);
       })
     );
+  }
+
+  public setComments(comments: IPaginatedComments) {
+    this.comments.next(comments);
   }
 }

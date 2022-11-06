@@ -1,15 +1,14 @@
-import { Observable, Subject, takeUntil } from 'rxjs';
-import { ConfirmationService } from 'primeng/api';
-import { IUser } from 'src/app/core/models/user.model';
-import { AuthService } from './../auth/auth.service';
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
+import { ConfirmationService } from 'primeng/api';
+import { Observable, Subject, takeUntil } from 'rxjs';
+import { IUser } from 'src/app/core/models/user.model';
 import { ITweet } from '../core/models/tweet.model';
 import { CommentService } from '../core/services/comment.service';
 import { TweetService } from '../core/services/tweet.service';
+import { AuthService } from './../auth/auth.service';
 import { IPaginatedComments } from './../core/models/tweet.model';
-import { RetweetService } from './../core/services/retweet.service';
 
 @Component({
   selector: 'app-tweet',
@@ -53,7 +52,7 @@ export class TweetComponent implements OnInit, OnDestroy {
     this.route.params.subscribe((params) => {
       this.tweetId = params['id'];
 
-      this.commentService.comments.next({
+      this.commentService.setComments({
         comments: [],
         page: 0,
         totalPages: 0,
@@ -80,13 +79,17 @@ export class TweetComponent implements OnInit, OnDestroy {
           this.tweet = res;
         });
 
-      this.commentService.isLoadingComment.subscribe((isLoading) => {
-        this.isCommenting = isLoading;
-      });
+      this.commentService.isLoadingCommentObservable
+        .pipe(takeUntil(this.unsubscribe$))
+        .subscribe((isLoading) => {
+          this.isCommenting = isLoading;
+        });
 
-      this.commentService.comments.subscribe((tweetComments) => {
-        this.tweetComments = tweetComments;
-      });
+      this.commentService.commentsObservable
+        .pipe(takeUntil(this.unsubscribe$))
+        .subscribe((tweetComments) => {
+          this.tweetComments = tweetComments;
+        });
 
       this.commentService.getTweetComments(this.tweetId);
 
