@@ -38,7 +38,7 @@ export class TweetCommentComponent implements OnInit {
   get isCommentOwner() {
     return (
       this.authService.userId() === this.comment.userId ||
-      this.authService.userId() === this.tweetService.tweet.value?.userId
+      this.authService.userId() === this.tweetService.tweetValue?.userId
     );
   }
 }

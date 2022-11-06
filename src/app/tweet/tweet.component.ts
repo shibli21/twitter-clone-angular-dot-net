@@ -1,8 +1,8 @@
-import { Observable } from 'rxjs';
+import { Observable, Subject, takeUntil } from 'rxjs';
 import { ConfirmationService } from 'primeng/api';
 import { IUser } from 'src/app/core/models/user.model';
 import { AuthService } from './../auth/auth.service';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { ITweet } from '../core/models/tweet.model';
@@ -17,7 +17,7 @@ import { RetweetService } from './../core/services/retweet.service';
   styleUrls: ['./tweet.component.scss'],
   providers: [ConfirmationService],
 })
-export class TweetComponent implements OnInit {
+export class TweetComponent implements OnInit, OnDestroy {
   display = false;
   retweetDisplay = false;
   retweetUndoDisplay = false;
@@ -32,6 +32,8 @@ export class TweetComponent implements OnInit {
 
   tweetComments!: IPaginatedComments | null;
 
+  unsubscribe$ = new Subject();
+
   constructor(
     private tweetService: TweetService,
     private confirmationService: ConfirmationService,
@@ -41,6 +43,10 @@ export class TweetComponent implements OnInit {
     private authService: AuthService,
     private toastr: ToastrService
   ) {}
+  ngOnDestroy(): void {
+    this.unsubscribe$.next(null);
+    this.unsubscribe$.complete();
+  }
 
   ngOnInit() {
     this.isLoading = true;
@@ -68,9 +74,11 @@ export class TweetComponent implements OnInit {
         },
       });
 
-      this.tweetService.tweet.subscribe((res) => {
-        this.tweet = res;
-      });
+      this.tweetService.tweetObservable
+        .pipe(takeUntil(this.unsubscribe$))
+        .subscribe((res) => {
+          this.tweet = res;
+        });
 
       this.commentService.isLoadingComment.subscribe((isLoading) => {
         this.isCommenting = isLoading;

@@ -71,8 +71,7 @@ export class CommentService {
             comments.comments = [comment, ...comments.comments];
             this.comments.next(comments);
           }
-
-          this.tweetService.tweet.getValue()!.commentCount++;
+          this.tweetService.increaseCommentCount();
           return comment;
         }),
         catchError((err) => {
@@ -120,7 +119,7 @@ export class CommentService {
           comments.comments = updatedComments;
           this.comments.next(comments);
         }
-        this.tweetService.tweet.getValue()!.commentCount--;
+        this.tweetService.decreaseCommentCount();
       }),
       catchError((err) => {
         return throwError(() => err);

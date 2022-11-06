@@ -1,16 +1,16 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Router } from '@angular/router';
 import { BehaviorSubject, catchError, tap, throwError } from 'rxjs';
-import { ITweet } from '../models/tweet.model';
 import { environment } from '../../../environments/environment';
+import { ITweet } from '../models/tweet.model';
 
 @Injectable({
   providedIn: 'root',
 })
 export class TweetService {
   private baseUrl = environment.baseUrl;
-  tweet = new BehaviorSubject<ITweet | null>(null);
+  private tweet = new BehaviorSubject<ITweet | null>(null);
+  tweetObservable = this.tweet.asObservable();
 
   constructor(private http: HttpClient) {}
 
@@ -106,5 +106,25 @@ export class TweetService {
       tweet.retweetCount++;
       this.tweet.next(tweet);
     }
+  }
+
+  increaseCommentCount() {
+    const tweet = this.tweet.value;
+    if (tweet) {
+      tweet.commentCount++;
+      this.tweet.next(tweet);
+    }
+  }
+
+  decreaseCommentCount() {
+    const tweet = this.tweet.value;
+    if (tweet) {
+      tweet.commentCount--;
+      this.tweet.next(tweet);
+    }
+  }
+
+  get tweetValue() {
+    return this.tweet.value;
   }
 }
