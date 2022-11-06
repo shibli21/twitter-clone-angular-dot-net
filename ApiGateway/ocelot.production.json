@@ -113,11 +113,11 @@
             ]
         },
         {
-            "UpstreamPathTemplate": "/api2/block/by-user/{id}",
+            "UpstreamPathTemplate": "/block/by-user/{id}",
             "UpstreamHttpMethod": [
                 "Post"
             ],
-            "DownstreamPathTemplate": "/block/by-user/{id}",
+            "DownstreamPathTemplate": "/api2/block/by-user/{id}",
             "DownstreamScheme": "http",
             "DownstreamHostAndPorts": [
                 {
@@ -299,7 +299,7 @@
             "UpstreamHttpMethod": [
                 "Get"
             ],
-            "DownstreamPathTemplate": "/users/follow-author",
+            "DownstreamPathTemplate": "/api2/users/follow-author",
             "DownstreamScheme": "http",
             "DownstreamHostAndPorts": [
                 {
