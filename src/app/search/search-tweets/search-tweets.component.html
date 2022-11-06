@@ -20,6 +20,14 @@
   </div>
 </div>
 
+<div
+  *ngIf="
+    searchedTweets && searchedTweets.tweets.length === 0 && tweetSearchQuery
+  "
+>
+  <h1 class="text-lg text-center">No tweets found!!</h1>
+</div>
+
 <div class="mt-2 space-y-2" *ngIf="isLoading">
   <div>
     <app-tweet-card-skeleton></app-tweet-card-skeleton>
