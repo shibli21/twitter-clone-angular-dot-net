@@ -27,10 +27,10 @@ export class BlockUserCardComponent implements OnInit {
     this.blockService.blockUserByUser(userId).subscribe({
       next: () => {
         this.toastr.success('User unblocked successfully');
-        const oldUsers = this.blockService.blockedUsers.value;
+        const oldUsers = this.blockService.blockedUsersValue;
 
         if (oldUsers) {
-          this.blockService.blockedUsers.next({
+          this.blockService.setBlockedUsers({
             ...oldUsers,
             users: oldUsers.users?.filter((user) => user.id !== userId),
           });
