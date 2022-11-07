@@ -8,6 +8,7 @@ import { SharedModule } from './../shared/shared.module';
 import { SettingsRoutingModule } from './settings-routing.module';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { ChangePasswordComponent } from './change-password/change-password.component';
 
 @NgModule({
   declarations: [
@@ -15,6 +16,7 @@ import { CommonModule } from '@angular/common';
     EditProfileComponent,
     BlockListComponent,
     BlockUserCardComponent,
+    ChangePasswordComponent,
   ],
   imports: [
     CommonModule,

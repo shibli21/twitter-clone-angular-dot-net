@@ -27,7 +27,25 @@ export class PasswordService {
       })
       .pipe(
         catchError((err) => {
-          return throwError(err);
+          return throwError(() => err);
+        })
+      );
+  }
+
+  changePassword(
+    oldPassword: string,
+    newPassword: string,
+    confirmPassword: string
+  ) {
+    return this.httpClient
+      .post(this.baseUrl + 'auth/change-password', {
+        confirmPassword,
+        newPassword,
+        oldPassword,
+      })
+      .pipe(
+        catchError((err) => {
+          return throwError(() => err);
         })
       );
   }

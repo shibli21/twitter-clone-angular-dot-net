@@ -25,6 +25,7 @@ import { BlockIconComponent } from './block-icon/block-icon.component';
 import { EditProfileIconComponent } from './edit-profile-icon/edit-profile-icon.component';
 import { AdminIconComponent } from './admin-icon/admin-icon.component';
 import { LogoComponent } from './logo/logo.component';
+import { ChangePasswordIconComponent } from './change-password-icon/change-password-icon.component';
 
 const icons = {
   IconCamera,
@@ -51,6 +52,7 @@ const icons = {
     EditProfileIconComponent,
     AdminIconComponent,
     LogoComponent,
+    ChangePasswordIconComponent,
   ],
   imports: [CommonModule, TablerIconsModule.pick(icons)],
   exports: [
@@ -68,6 +70,7 @@ const icons = {
     BlockIconComponent,
     LogoComponent,
     AdminIconComponent,
+    ChangePasswordIconComponent,
   ],
 })
 export class IconsModule {}

@@ -3,21 +3,29 @@
 <ul class="divide-y" *ngIf="user$ | async as user">
   <li
     [routerLink]="['/settings/edit', user.id]"
-    class="px-4 md:px-8 py-4 flex gap-4 items-center cursor-pointer hover:bg-gray-100"
+    class="px-4 md:px-8 py-4 flex gap-4 items-center cursor-pointer hover:bg-gray-100 transition"
   >
     <app-edit-profile-icon></app-edit-profile-icon>
     <a>Edit Profile</a>
   </li>
   <li
+    routerLink="/settings/change-password"
+    class="px-4 md:px-8 py-4 flex gap-4 items-center cursor-pointer hover:bg-gray-100 transition"
+  >
+    <app-change-password-icon></app-change-password-icon>
+    <a>Change Password</a>
+  </li>
+  <li
     routerLink="/settings/block/users"
-    class="px-4 md:px-8 py-4 flex gap-4 items-center cursor-pointer hover:bg-gray-100"
+    class="px-4 md:px-8 py-4 flex gap-4 items-center cursor-pointer hover:bg-gray-100 transition"
   >
     <app-block-icon></app-block-icon>
     <a>Block List</a>
   </li>
+
   <li
     routerLink="/notifications"
-    class="px-4 md:px-8 py-4 flex gap-4 items-center cursor-pointer hover:bg-gray-100"
+    class="px-4 md:px-8 py-4 flex gap-4 items-center cursor-pointer hover:bg-gray-100 transition"
   >
     <app-notification-icon [isActive]="false"></app-notification-icon>
     <a>Notifications</a>

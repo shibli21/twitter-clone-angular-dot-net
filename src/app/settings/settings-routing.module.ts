@@ -1,3 +1,4 @@
+import { ChangePasswordComponent } from './change-password/change-password.component';
 import { SettingsComponent } from './settings.component';
 import { BlockListComponent } from './block-list/block-list.component';
 import { EditProfileComponent } from './edit-profile/edit-profile.component';
@@ -16,6 +17,10 @@ const routes: Routes = [
   {
     path: 'block/users',
     component: BlockListComponent,
+  },
+  {
+    path: 'change-password',
+    component: ChangePasswordComponent,
   },
 ];
 
