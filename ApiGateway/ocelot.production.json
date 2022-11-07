@@ -281,6 +281,20 @@
             ]
         },
         {
+            "UpstreamPathTemplate": "/auth/change-password",
+            "UpstreamHttpMethod": [
+                "Post"
+            ],
+            "DownstreamPathTemplate": "/api2/auth/change-password",
+            "DownstreamScheme": "http",
+            "DownstreamHostAndPorts": [
+                {
+                    "Host": "noobmasters.learnathon.net",
+                    "Port": 80
+                }
+            ]
+        },
+        {
             "UpstreamPathTemplate": "/users/current-user",
             "UpstreamHttpMethod": [
                 "Post"

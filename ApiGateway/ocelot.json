@@ -281,6 +281,20 @@
       ]
     },
     {
+      "UpstreamPathTemplate": "/auth/change-password",
+      "UpstreamHttpMethod": [
+        "Post"
+      ],
+      "DownstreamPathTemplate": "/auth/change-password",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5211
+        }
+      ]
+    },
+    {
       "UpstreamPathTemplate": "/users/current-user",
       "UpstreamHttpMethod": [
         "Post"
