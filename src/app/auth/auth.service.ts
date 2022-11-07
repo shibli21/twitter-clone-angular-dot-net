@@ -103,6 +103,7 @@ export class AuthService {
       })
       .subscribe({
         next: () => {
+          this.liveNotificationService.stopConnection();
           this.user.next(null);
           localStorage.removeItem('userData');
           this.router.navigate(['/login']);
