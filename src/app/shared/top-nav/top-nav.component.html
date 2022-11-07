@@ -1,16 +1,16 @@
 <ng-container *ngIf="user$ | async as user">
   <div
     [ngClass]="showBackButton ? 'pl-2' : 'pl-4'"
-    class="w-full pr-4 py-4 sticky flex gap-2 items-center top-0 backdrop-blur-lg z-50"
+    class="w-full pr-4 py-3 sticky flex gap-2 items-center top-0 backdrop-blur-lg z-50"
   >
     <a
       *ngIf="!showBackButton"
       type="button"
-      class="rounded-full block sm:hidden overflow-hidden"
+      class="block sm:hidden"
       (click)="toggleSidebar()"
     >
       <img
-        class="h-[36px] w-[36px] object-cover"
+        class="rounded-full h-[38px] w-[38px] object-cover border-2"
         [src]="
           user.profilePictureUrl
             ? user.profilePictureUrl
@@ -58,11 +58,14 @@
   >
     <ng-template pTemplate="content">
       <div class="flex py-4 mb-2 items-center justify-between">
-        <h1 class="font-bold">Account info</h1>
+        <div class="flex items-center justify-start space-x-2">
+          <app-logo fill="fill-indigo-700" [size]="2"></app-logo>
+          <a [routerLink]="['/home']" class="font-bold text-xl">Geeky</a>
+        </div>
         <i class="pi pi-times mr-2" (click)="toggleSidebar()"></i>
       </div>
       <img
-        class="h-[50px] w-[50px] object-cover rounded-full"
+        class="h-[50px] w-[50px] object-cover rounded-full border-2"
         [src]="
           user.profilePictureUrl
             ? user.profilePictureUrl

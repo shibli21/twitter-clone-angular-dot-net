@@ -7,13 +7,13 @@ import { Component, Input, OnInit } from '@angular/core';
 })
 export class LogoComponent implements OnInit {
   @Input() fill = 'fill-indigo-700';
-  @Input() size = 10;
+  @Input() size = 2.5;
 
   constructor() {}
 
   ngOnInit(): void {}
 
-  get sizeClass() {
-    return `w-${this.size} h-${this.size}`;
+  get sizeStyle() {
+    return `width: ${this.size}rem; height: ${this.size}rem`;
   }
 }

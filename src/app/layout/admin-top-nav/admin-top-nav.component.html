@@ -6,16 +6,12 @@
       class="md:hidden flex gap-2 items-center cursor-pointer"
       [routerLink]="['/']"
     >
-      <app-logo fill="fill-indigo-700" [size]="10"></app-logo>
+      <app-logo fill="fill-indigo-700" [size]="2"></app-logo>
       <a [routerLink]="['/home']" class="font-bold text-xl">Geeky</a>
     </div>
-    <a
-      type="button"
-      class="rounded-full overflow-hidden block"
-      (click)="toggleSidebar()"
-    >
+    <a type="button" class="block" (click)="toggleSidebar()">
       <img
-        class="h-[36px] w-[36px] object-cover"
+        class="h-[38px] w-[38px] rounded-full border-2 object-cover"
         [src]="
           user.profilePictureUrl
             ? user.profilePictureUrl
@@ -35,11 +31,14 @@
   >
     <ng-template pTemplate="content">
       <div class="flex py-4 mb-2 items-center justify-between">
-        <h1 class="font-bold">Account info</h1>
+        <div class="flex items-center justify-start space-x-2">
+          <app-logo fill="fill-indigo-700" [size]="2"></app-logo>
+          <a [routerLink]="['/home']" class="font-bold text-xl">Geeky</a>
+        </div>
         <i class="pi pi-times mr-2" (click)="toggleSidebar()"></i>
       </div>
       <img
-        class="h-[50px] w-[50px] object-cover rounded-full"
+        class="h-[50px] w-[50px] object-cover border-2 rounded-full"
         [src]="
           user.profilePictureUrl
             ? user.profilePictureUrl

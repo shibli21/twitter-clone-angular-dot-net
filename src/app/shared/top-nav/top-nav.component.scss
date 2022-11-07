@@ -13,4 +13,8 @@
   .p-sidebar-header {
     @apply hidden;
   }
+
+  .p-sidebar-content {
+    @apply bg-gray-50 flex flex-col h-full;
+  }
 }
