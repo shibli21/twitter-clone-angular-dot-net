@@ -65,7 +65,14 @@ export class ProfileService {
     }
   }
 
-  setUser(user: IUser) {
-    this.user.next(user);
+  public setUser(user: IUser | null) {
+    if (user) {
+      this.user.next({
+        ...this.user.value,
+        ...user,
+      });
+    } else {
+      this.user.next(null);
+    }
   }
 }
