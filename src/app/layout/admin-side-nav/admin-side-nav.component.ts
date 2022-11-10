@@ -1,5 +1,5 @@
+import { AuthService } from './../../core/services/auth.service';
 import { Router } from '@angular/router';
-import { AuthService } from './../../auth/auth.service';
 import { ConfirmationService } from 'primeng/api';
 import { Component, OnInit } from '@angular/core';
 

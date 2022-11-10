@@ -1,8 +1,7 @@
-import { AuthService } from './../../auth/auth.service';
-import { TimelineService } from './timeline.service';
-import { Router } from '@angular/router';
 import { Injectable } from '@angular/core';
-import { PaginatedTweets } from '../models/tweet.model';
+import { Router } from '@angular/router';
+import { AuthService } from './auth.service';
+import { TimelineService } from './timeline.service';
 
 @Injectable({
   providedIn: 'root',

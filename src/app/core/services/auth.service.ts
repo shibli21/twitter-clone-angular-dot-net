@@ -1,17 +1,17 @@
+import { ToastrService } from 'ngx-toastr';
+import {
+  IRegisterUser,
+  ILoginUser,
+  ILoginResponse,
+} from './../models/user.model';
+import { LiveNotificationService } from './live-notification.service';
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { environment } from 'src/environments/environment';
-import { LiveNotificationService } from './../core/services/live-notification.service';
 
 import { BehaviorSubject, catchError, tap, throwError } from 'rxjs';
-
-import {
-  ILoginResponse,
-  ILoginUser,
-  IRegisterUser,
-  IUser,
-} from '../core/models/user.model';
+import { IUser } from '../models/user.model';
 
 @Injectable({
   providedIn: 'root',
@@ -27,7 +27,8 @@ export class AuthService {
   constructor(
     private http: HttpClient,
     private router: Router,
-    private liveNotificationService: LiveNotificationService
+    private liveNotificationService: LiveNotificationService,
+    private toastr: ToastrService
   ) {}
 
   registerUser(registerUser: IRegisterUser) {
@@ -128,6 +129,13 @@ export class AuthService {
     });
   }
 
+  sessionExpired() {
+    this.liveNotificationService.stopConnection();
+    this.user.next(null);
+    localStorage.clear();
+    this.router.navigate(['/login']);
+  }
+
   getJwtToken() {
     const userAuthData = localStorage.getItem('userData');
     if (!userAuthData) {
@@ -163,10 +171,14 @@ export class AuthService {
       );
   }
 
-  public setUser(user: IUser) {
-    this.user.next({
-      ...this.user.value,
-      ...user,
-    });
+  public setUser(user: IUser | null) {
+    if (user) {
+      this.user.next({
+        ...this.user.value,
+        ...user,
+      });
+    } else {
+      this.user.next(null);
+    }
   }
 }

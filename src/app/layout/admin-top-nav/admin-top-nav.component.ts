@@ -1,7 +1,7 @@
+import { AuthService } from './../../core/services/auth.service';
 import { Observable } from 'rxjs';
 import { Router } from '@angular/router';
 import { ConfirmationService } from 'primeng/api';
-import { AuthService } from './../../auth/auth.service';
 import { IUser } from 'src/app/core/models/user.model';
 import { Component, OnInit } from '@angular/core';
 

@@ -1,9 +1,7 @@
-import { AuthService } from './../../../auth/auth.service';
-import { UserService } from './../../../core/services/user.service';
-import { ToastrService } from 'ngx-toastr';
-import { FormGroup, FormControl, Validators } from '@angular/forms';
-import { TweetService } from '../../../core/services/tweet.service';
 import { Component, OnInit } from '@angular/core';
+import { ToastrService } from 'ngx-toastr';
+import { TweetService } from '../../../core/services/tweet.service';
+import { AuthService } from './../../../core/services/auth.service';
 
 @Component({
   selector: 'app-new-tweet',

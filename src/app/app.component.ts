@@ -1,6 +1,6 @@
+import { AuthService } from './core/services/auth.service';
 import { Component } from '@angular/core';
 import { Meta, Title } from '@angular/platform-browser';
-import { AuthService } from './auth/auth.service';
 
 @Component({
   selector: 'app-root',

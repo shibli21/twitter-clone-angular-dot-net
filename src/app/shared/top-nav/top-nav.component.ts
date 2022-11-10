@@ -1,9 +1,9 @@
+import { AuthService } from './../../core/services/auth.service';
 import { Location } from '@angular/common';
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { ConfirmationService } from 'primeng/api';
 import { Observable, Subject, takeUntil } from 'rxjs';
 import { IUser } from 'src/app/core/models/user.model';
-import { AuthService } from './../../auth/auth.service';
 import { NavService } from './../../core/services/nav.service';
 import { SearchService } from './../../core/services/search.service';
 

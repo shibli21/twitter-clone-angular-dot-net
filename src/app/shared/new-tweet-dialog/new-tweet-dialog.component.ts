@@ -1,7 +1,7 @@
+import { AuthService } from './../../core/services/auth.service';
 import { Component, OnInit } from '@angular/core';
 import { Observable, Subject, takeUntil } from 'rxjs';
 import { IUser } from 'src/app/core/models/user.model';
-import { AuthService } from './../../auth/auth.service';
 import { NewTweetService } from './../../core/services/new-tweet.service';
 
 @Component({

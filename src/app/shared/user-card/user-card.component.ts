@@ -1,7 +1,7 @@
-import { AuthService } from './../../auth/auth.service';
-import { FollowService } from './../../core/services/follow.service';
-import { IUser } from 'src/app/core/models/user.model';
 import { Component, Input, OnInit } from '@angular/core';
+import { IUser } from 'src/app/core/models/user.model';
+import { AuthService } from './../../core/services/auth.service';
+import { FollowService } from './../../core/services/follow.service';
 
 @Component({
   selector: 'app-user-card',

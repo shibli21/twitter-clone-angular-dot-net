@@ -1,3 +1,4 @@
+import { AuthService } from './../core/services/auth.service';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
@@ -7,7 +8,6 @@ import { IUser } from 'src/app/core/models/user.model';
 import { ITweet } from '../core/models/tweet.model';
 import { CommentService } from '../core/services/comment.service';
 import { TweetService } from '../core/services/tweet.service';
-import { AuthService } from './../auth/auth.service';
 import { IPaginatedComments } from './../core/models/tweet.model';
 
 @Component({

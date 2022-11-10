@@ -1,10 +1,10 @@
+import { AuthService } from './../../core/services/auth.service';
 import { Observable, Subject, takeUntil } from 'rxjs';
 import { Router } from '@angular/router';
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
 import { ILoginUser } from '../../core/models/user.model';
-import { AuthService } from './../auth.service';
 
 @Component({
   selector: 'app-login',

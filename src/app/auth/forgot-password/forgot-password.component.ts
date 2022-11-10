@@ -1,7 +1,7 @@
+import { PasswordService } from './../../core/services/password.service';
 import { Router } from '@angular/router';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
-import { PasswordService } from './../password.service';
 import { Component, OnInit } from '@angular/core';
 import { environment } from 'src/environments/environment';
 

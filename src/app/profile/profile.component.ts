@@ -6,7 +6,7 @@ import { takeUntil } from 'rxjs/operators';
 import { IPaginatedTweets } from '../core/models/tweet.model';
 import { IUser } from '../core/models/user.model';
 import { FollowService } from '../core/services/follow.service';
-import { AuthService } from './../auth/auth.service';
+import { AuthService } from './../core/services/auth.service';
 import { BlockService } from './../core/services/block.service';
 import { ProfileService } from './../core/services/profile.service';
 import { TimelineService } from './../core/services/timeline.service';

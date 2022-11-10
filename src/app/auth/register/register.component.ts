@@ -1,3 +1,4 @@
+import { AuthService } from './../../core/services/auth.service';
 import { IRegisterUser } from '../../core/models/user.model';
 import { Router } from '@angular/router';
 import { Component, OnInit } from '@angular/core';
@@ -8,7 +9,6 @@ import {
   ValidatorFn,
   Validators,
 } from '@angular/forms';
-import { AuthService } from '../auth.service';
 import { ToastrService } from 'ngx-toastr';
 
 @Component({

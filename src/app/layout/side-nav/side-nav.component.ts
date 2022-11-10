@@ -1,10 +1,10 @@
+import { AuthService } from './../../core/services/auth.service';
 import { TimelineService } from './../../core/services/timeline.service';
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { ConfirmationService } from 'primeng/api';
 import { Observable, Subject, takeUntil } from 'rxjs';
 import { IUser } from 'src/app/core/models/user.model';
-import { AuthService } from './../../auth/auth.service';
 import { NavService } from './../../core/services/nav.service';
 import { NewTweetService } from './../../core/services/new-tweet.service';
 import { NotificationService } from './../../core/services/notification.service';

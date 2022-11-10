@@ -1,5 +1,5 @@
+import { PasswordService } from './../../core/services/password.service';
 import { ToastrService } from 'ngx-toastr';
-import { PasswordService } from './../../auth/password.service';
 import { ActivatedRoute } from '@angular/router';
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';

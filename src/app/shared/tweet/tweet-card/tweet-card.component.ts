@@ -1,3 +1,4 @@
+import { AuthService } from './../../../core/services/auth.service';
 import { Observable } from 'rxjs';
 import { ConfirmationService } from 'primeng/api';
 import { TimelineService } from './../../../core/services/timeline.service';
@@ -7,7 +8,6 @@ import { ToastrService } from 'ngx-toastr';
 import { ITweet } from 'src/app/core/models/tweet.model';
 import { CommentService } from '../../../core/services/comment.service';
 import { TweetService } from '../../../core/services/tweet.service';
-import { AuthService } from './../../../auth/auth.service';
 
 @Component({
   selector: 'app-tweet-card',

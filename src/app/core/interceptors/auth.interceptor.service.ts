@@ -1,3 +1,5 @@
+import { ToastrService } from 'ngx-toastr';
+import { AuthService } from './../services/auth.service';
 import {
   HttpErrorResponse,
   HttpEvent,
@@ -8,7 +10,6 @@ import {
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, throwError } from 'rxjs';
 import { catchError, filter, switchMap, take } from 'rxjs/operators';
-import { AuthService } from './auth.service';
 
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
@@ -18,7 +19,7 @@ export class AuthInterceptor implements HttpInterceptor {
     null
   );
 
-  constructor(public authService: AuthService) {}
+  constructor(public authService: AuthService, private toastr: ToastrService) {}
 
   intercept(
     request: HttpRequest<any>,
@@ -32,6 +33,10 @@ export class AuthInterceptor implements HttpInterceptor {
       catchError((error) => {
         if (error instanceof HttpErrorResponse && error.status === 401) {
           return this.handle401Error(request, next);
+        } else if (error instanceof HttpErrorResponse && error.status === 403) {
+          this.toastr.error(error.error.message);
+          this.authService.sessionExpired();
+          return throwError(() => error);
         } else {
           return throwError(() => error);
         }
@@ -60,6 +65,9 @@ export class AuthInterceptor implements HttpInterceptor {
         })
       );
     } else {
+      this.isRefreshing = false;
+      this.authService.sessionExpired();
+      this.toastr.error('You session has expired. Please login again.');
       return this.refreshTokenSubject.pipe(
         filter((token) => token != null),
         take(1),

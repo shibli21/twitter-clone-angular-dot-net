@@ -1,3 +1,4 @@
+import { AuthService } from './../../core/services/auth.service';
 import { TimelineService } from './../../core/services/timeline.service';
 import { Observable, Subject, takeUntil } from 'rxjs';
 import { NotificationService } from './../../core/services/notification.service';
@@ -6,7 +7,6 @@ import { SearchService } from './../../core/services/search.service';
 import { Router } from '@angular/router';
 import { NavService } from './../../core/services/nav.service';
 import { IUser } from './../../core/models/user.model';
-import { AuthService } from './../../auth/auth.service';
 import { Component, OnInit } from '@angular/core';
 
 @Component({

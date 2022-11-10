@@ -1,6 +1,6 @@
+import { AuthService } from './../../core/services/auth.service';
 import { TweetService } from './../../core/services/tweet.service';
 import { ConfirmationService } from 'primeng/api';
-import { AuthService } from './../../auth/auth.service';
 import { Component, Input, OnInit } from '@angular/core';
 import { Comment } from 'src/app/core/models/tweet.model';
 import { CommentService } from '../../core/services/comment.service';

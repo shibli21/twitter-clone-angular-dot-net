@@ -18,6 +18,8 @@ export interface ILoginResponse extends IUser {
   jwtToken: string;
   refreshToken: string;
   jwtExpiresIn: number;
+  jwtExpiresAt: Date;
+  refreshTokenExpiresAt: Date;
   refreshTokenExpiresIn: number;
 }
 
