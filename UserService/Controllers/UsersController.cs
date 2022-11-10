@@ -82,7 +82,7 @@ public class UsersController : ControllerBase
 
 
     [HttpPut("edit"), Authorize]
-    public async Task<ActionResult<UserResponseDto?>> UpdateUser(UserEditDto userEditDto)
+    public async Task<ActionResult<UserEditResponseDto?>> UpdateUser(UserEditDto userEditDto)
     {
         if (_httpContextAccessor.HttpContext != null)
         {
@@ -123,7 +123,7 @@ public class UsersController : ControllerBase
             await _bus.Publish(cacheNotificationConsumerDto);
 
             // RabbitMQ Publish end
-            return Ok(user.AsDto());
+            return Ok(user.AsDtoEdit());
         }
         else
         {
