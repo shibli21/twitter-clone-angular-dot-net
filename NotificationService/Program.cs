@@ -9,11 +9,10 @@ using Microsoft.AspNetCore.Http.Connections;
 using MongoDB.Driver;
 using NotificationService.Consumers;
 using NotificationService.Hubs;
-using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Host.UseSerilog((ctx, lc) => lc.WriteTo.Console());
+builder.Services.AddCustomSerilog(builder.Environment);
 
 builder.Services.Configure<TwitterCloneDbConfig>(
     builder.Configuration.GetSection("TwitterCloneDatabaseSettings")

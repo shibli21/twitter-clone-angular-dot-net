@@ -6,11 +6,10 @@ using Infrastructure.Middlewares;
 using Infrastructure.Services;
 using JWTAuthenticationManager;
 using MongoDB.Driver;
-using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Host.UseSerilog((ctx, lc) => lc.WriteTo.Console());
+builder.Services.AddCustomSerilog(builder.Environment);
 
 builder.Services.Configure<TwitterCloneDbConfig>(
     builder.Configuration.GetSection("TwitterCloneDatabaseSettings")
