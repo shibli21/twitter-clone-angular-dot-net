@@ -62,13 +62,21 @@ export class NotificationsComponent implements OnInit, OnDestroy {
   }
 
   markAsRead(notification: Notification) {
-    this.notificationService.markAsRead(notification.id).subscribe((res) => {
+    if (notification.isRead) {
       if (notification.type === 'Follow') {
         this.router.navigate(['/profile', notification.refUserId]);
       } else {
         this.router.navigate(['/tweet', notification.tweetId]);
       }
-    });
+    } else {
+      this.notificationService.markAsRead(notification.id).subscribe((res) => {
+        if (notification.type === 'Follow') {
+          this.router.navigate(['/profile', notification.refUserId]);
+        } else {
+          this.router.navigate(['/tweet', notification.tweetId]);
+        }
+      });
+    }
   }
 
   getNotificationTypeIcon(type: string) {
