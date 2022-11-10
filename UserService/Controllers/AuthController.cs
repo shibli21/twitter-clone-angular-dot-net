@@ -69,7 +69,7 @@ public class AuthController : ControllerBase
         if (userFromDb.DeletedAt != null)
             return BadRequest(new { field = "email", message = "User is deleted" });
         if (userFromDb.BlockedAt != null)
-            return BadRequest(new { field = "email", message = "User is blocked" });
+            return StatusCode(403, new { field = "user", message = "User is blocked" });
 
         var refreshTokenString = Request.Cookies["refreshToken"];
         RefreshToken refreshToken = this.CreateRefreshToken(userFromDb);
@@ -163,7 +163,7 @@ public class AuthController : ControllerBase
         if (user.DeletedAt != null)
             return BadRequest(new { field = "email", message = "User is deleted" });
         if (user.BlockedAt != null)
-            return BadRequest(new { field = "email", message = "User is blocked" });
+            return StatusCode(403, new { field = "user", message = "User is blocked" });
         string token = this.CreatePasswordResetToken();
         await _forgotPasswordService.StoreResetPasswordTokenAsync(user, token);
         MailDto mailDto = new MailDto
@@ -186,7 +186,7 @@ public class AuthController : ControllerBase
         if (user.DeletedAt != null)
             return BadRequest(new { field = "token", message = "User is deleted" });
         if (user.BlockedAt != null)
-            return BadRequest(new { field = "token", message = "User is blocked" });
+            return StatusCode(403, new { field = "user", message = "User is blocked" });
         user.Password = this.CreatePasswordHash(resetPasswordDto.Password);
         await _usersService.UpdateGetUserAsync(user.Id, user);
         await _forgotPasswordService.DeleteResetPasswordTokenAsync(resetPasswordDto.Token);
@@ -214,7 +214,7 @@ public class AuthController : ControllerBase
         if (userFromDb == null)
             return Unauthorized(new { field = "refreshToken", message = "User not found." });
         if (userFromDb.BlockedAt != null)
-            return Unauthorized(new { field = "refreshToken", message = "User is blocked." });
+            return StatusCode(403, new { field = "user", message = "User is blocked" });
 
 
         RefreshToken refreshToken = this.CreateRefreshToken(userFromDb);
