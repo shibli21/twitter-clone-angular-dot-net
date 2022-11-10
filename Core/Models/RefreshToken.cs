@@ -19,6 +19,7 @@ public class RefreshToken
     public DateTime Created { get; set; } = DateTime.Now;
 
     [BsonElement("expires")]
+    [BsonDateTimeOptions(Kind = DateTimeKind.Local)]
     public DateTime Expires { get; set; }
 
 }
