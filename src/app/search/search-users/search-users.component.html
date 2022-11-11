@@ -15,7 +15,14 @@
     </div>
   </div>
 
-  <div *ngIf="searchedUsers && searchedUsers.users.length === 0 && searchQuery">
+  <div
+    *ngIf="
+      !isLoading &&
+      searchedUsers &&
+      searchedUsers.users.length === 0 &&
+      searchQuery
+    "
+  >
     <h1 class="text-lg text-center">No users found!!</h1>
   </div>
 

@@ -22,7 +22,10 @@
 
 <div
   *ngIf="
-    searchedTweets && searchedTweets.tweets.length === 0 && tweetSearchQuery
+    !isLoading &&
+    searchedTweets &&
+    searchedTweets.tweets.length === 0 &&
+    tweetSearchQuery
   "
 >
   <h1 class="text-lg text-center">No tweets found!!</h1>
