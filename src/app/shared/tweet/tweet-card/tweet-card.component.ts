@@ -22,6 +22,7 @@ export class TweetCardComponent implements OnInit {
   comment = '';
   isCommenting = false;
   display: boolean = false;
+  deleteLoading: boolean = false;
   displayEditDialog: boolean = false;
   retweetDisplay = false;
   retweetUndoDisplay = false;
@@ -86,12 +87,18 @@ export class TweetCardComponent implements OnInit {
       key: 'deleteTweet',
       message: 'Are you sure that you want to delete?',
       accept: () => {
+        this.deleteLoading = true;
         this.tweetService.deleteTweet(this.tweet.id).subscribe({
           next: (res) => {
             this.toastr.success('Tweet deleted successfully');
             this.timelineService.updateProfileTimelineAfterDelete(
               this.tweet.id
             );
+            this.deleteLoading = false;
+          },
+          error: (err) => {
+            this.toastr.error('Error deleting tweet');
+            this.deleteLoading = false;
           },
         });
       },

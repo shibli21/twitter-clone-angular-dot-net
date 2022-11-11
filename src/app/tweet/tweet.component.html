@@ -36,6 +36,7 @@
                 type="button"
                 icon="pi pi-trash"
                 class="p-button-danger p-button-sm p-button-text"
+                [loading]="deleteLoading"
                 (click)="deleteTweet()"
               ></button>
             </div>

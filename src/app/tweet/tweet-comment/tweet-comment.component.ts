@@ -13,6 +13,7 @@ import { CommentService } from '../../core/services/comment.service';
 })
 export class TweetCommentComponent implements OnInit {
   @Input() comment!: Comment;
+  deleteLoading = false;
 
   constructor(
     private commentService: CommentService,
@@ -28,9 +29,15 @@ export class TweetCommentComponent implements OnInit {
       key: 'deleteComment',
       message: 'Are you sure that you want to delete?',
       accept: () => {
-        this.commentService
-          .deleteComment(this.comment.id)
-          .subscribe((res) => {});
+        this.deleteLoading = true;
+        this.commentService.deleteComment(this.comment.id).subscribe({
+          next: (res) => {
+            this.deleteLoading = false;
+          },
+          error: (err) => {
+            this.deleteLoading = false;
+          },
+        });
       },
     });
   }

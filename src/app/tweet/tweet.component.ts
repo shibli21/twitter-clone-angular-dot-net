@@ -20,6 +20,7 @@ export class TweetComponent implements OnInit, OnDestroy {
   display = false;
   retweetDisplay = false;
   retweetUndoDisplay = false;
+  deleteLoading = false;
   tweet!: ITweet | null;
   comment = '';
   tweetId = '';
@@ -123,10 +124,16 @@ export class TweetComponent implements OnInit, OnDestroy {
       key: 'deleteSingleTweet',
       message: 'Are you sure that you want to delete?',
       accept: () => {
+        this.deleteLoading = true;
         this.tweetService.deleteTweet(this.tweetId).subscribe({
           next: (res) => {
             this.router.navigate(['/profile', this.authService.userId()]);
             this.toastr.success('Tweet deleted successfully');
+            this.deleteLoading = false;
+          },
+          error: (err) => {
+            this.toastr.error('Error deleting tweet');
+            this.deleteLoading = false;
           },
         });
       },
