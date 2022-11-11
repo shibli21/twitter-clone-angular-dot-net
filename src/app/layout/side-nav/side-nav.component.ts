@@ -42,10 +42,6 @@ export class SideNavComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    if (this.router.url !== '/notifications') {
-      this.notificationService.getNotifications();
-    }
-
     this.notificationService.notificationsObservable
       .pipe(takeUntil(this.unsubscribe$))
       .subscribe((paginatedNotifications) => {

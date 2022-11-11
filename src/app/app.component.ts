@@ -1,3 +1,5 @@
+import { NotificationService } from './core/services/notification.service';
+import { Router } from '@angular/router';
 import { AuthService } from './core/services/auth.service';
 import { Component } from '@angular/core';
 import { Meta, Title } from '@angular/platform-browser';
@@ -11,7 +13,9 @@ export class AppComponent {
   constructor(
     private authService: AuthService,
     private meta: Meta,
-    private title: Title
+    private title: Title,
+    private router: Router,
+    private notificationService: NotificationService
   ) {}
 
   ngOnInit(): void {
@@ -29,5 +33,9 @@ export class AppComponent {
     this.title.setTitle('Geeky - Twitter Clone');
 
     this.authService.autoLogin();
+
+    if (this.router.url !== '/notifications') {
+      this.notificationService.getNotifications();
+    }
   }
 }
