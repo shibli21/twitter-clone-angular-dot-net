@@ -32,6 +32,17 @@ export class AuthInterceptor implements HttpInterceptor {
     return next.handle(request).pipe(
       catchError((error) => {
         if (error instanceof HttpErrorResponse && error.status === 401) {
+          if (
+            error.error !== null &&
+            error.error.field &&
+            error.error.field === 'refreshToken'
+          ) {
+            this.toastr.error('You session has expired. Please login again.');
+            this.authService.sessionExpired();
+            this.isRefreshing = false;
+            return throwError(() => error);
+          }
+
           return this.handle401Error(request, next);
         } else if (error instanceof HttpErrorResponse && error.status === 403) {
           this.toastr.error(error.error.message);
@@ -65,9 +76,6 @@ export class AuthInterceptor implements HttpInterceptor {
         })
       );
     } else {
-      this.isRefreshing = false;
-      this.authService.sessionExpired();
-      this.toastr.error('You session has expired. Please login again.');
       return this.refreshTokenSubject.pipe(
         filter((token) => token != null),
         take(1),
