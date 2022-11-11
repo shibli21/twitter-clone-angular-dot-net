@@ -98,6 +98,10 @@ export class AuthService {
   }
 
   logout() {
+    this.toastr.info('Logging out...', 'Info', {
+      disableTimeOut: true,
+    });
+
     this.http
       .delete(this.baseUrl + 'auth/logout ', {
         withCredentials: true,
@@ -108,8 +112,11 @@ export class AuthService {
           this.user.next(null);
           localStorage.removeItem('userData');
           this.router.navigate(['/login']);
+          this.toastr.clear();
         },
-        error: (err) => {},
+        error: (err) => {
+          this.toastr.clear();
+        },
       });
   }
 
