@@ -15,7 +15,9 @@ export class TweetService {
   constructor(private http: HttpClient) {}
 
   createTweet(tweetText: string) {
-    const hashTags = tweetText.match(/#\w+/g);
+    //remove html tags
+    const tweetTextWithOutHtmlTag = tweetText.replace(/(<([^>]+)>)/gi, '');
+    const hashTags = tweetTextWithOutHtmlTag.match(/#\w+/g);
 
     return this.http
       .post<ITweet>(this.baseUrl + 'tweet/create', {
