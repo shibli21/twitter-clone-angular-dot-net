@@ -15,16 +15,30 @@ public class UsersController : ControllerBase
     private readonly IUsersService _usersService;
     private readonly IBlockService _blockService;
     private readonly IFollowerService _followerService;
-    private readonly IHttpContextAccessor _httpContextAccessor;
-    private readonly IBus _bus;
+    private readonly IPhotoService _photoService;
 
-    public UsersController(IUsersService usersService, IHttpContextAccessor httpContextAccessor, IFollowerService followerService, IBus bus, IBlockService blockService)
+    private readonly IHttpContextAccessor _httpContextAccessor;
+
+    private readonly IBus _bus;
+    private readonly IWebHostEnvironment _env;
+
+
+    public UsersController(
+        IUsersService usersService,
+        IHttpContextAccessor httpContextAccessor,
+        IFollowerService followerService,
+        IBus bus,
+        IWebHostEnvironment env,
+        IBlockService blockService,
+        IPhotoService photoService)
     {
+        _photoService = photoService;
         _usersService = usersService;
         _httpContextAccessor = httpContextAccessor;
         _followerService = followerService;
         _bus = bus;
         _blockService = blockService;
+        _env = env;
     }
 
     [HttpGet("{id}"), Authorize]
@@ -82,8 +96,9 @@ public class UsersController : ControllerBase
 
 
     [HttpPut("edit"), Authorize]
-    public async Task<ActionResult<UserEditResponseDto?>> UpdateUser(UserEditDto userEditDto)
+    public async Task<ActionResult<UserEditResponseDto?>> UpdateUser([FromForm] UserEditDto userEditDto)
     {
+
         if (_httpContextAccessor.HttpContext != null)
         {
             User? user = await _usersService.GetUserAsync(userEditDto.Id);
@@ -93,23 +108,37 @@ public class UsersController : ControllerBase
             }
             string? id = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             string role = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.Role)?.Value ?? "";
+
             if (id != user.Id && role != "admin")
             {
                 return Unauthorized();
             }
-            
+
+            if (userEditDto.ProfilePicture != null)
+            {
+
+                PhotoUploadResult img = await _photoService.AddPhotoAsync(userEditDto.ProfilePicture);
+                user.ProfilePictureUrl = img.Url;
+
+            }
+
+            if (userEditDto.CoverPicture != null)
+            {
+                PhotoUploadResult img = await _photoService.AddPhotoAsync(userEditDto.CoverPicture, 1000, 1000);
+                user.CoverPictureUrl = img.Url;
+            }
 
             user.UserName = userEditDto.UserName;
             user.Email = userEditDto.Email;
             user.FirstName = userEditDto.FirstName;
             user.LastName = userEditDto.LastName;
-            user.ProfilePictureUrl = userEditDto.ProfilePictureUrl;
-            user.CoverPictureUrl = userEditDto.CoverPictureUrl;
             user.Gender = userEditDto.Gender;
             user.DateOfBirth = userEditDto.DateOfBirth;
             user.UpdatedAt = DateTime.Now;
             user.Bio = userEditDto.Bio;
             user.Address = userEditDto.Address;
+
+            Console.WriteLine(user.CoverPictureUrl);
 
             await _usersService.UpdateGetUserAsync(user.Id, user);
             // RabbitMQ Publish start

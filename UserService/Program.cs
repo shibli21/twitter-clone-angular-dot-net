@@ -34,6 +34,7 @@ builder.Services.AddSingleton<IFollowerService, FollowService>();
 builder.Services.AddSingleton<IBlockService, BlockService>();
 builder.Services.AddSingleton<IForgotPasswordService, ForgotPasswordService>();
 builder.Services.AddSingleton<IAdminService, AdminService>();
+builder.Services.AddSingleton<IPhotoService, PhotoService>();
 
 builder.Services.AddControllers();
 
@@ -75,6 +76,8 @@ app.UseSwaggerDocumentation();
 app.UseAuthentication();
 
 app.UseAuthorization();
+
+app.UseStaticFiles();
 
 app.UseUserBlockedMiddleware();
 
