@@ -5,3 +5,9 @@
 .medium-zoom-image--opened {
   z-index: 99999;
 }
+
+:host::ng-deep {
+  .p-follow-button {
+    @apply w-[120px];
+  }
+}

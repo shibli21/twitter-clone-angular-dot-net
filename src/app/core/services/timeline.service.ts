@@ -167,6 +167,16 @@ export class TimelineService {
     this.userTimeline.next(userTimeline);
   }
 
+  public addNewTweetToUserTimeline(tweet: ITweet) {
+    console.log('addNewTweetToUserTimeline');
+
+    const userTimeline = this.userTimeline.getValue();
+    if (userTimeline) {
+      userTimeline.tweets.unshift(tweet);
+      this.userTimeline.next(userTimeline);
+    }
+  }
+
   get getNewsFeedValue() {
     return this.newsFeed.getValue();
   }

@@ -1,10 +1,10 @@
 <div
-  class="p-4 hover:bg-gray-100 transition border-b cursor-pointer w-full"
+  class="p-4 hover:bg-gray-100 transition border-b cursor-pointer w-full group"
   [routerLink]="['/profile', user.id]"
 >
   <div
     class="grid gap-4 w-full"
-    style="grid-template-columns: 2.5rem auto 100px"
+    style="grid-template-columns: 2.5rem auto 120px"
   >
     <img
       class="w-10 h-10 object-cover rounded-full"
@@ -18,17 +18,21 @@
       alt="Neil image"
     />
     <div class="truncate">
-      <p class="truncate text-sm font-medium text-gray-900">
+      <p
+        class="truncate text-sm font-medium text-gray-900 group-hover:text-indigo-600"
+      >
         {{ user.firstName }} {{ user.lastName }}
       </p>
       <p class="text-sm truncate text-gray-500">{{ user.email }}</p>
     </div>
     <div *ngIf="currentUserId !== user.id">
-      <button
-        class="p-button-sm"
-        pButton
+      <p-button
+        [styleClass]="user.isFollowed ? 'p-button-outlined' : ''"
+        [class]="user.isFollowed ? ' p-button-outlined' : ''"
+        [loading]="isFollowingLoading"
+        (click)="followUnfollowUser($event)"
         [label]="user.isFollowed ? 'Following' : 'Follow'"
-      ></button>
+      ></p-button>
     </div>
   </div>
 </div>

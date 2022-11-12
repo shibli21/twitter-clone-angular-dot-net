@@ -83,6 +83,11 @@
                 label="Block"
               ></p-button>
               <p-button
+                [styleClass]="
+                  profileUser.isFollowed
+                    ? 'p-button-outlined p-follow-button'
+                    : 'p-button p-follow-button'
+                "
                 [label]="!profileUser.isFollowed ? 'Follow' : 'Following'"
                 (onClick)="followUnfollowUser()"
                 [loading]="isFollowUnFollowing"

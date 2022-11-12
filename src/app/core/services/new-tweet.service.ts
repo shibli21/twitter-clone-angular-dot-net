@@ -1,7 +1,9 @@
+import { ToastrService } from 'ngx-toastr';
+import { TimelineService } from './timeline.service';
 import { HttpClient } from '@angular/common/http';
 import { ITweet } from 'src/app/core/models/tweet.model';
 import { environment } from 'src/environments/environment';
-import { BehaviorSubject, catchError, throwError } from 'rxjs';
+import { BehaviorSubject, catchError, throwError, tap } from 'rxjs';
 import { Injectable } from '@angular/core';
 
 @Injectable({
@@ -16,12 +18,17 @@ export class NewTweetService {
   isTweetDialogOpenObservable = this.isTweetDialogOpen.asObservable();
   isTweetingObservable = this.isTweeting.asObservable();
 
-  constructor(private http: HttpClient) {}
+  constructor(
+    private http: HttpClient,
+    private timelineService: TimelineService,
+    private toastrService: ToastrService
+  ) {}
 
   tweet(tweet: string) {
     this.isTweeting.next(true);
 
-    const hashTags = tweet.match(/#\w+/g);
+    const tweetTextWithOutHtmlTag = tweet.replace(/(<([^>]+)>)/gi, '');
+    const hashTags = tweetTextWithOutHtmlTag.match(/#\w+/g);
 
     return this.http
       .post<ITweet>(this.baseUrl + 'tweet/create', {
@@ -29,6 +36,9 @@ export class NewTweetService {
         hashTags: hashTags ? hashTags : [],
       })
       .pipe(
+        tap((tweet) => {
+          this.timelineService.addNewTweetToUserTimeline(tweet);
+        }),
         catchError((err) => {
           return throwError(() => err);
         })
@@ -36,6 +46,7 @@ export class NewTweetService {
       .subscribe(() => {
         this.isTweeting.next(false);
         this.isTweetDialogOpen.next(false);
+        this.toastrService.success('Tweeted successfully');
       })
       .add(() => {
         this.isTweeting.next(false);

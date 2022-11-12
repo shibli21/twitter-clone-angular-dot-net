@@ -1,3 +1,4 @@
+import { ProfileService } from './profile.service';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from './auth.service';
@@ -10,6 +11,7 @@ export class NavService {
   constructor(
     private router: Router,
     private timelineService: TimelineService,
+    private profileService: ProfileService,
     private authService: AuthService
   ) {}
 
@@ -23,10 +25,10 @@ export class NavService {
 
   refreshProfile() {
     window.scrollTo(0, 0);
-    this.router
-      .navigateByUrl('/', { skipLocationChange: true })
-      .then(() =>
-        this.router.navigate(['/profile', this.authService.userId()])
-      );
+    this.timelineService.clearUserTimeLine();
+    this.profileService.clearUser();
+    this.profileService.getUserById(this.authService.userId()!);
+    this.timelineService.getUserTimeline(this.authService.userId()!);
+    this.router.navigate(['/profile', this.authService.userId()]);
   }
 }

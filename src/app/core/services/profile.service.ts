@@ -65,6 +65,20 @@ export class ProfileService {
     }
   }
 
+  public updateFollowFollowingCount(count: number) {
+    const user = this.user.value;
+
+    if (user) {
+      if (user.id === this.authService.userId()) {
+        user.following += count;
+      } else {
+        user.followers += count;
+        user.isFollowed = !user.isFollowed;
+      }
+    }
+    this.setUser(user);
+  }
+
   public setUser(user: IUser | null) {
     if (user) {
       this.user.next({
@@ -74,5 +88,9 @@ export class ProfileService {
     } else {
       this.user.next(null);
     }
+  }
+
+  public clearUser() {
+    this.user.next(null);
   }
 }

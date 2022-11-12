@@ -89,7 +89,11 @@ export class ProfileComponent implements OnInit, OnDestroy {
       next: (res: any) => {
         this.toastr.success(res.message);
         if (this.profileUser) {
-          this.profileUser.isFollowed = !this.profileUser.isFollowed;
+          if (this.profileUser.isFollowed) {
+            this.profileService.updateFollowFollowingCount(-1);
+          } else {
+            this.profileService.updateFollowFollowingCount(1);
+          }
         }
         this.isFollowUnFollowing = false;
       },
