@@ -1,9 +1,11 @@
+import { IEditUser } from './../../core/models/user.model';
 import { Component, Input, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
 import { IUser } from '../../core/models/user.model';
 import { EditUserService } from '../../core/services/edit-user.service';
 import { UserService } from '../../core/services/user.service';
+import Validation from 'src/app/settings/edit-profile/edit-profile.component';
 
 @Component({
   selector: 'app-edit-profile-form',
@@ -31,8 +33,8 @@ export class EditProfileFormComponent implements OnInit {
     lastName: new FormControl('', [Validators.required]),
     bio: new FormControl(''),
     address: new FormControl(''),
-    coverPictureUrl: new FormControl(''),
-    profilePictureUrl: new FormControl(''),
+    CoverPicture: new FormControl(File, [Validation.fileMaxSize]),
+    ProfilePicture: new FormControl(File, [Validation.fileMaxSize]),
     gender: new FormControl('male', [Validators.required]),
     dateOfBirth: new FormControl(new Date(), [Validators.required]),
   });
@@ -52,33 +54,29 @@ export class EditProfileFormComponent implements OnInit {
 
   onSubmit() {
     this.isUpdating = true;
+    const formData = this.toFormData(this.editProfileForm.value);
 
-    this.userService
-      .updateUser({
-        ...this.editProfileForm.value,
-        id: this.user.id,
-      })
-      .subscribe({
-        next: (res) => {
-          this.toastr.success('Profile updated successfully');
-          this.isUpdating = false;
-          this.editUserService.setEditingDialog(false);
-        },
-        error: (err) => {
-          this.isUpdating = false;
+    this.userService.updateUser(formData).subscribe({
+      next: (res) => {
+        this.toastr.success('Profile updated successfully');
+        this.isUpdating = false;
+        this.editUserService.setEditingDialog(false);
+      },
+      error: (err) => {
+        this.isUpdating = false;
 
-          if (err.error.errors) {
-            err.error.errors['Email'] &&
-              this.editProfileForm.controls['email'].setErrors({
-                serverErrorEmail: err.error.errors?.Email[0],
-              });
-            err.error.errors['UserName'] &&
-              this.editProfileForm.controls['userName'].setErrors({
-                userName: err.error.errors?.UserName[0],
-              });
-          }
-        },
-      });
+        if (err.error.errors) {
+          err.error.errors['Email'] &&
+            this.editProfileForm.controls['email'].setErrors({
+              serverErrorEmail: err.error.errors?.Email[0],
+            });
+          err.error.errors['UserName'] &&
+            this.editProfileForm.controls['userName'].setErrors({
+              userName: err.error.errors?.UserName[0],
+            });
+        }
+      },
+    });
   }
 
   get editProfileFormControl() {
@@ -101,5 +99,39 @@ export class EditProfileFormComponent implements OnInit {
   onBlur(event: Event, key: string) {
     let form = this.editProfileForm as any;
     form.controls[key].markAsTouched();
+  }
+
+  onFileChange(event: Event, key: string) {
+    let form = this.editProfileForm as any;
+
+    const fileList: FileList | null = (event.target as HTMLInputElement).files;
+
+    if (fileList) {
+      form.controls[key].setValue(fileList[0]);
+      form.controls[key].markAsDirty();
+    }
+  }
+
+  private toFormData(formValue: IEditUser) {
+    const formData = new FormData();
+
+    formData.set('id', this.user.id);
+    formData.set('userName', formValue.userName);
+    formData.set('email', formValue.email);
+    formData.set('firstName', formValue.firstName);
+    formData.set('lastName', formValue.lastName);
+    formData.set('gender', formValue.gender);
+    formData.set('dateOfBirth', new Date(formValue.dateOfBirth).toISOString());
+
+    formValue.bio && formData.set('bio', formValue.bio);
+    formValue.address && formData.set('address', formValue.address);
+
+    formValue.CoverPicture &&
+      formData.set('CoverPicture', formValue.CoverPicture);
+
+    formValue.ProfilePicture &&
+      formData.set('ProfilePicture', formValue.ProfilePicture);
+
+    return formData;
   }
 }

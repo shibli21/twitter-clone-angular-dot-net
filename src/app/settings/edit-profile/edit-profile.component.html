@@ -113,34 +113,45 @@
         </div>
       </div>
     </div>
+
     <div class="space-y-1">
-      <label class="text-gray-600">Profile Picture Url</label>
+      <label class="text-gray-600" for="file_input">Profile Picture</label>
       <div>
         <input
-          formControlName="profilePictureUrl"
-          type="text"
-          pInputText
-          class="p-inputtext-sm"
+          accept="image/*"
+          class="block w-full text-sm text-gray-900 bg-gray-50 rounded border border-gray-300 cursor-pointer focus:outline-none"
+          id="file_input"
+          type="file"
+          (change)="onFileChange($event, 'ProfilePicture')"
         />
-        <div *ngIf="isInvalidTouchedDirty('profilePictureUrl')">
+        <div *ngIf="isInvalidTouchedDirty('ProfilePicture')">
           <div
-            *ngIf="editProfileFormControl['profilePictureUrl'].errors?.['required']"
+            *ngIf="editProfileFormControl['ProfilePicture'].errors?.['fileMaxSize']"
             class="input-error"
           >
-            profilePictureUrl is required.
+            File size must be less than 400kb.
           </div>
         </div>
       </div>
     </div>
     <div class="space-y-1">
-      <label class="text-gray-600">Cover Picture Url</label>
+      <label class="text-gray-600" for="file_input_cover">Cover Picture</label>
       <div>
         <input
-          formControlName="coverPictureUrl"
-          type="text"
-          pInputText
-          class="p-inputtext-sm"
+          accept="image/*"
+          class="block w-full text-sm text-gray-900 rounded-md border border-gray-300 cursor-pointer focus:outline-none"
+          id="file_input_cover"
+          type="file"
+          (change)="onFileChange($event, 'CoverPicture')"
         />
+        <div *ngIf="isInvalidTouchedDirty('CoverPicture')">
+          <div
+            *ngIf="editProfileFormControl['CoverPicture'].errors?.['fileMaxSize']"
+            class="input-error"
+          >
+            File size must be less than 400kb.
+          </div>
+        </div>
       </div>
     </div>
     <div class="space-y-1">

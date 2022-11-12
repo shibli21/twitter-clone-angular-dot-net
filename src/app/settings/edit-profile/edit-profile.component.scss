@@ -9,4 +9,8 @@
   .p-dropdown {
     @apply w-full;
   }
+
+  input::file-selector-button {
+    @apply h-full  overflow-hidden bg-indigo-600 border-none px-4 py-2.5 mr-4 text-white font-medium cursor-pointer;
+  }
 }

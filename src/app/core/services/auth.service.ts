@@ -179,6 +179,8 @@ export class AuthService {
   }
 
   public setUser(user: IUser | null) {
+    this.updateLocalStorage(user);
+
     if (user) {
       this.user.next({
         ...this.user.value,
@@ -187,5 +189,21 @@ export class AuthService {
     } else {
       this.user.next(null);
     }
+  }
+
+  public updateLocalStorage(user: IUser | null) {
+    const userData = localStorage.getItem('userData');
+    if (!userData) {
+      return;
+    }
+    const { ...prevUser } = JSON.parse(userData) as ILoginResponse;
+
+    localStorage.setItem(
+      'userData',
+      JSON.stringify({
+        ...prevUser,
+        ...user,
+      })
+    );
   }
 }

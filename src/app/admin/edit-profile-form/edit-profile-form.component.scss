@@ -1,6 +1,6 @@
 :host ::ng-deep {
   .p-button {
-    @apply px-4 py-1.5 shadow-none text-sm w-full;
+    @apply px-4 shadow-none text-sm w-full;
   }
 
   i-tabler {
@@ -37,5 +37,9 @@
 
   .p-dropdown {
     @apply w-full;
+  }
+
+  input::file-selector-button {
+    @apply h-full  overflow-hidden bg-indigo-600 border-none px-4 py-2.5 mr-4 text-white font-medium cursor-pointer;
   }
 }

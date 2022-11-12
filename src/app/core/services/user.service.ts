@@ -1,10 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Router } from '@angular/router';
-import { catchError, tap, throwError } from 'rxjs';
-import { PaginatedUsers, IUser } from '../models/user.model';
+import { catchError, throwError } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { FollowService } from './follow.service';
+import { IUser } from '../models/user.model';
 
 @Injectable({
   providedIn: 'root',
@@ -17,15 +15,15 @@ export class UserService {
   getUserById(id: string) {
     return this.http.get<IUser>(this.baseUrl + 'users/' + id).pipe(
       catchError((err) => {
-        return throwError(err);
+        return throwError(() => err);
       })
     );
   }
 
-  updateUser(user: IUser) {
+  updateUser(user: FormData) {
     return this.http.put<IUser>(this.baseUrl + 'users/edit', user).pipe(
       catchError((err) => {
-        return throwError(err);
+        return throwError(() => err);
       })
     );
   }

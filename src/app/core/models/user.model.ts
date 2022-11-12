@@ -42,6 +42,20 @@ export interface IUser {
   isFollowed?: boolean;
 }
 
+export interface IEditUser {
+  userName: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  profilePictureUrl: string;
+  ProfilePicture: File;
+  CoverPicture: File;
+  dateOfBirth: Date;
+  gender: string;
+  bio: string;
+  address: string;
+}
+
 export interface IPaginatedUsers {
   page: number;
   size: number;
