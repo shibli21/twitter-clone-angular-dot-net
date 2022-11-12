@@ -97,6 +97,10 @@ export class SideNavComponent implements OnInit, OnDestroy {
     return this.router.url.includes(route);
   }
 
+  isActiveExact(route: string) {
+    return this.router.url === route;
+  }
+
   logout() {
     this.confirmationService.confirm({
       key: 'side-logout',

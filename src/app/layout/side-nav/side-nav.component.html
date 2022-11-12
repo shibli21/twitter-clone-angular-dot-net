@@ -62,7 +62,9 @@
         routerLinkActive="font-bold"
         [routerLinkActiveOptions]="{ exact: true }"
       >
-        <app-settings-icon></app-settings-icon>
+        <app-settings-icon
+          [isActive]="isActiveExact('/settings')"
+        ></app-settings-icon>
         <div>Settings</div>
       </li>
       <li *ngIf="isAdmin()" class="sidenav-item" [routerLink]="['/admin']">
