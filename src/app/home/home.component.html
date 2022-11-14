@@ -22,15 +22,19 @@
 
   <p
     class="text-center py-10 font-semibold"
-    *ngIf="newsFeed.page === newsFeed.totalPages && !isLoading"
+    *ngIf="
+      newsFeed.page === newsFeed.totalPages &&
+      !isLoading &&
+      newsFeed.totalElements > 0
+    "
   >
     No more tweets to show
   </p>
 
   <div
-    class="font-bold text-center p-4 py-10 text-lg"
+    class="text-center p-4 py-10 text-lg md:text-xl"
     *ngIf="newsFeed.tweets.length === 0"
   >
-    Follow users to see their tweets in your news feed
+    Keep following people to see their tweets here
   </div>
 </div>
