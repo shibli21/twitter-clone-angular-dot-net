@@ -124,7 +124,9 @@ namespace Infrastructure.Services
                     var blockedMeIds = blocked.Where(block => block.BlockedUserId == id).Select(block => block.UserId).ToList();
                     var myBlockedIds = blocked.Where(block => block.UserId == id).Select(block => block.BlockedUserId).ToList();
                     var blockedIds = blockedMeIds.Concat(myBlockedIds).ToList();
-                    var filter = _usersCollection.Find(user => (user.UserName.ToLower().Contains(searchQuery.ToLower()) || user.FirstName.ToLower().Contains(searchQuery.ToLower()) || user.LastName.ToLower().Contains(searchQuery.ToLower())) && user.Id != id && !blockedIds.Contains(user.Id) && user.DeletedAt == null && user.BlockedAt == null);
+                    searchQuery = searchQuery.ToLower();
+                    var searchQueryArray = searchQuery.Split(" ");
+                    var filter = _usersCollection.Find(user => (user.UserName.ToLower().Contains(searchQueryArray[0]) || user.FirstName.ToLower().Contains(searchQueryArray[0]) || user.LastName.ToLower().Contains(searchQueryArray[searchQueryArray.Length - 1])) && user.Id != id && !blockedIds.Contains(user.Id) && user.DeletedAt == null && user.BlockedAt == null);
                     long totalElements = await filter.CountDocumentsAsync();
                     int lastPage = (int)Math.Ceiling((double)totalElements / limit) - 1;
                     lastPage = lastPage < 0 ? 0 : lastPage;
