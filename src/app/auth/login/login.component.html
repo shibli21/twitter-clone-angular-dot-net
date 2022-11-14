@@ -50,13 +50,6 @@
           </div>
         </div>
 
-        <button
-          class="text-sm md:text-base px-3 py-1 rounded font-medium bg-green-600 text-white absolute top-16 lg:top-4 right-4"
-          (click)="op.toggle($event)"
-        >
-          Admin Credentials
-        </button>
-
         <div
           class="flex flex-1 w-full xs:w-auto flex-col justify-center space-y-5"
         >
@@ -146,21 +139,3 @@
     </div>
   </div>
 </section>
-
-<p-overlayPanel #op appendTo="body" [dismissable]="false">
-  <ng-template pTemplate>
-    <!-- render admin email and password -->
-    <div class="m-4">
-      <table class="text-left">
-        <tr class="border">
-          <td class="border px-2 py-1">Email</td>
-          <td class="border px-2 py-1">admin@gmail.com</td>
-        </tr>
-        <tr class="border">
-          <td class="border px-2 py-1">Password</td>
-          <td class="border px-2 py-1">Admin@123!</td>
-        </tr>
-      </table>
-    </div>
-  </ng-template>
-</p-overlayPanel>
