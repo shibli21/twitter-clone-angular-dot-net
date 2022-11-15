@@ -40,7 +40,7 @@ namespace Infrastructure.Services
                 string? userId = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
                 if (userId != null)
                 {
-                    var filter = _hashTagCollection.Find(x => x.HashTag.ToLower().Contains(searchQuery.ToLower()));
+                    var filter = _hashTagCollection.Find(x => x.HashTag.ToLower().Contains(searchQuery.ToLower())).SortByDescending(x => x.CreatedAt);
                     var totalElements = await filter.CountDocumentsAsync();
                     int LastPage = (int)Math.Ceiling((double)totalElements / limit) - 1;
                     LastPage = LastPage < 0 ? 0 : LastPage;
