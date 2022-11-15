@@ -1,10 +1,12 @@
 using System.Security.Claims;
+using System.Text.RegularExpressions;
 using Core.Dtos;
 using Core.Interfaces;
 using Core.Models;
 using Infrastructure.Config;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
+using MongoDB.Bson;
 using MongoDB.Driver;
 
 namespace Infrastructure.Services
@@ -124,15 +126,30 @@ namespace Infrastructure.Services
                     var blockedMeIds = blocked.Where(block => block.BlockedUserId == id).Select(block => block.UserId).ToList();
                     var myBlockedIds = blocked.Where(block => block.UserId == id).Select(block => block.BlockedUserId).ToList();
                     var blockedIds = blockedMeIds.Concat(myBlockedIds).ToList();
-                    searchQuery = searchQuery.ToLower();
-                    var searchQueryArray = searchQuery.Split(" ");
-                    var filter = _usersCollection.Find(user => (user.UserName.ToLower().Contains(searchQueryArray[0]) || user.FirstName.ToLower().Contains(searchQueryArray[0]) || user.LastName.ToLower().Contains(searchQueryArray[searchQueryArray.Length - 1])) && user.Id != id && !blockedIds.Contains(user.Id) && user.DeletedAt == null && user.BlockedAt == null);
-                    long totalElements = await filter.CountDocumentsAsync();
+
+                    string[] searchQueryArray = searchQuery.ToLower().Trim().Split(" ");
+                    string pattern = string.Join("|", searchQueryArray);
+
+                    var searchFilter = Builders<User>.Filter.And(
+                        Builders<User>.Filter.Eq(u => u.DeletedAt, null),
+                        Builders<User>.Filter.Eq(u => u.BlockedAt, null),
+                        Builders<User>.Filter.Ne(u => u.Id, id),
+                        Builders<User>.Filter.Nin(u => u.Id, blockedIds),
+                        Builders<User>.Filter.Or(
+                            Builders<User>.Filter.Regex(u => u.UserName, $"/^{pattern}/i"),
+                            Builders<User>.Filter.Regex(u => u.LastName, $"/^{pattern}/i"),
+                            Builders<User>.Filter.Regex(u => u.FirstName, $"/^{pattern}/i")
+                        ));
+
+                    var findUsers = _usersCollection.Find(searchFilter);
+
+                    long totalElements = await findUsers.CountDocumentsAsync();
+
                     int lastPage = (int)Math.Ceiling((double)totalElements / limit) - 1;
                     lastPage = lastPage < 0 ? 0 : lastPage;
 
                     int totalPages = lastPage + 1;
-                    List<SearchedUserResponseDto> users = (await filter.Skip((page) * limit)
+                    List<SearchedUserResponseDto> users = (await findUsers.Skip((page) * limit)
                         .Limit(limit)
                         .ToListAsync()).Select(user => user.AsDtoSearchedUser()).ToList();
                     foreach (SearchedUserResponseDto user in users)
