@@ -1,10 +1,12 @@
-import { ToastrService } from 'ngx-toastr';
-import { TimelineService } from './timeline.service';
 import { HttpClient } from '@angular/common/http';
+import { Injectable } from '@angular/core';
+import { Router } from '@angular/router';
+import { ToastrService } from 'ngx-toastr';
+import { BehaviorSubject, catchError, tap, throwError } from 'rxjs';
 import { ITweet } from 'src/app/core/models/tweet.model';
 import { environment } from 'src/environments/environment';
-import { BehaviorSubject, catchError, throwError, tap } from 'rxjs';
-import { Injectable } from '@angular/core';
+import { AuthService } from './auth.service';
+import { TimelineService } from './timeline.service';
 
 @Injectable({
   providedIn: 'root',
@@ -21,7 +23,9 @@ export class NewTweetService {
   constructor(
     private http: HttpClient,
     private timelineService: TimelineService,
-    private toastrService: ToastrService
+    private toastrService: ToastrService,
+    private authService: AuthService,
+    private router: Router
   ) {}
 
   tweet(tweet: string) {
@@ -37,7 +41,9 @@ export class NewTweetService {
       })
       .pipe(
         tap((tweet) => {
-          this.timelineService.addNewTweetToUserTimeline(tweet);
+          if (this.router.url.includes(this.authService.userId()!)) {
+            this.timelineService.addNewTweetToUserTimeline(tweet);
+          }
         }),
         catchError((err) => {
           return throwError(() => err);

@@ -1,3 +1,4 @@
+import { TimelineService } from './timeline.service';
 import { AuthService } from './auth.service';
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
@@ -16,9 +17,14 @@ export class ProfileService {
 
   baseUrl = environment.baseUrl;
 
-  constructor(private http: HttpClient, private authService: AuthService) {}
+  constructor(
+    private http: HttpClient,
+    private authService: AuthService,
+    private timelineService: TimelineService
+  ) {}
 
   getUserById(id: string) {
+    this.timelineService.clearUserTimeLine();
     if (id === this.user.value?.id) {
       return;
     } else {

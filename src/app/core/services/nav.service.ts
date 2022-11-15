@@ -27,7 +27,7 @@ export class NavService {
     window.scrollTo(0, 0);
     this.timelineService.clearUserTimeLine();
     this.profileService.clearUser();
-    if (this.router.url.includes('/profile/')) {
+    if (this.router.url.includes(`/profile/${this.authService.userId()!}`)) {
       this.profileService.getUserById(this.authService.userId()!);
       this.timelineService.getUserTimeline(this.authService.userId()!);
     } else {

@@ -168,8 +168,6 @@ export class TimelineService {
   }
 
   public addNewTweetToUserTimeline(tweet: ITweet) {
-    console.log('addNewTweetToUserTimeline');
-
     const userTimeline = this.userTimeline.getValue();
     if (userTimeline) {
       userTimeline.tweets.unshift(tweet);
