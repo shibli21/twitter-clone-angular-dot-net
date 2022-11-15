@@ -36,7 +36,9 @@ export class ForgotPasswordComponent implements OnInit {
         )
         .subscribe({
           next: (res) => {
-            this.toastr.success('Password reset link sent to your email');
+            this.toastr.success(
+              'Password reset link sent to your email. Please check spam folder if not found in inbox.'
+            );
             this.isLoading = false;
             this.router.navigate(['/login']);
           },
