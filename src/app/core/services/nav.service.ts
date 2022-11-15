@@ -27,8 +27,11 @@ export class NavService {
     window.scrollTo(0, 0);
     this.timelineService.clearUserTimeLine();
     this.profileService.clearUser();
-    this.profileService.getUserById(this.authService.userId()!);
-    this.timelineService.getUserTimeline(this.authService.userId()!);
-    this.router.navigate(['/profile', this.authService.userId()]);
+    if (this.router.url.includes('/profile/')) {
+      this.profileService.getUserById(this.authService.userId()!);
+      this.timelineService.getUserTimeline(this.authService.userId()!);
+    } else {
+      this.router.navigate(['/profile', this.authService.userId()]);
+    }
   }
 }
