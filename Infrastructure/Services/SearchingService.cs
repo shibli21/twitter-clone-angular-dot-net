@@ -52,7 +52,7 @@ namespace Infrastructure.Services
                     var myBlockedIds = blocked.Where(block => block.UserId == userId).Select(block => block.BlockedUserId).ToList();
                     var blockedIds = blockedMeIds.Concat(myBlockedIds).ToList();
 
-                    var tweets = await _tweetCollection.Find(tweet => tweetIds.Contains(tweet.Id) && tweet.DeletedAt == null && !blockedIds.Contains(tweet.UserId)).ToListAsync();
+                    var tweets = await _tweetCollection.Find(tweet => tweetIds.Contains(tweet.Id) && tweet.DeletedAt == null && !blockedIds.Contains(tweet.UserId)).SortByDescending(x => x.CreatedAt).ToListAsync();
 
                     PaginatedTweetResponseDto resDto = new PaginatedTweetResponseDto()
                     {
