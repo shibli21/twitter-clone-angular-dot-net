@@ -3,9 +3,12 @@ using Ocelot.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
+var ocelotJsonFileName = "ocelot.json";
+if (builder.Environment.IsProduction()) ocelotJsonFileName = "ocelot.production.json";
+
 builder.Configuration
         .SetBasePath(Directory.GetCurrentDirectory())
-        .AddJsonFile("ocelot.json", optional: false, reloadOnChange: true)
+        .AddJsonFile(ocelotJsonFileName, optional: false, reloadOnChange: true)
         .AddEnvironmentVariables();
 
 builder.Services.AddCors(p => p.AddPolicy("TwitterCloneCorsPolicy", builder =>

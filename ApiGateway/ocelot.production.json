@@ -113,11 +113,11 @@
             ]
         },
         {
-            "UpstreamPathTemplate": "/api2/block/by-user/{id}",
+            "UpstreamPathTemplate": "/block/by-user/{id}",
             "UpstreamHttpMethod": [
                 "Post"
             ],
-            "DownstreamPathTemplate": "/block/by-user/{id}",
+            "DownstreamPathTemplate": "/api2/block/by-user/{id}",
             "DownstreamScheme": "http",
             "DownstreamHostAndPorts": [
                 {
@@ -281,11 +281,39 @@
             ]
         },
         {
+            "UpstreamPathTemplate": "/auth/change-password",
+            "UpstreamHttpMethod": [
+                "Post"
+            ],
+            "DownstreamPathTemplate": "/api2/auth/change-password",
+            "DownstreamScheme": "http",
+            "DownstreamHostAndPorts": [
+                {
+                    "Host": "noobmasters.learnathon.net",
+                    "Port": 80
+                }
+            ]
+        },
+        {
             "UpstreamPathTemplate": "/users/current-user",
             "UpstreamHttpMethod": [
                 "Post"
             ],
             "DownstreamPathTemplate": "/api2/users/current-user",
+            "DownstreamScheme": "http",
+            "DownstreamHostAndPorts": [
+                {
+                    "Host": "noobmasters.learnathon.net",
+                    "Port": 80
+                }
+            ]
+        },
+        {
+            "UpstreamPathTemplate": "/users/follow-author",
+            "UpstreamHttpMethod": [
+                "Get"
+            ],
+            "DownstreamPathTemplate": "/api2/users/follow-author",
             "DownstreamScheme": "http",
             "DownstreamHostAndPorts": [
                 {
