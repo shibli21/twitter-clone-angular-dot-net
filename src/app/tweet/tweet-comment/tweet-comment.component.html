@@ -1,7 +1,7 @@
 <div class="cursor-pointer w-full border-b">
   <div class="flex gap-2 p-2 md:p-4">
     <div class="w-[40px]">
-      <div class="overflow-hidden h-[30px] w-[30px] rounded-full">
+      <div class="overflow-hidden h-[30px] w-[30px] rounded-full mt-1">
         <img
           class="w-full h-full object-cover"
           [src]="
@@ -16,17 +16,19 @@
     </div>
     <div class="w-full">
       <div class="flex justify-between">
-        <div class="flex flex-col md:flex-row gap-0 md:gap-1">
-          <h1
-            class="text-sm font-bold hover:text-indigo-700"
-            [routerLink]="['/profile', comment.user.id]"
-          >
-            {{ comment.user.firstName }} {{ comment.user.lastName }}
-          </h1>
-          <p class="text-gray-600 text-sm">
-            @{{ comment.user.userName }} ·
-            {{ comment.createdAt | dateTimeFormat }}
-          </p>
+        <div class="flex flex-col md:flex-row gap-0 md:gap-1 mb-2">
+          <div>
+            <h1
+              class="font-bold hover:text-indigo-700"
+              [routerLink]="['/profile', comment.user.id]"
+            >
+              {{ comment.user.firstName }} {{ comment.user.lastName }}
+            </h1>
+            <p class="text-gray-600 text-sm">
+              @{{ comment.user.userName }} ·
+              {{ comment.createdAt | dateTimeFormat }}
+            </p>
+          </div>
         </div>
         <div *ngIf="isCommentOwner">
           <button
@@ -34,12 +36,13 @@
             class="p-button-sm p-button-text p-button-danger"
             pButton
             type="button"
-            icon="pi pi-trash"
             [loading]="deleteLoading"
-          ></button>
+          >
+            Delete
+          </button>
         </div>
       </div>
-      <p class="text-sm mt-1 md:mt-0">
+      <p class="mt-1 md:mt-0">
         {{ comment.comment }}
       </p>
     </div>
