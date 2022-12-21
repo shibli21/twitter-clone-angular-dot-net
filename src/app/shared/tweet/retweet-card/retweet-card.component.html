@@ -1,6 +1,6 @@
-<div class="cursor-pointer border w-full transition rounded-md mt-2">
+<div class="cursor-pointer border w-full transition mt-2">
   <div
-    class="border-b border-gray-300 px-2 md:px-4 py-2 items-center justify-between flex"
+    class="border-b border-slate-300 px-2 md:px-4 py-2 items-center justify-between flex"
   >
     <app-name-and-time-header
       [date]="tweet.createdAt"
@@ -9,7 +9,11 @@
     ></app-name-and-time-header>
   </div>
 
-  <div class="hover:bg-gray-100 p-4" [routerLink]="['/tweet', tweet.id]">
+  <div
+    class="transition p-4"
+    [routerLink]="['/tweet', tweet.id]"
+    [ngClass]="isSolo ? 'hover:bg-slate-50' : 'hover:bg-slate-100'"
+  >
     <quill-view-html [content]="tweet.tweet"></quill-view-html>
   </div>
 </div>
