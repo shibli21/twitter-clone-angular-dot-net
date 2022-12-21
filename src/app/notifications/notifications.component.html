@@ -11,7 +11,7 @@
       >
         <li
           *ngFor="let notification of paginatedNotifications.notifications"
-          class="cursor-pointer hover:bg-gray-100 hover:text-indigo-900 px-4 py-4 md:px-6"
+          class="cursor-pointer hover:bg-slate-50 hover:text-indigo-900 px-4 py-4 md:px-6"
           (click)="markAsRead(notification)"
         >
           <div class="flex items-center space-x-4 md:space-x-6">
@@ -20,11 +20,11 @@
                 [ngClass]="
                   'pi pi-' + getNotificationTypeIcon(notification.type)
                 "
-                class="text-[1.3rem] md:text-2xl"
+                class="text-[1.3rem] md:text-[1.4rem]"
               ></i>
             </div>
             <div class="flex-1 min-w-0">
-              <p class="font-medium text-lg leading-5">
+              <p class="font-medium leading-5">
                 {{ notification.message }}
               </p>
               <p class="flex-shrink-0 text-gray-600 text-sm mt-0.5">
