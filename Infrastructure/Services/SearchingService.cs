@@ -136,9 +136,10 @@ namespace Infrastructure.Services
                         Builders<User>.Filter.Ne(u => u.Id, id),
                         Builders<User>.Filter.Nin(u => u.Id, blockedIds),
                         Builders<User>.Filter.Or(
-                            Builders<User>.Filter.Regex(u => u.UserName, $"/^{pattern}/i"),
-                            Builders<User>.Filter.Regex(u => u.LastName, $"/^{pattern}/i"),
-                            Builders<User>.Filter.Regex(u => u.FirstName, $"/^{pattern}/i")
+                            Builders<User>.Filter.Regex(u => u.UserName, $"/{pattern}/i"),
+                            Builders<User>.Filter.Regex(u => u.LastName, $"/{pattern}/i"),
+                            Builders<User>.Filter.Regex(u => u.FirstName, $"/{pattern}/i")
+
                         ));
 
                     var findUsers = _usersCollection.Find(searchFilter);
