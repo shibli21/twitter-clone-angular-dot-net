@@ -22,6 +22,7 @@ import { SkeletonModule } from 'primeng/skeleton';
 import { OverlayPanelModule } from 'primeng/overlaypanel';
 import { SidebarModule } from 'primeng/sidebar';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { AutoCompleteModule } from 'primeng/autocomplete';
 
 @NgModule({
   declarations: [],
@@ -49,6 +50,7 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
     OverlayPanelModule,
     SidebarModule,
     ConfirmDialogModule,
+    AutoCompleteModule,
   ],
 })
 export class NgPrimeModule {}

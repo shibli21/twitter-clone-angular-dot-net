@@ -143,4 +143,10 @@ export class SearchService {
   setIsSearchDialogOpen(isOpen: boolean) {
     this.isSearchDialogOpen.next(isOpen);
   }
+
+  searchResultForAutoComplete(query: string) {
+    return this.http.get<IPaginatedUsers>(
+      `${this.baseUrl}search/search-users?searchQuery=${query}&page=0&limit=10`
+    );
+  }
 }

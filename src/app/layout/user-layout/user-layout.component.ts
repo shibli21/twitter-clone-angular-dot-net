@@ -1,5 +1,7 @@
+import { Router } from '@angular/router';
 import { Location } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { IUser } from 'src/app/core/models/user.model';
 import { SearchService } from './../../core/services/search.service';
 
 @Component({
@@ -9,10 +11,12 @@ import { SearchService } from './../../core/services/search.service';
 })
 export class UserLayoutComponent implements OnInit {
   searchQuery = '';
+  results: IUser[] = [];
 
   constructor(
     private searchService: SearchService,
-    private location: Location
+    private location: Location,
+    private router: Router
   ) {}
 
   ngOnInit(): void {}
@@ -24,5 +28,21 @@ export class UserLayoutComponent implements OnInit {
 
   get isSearchPage() {
     return this.location.path().includes('search');
+  }
+
+  searchResultForAutoComplete(event: any) {
+    this.searchQuery = event.query;
+    this.searchService
+      .searchResultForAutoComplete(this.searchQuery)
+      .subscribe((results) => {
+        this.results = results.users;
+      });
+  }
+
+  onSearchResultClick(user: any) {
+    event?.stopPropagation();
+    console.log(user);
+    this.router.navigate(['/profile', user.id]);
+    this.searchQuery = '';
   }
 }
