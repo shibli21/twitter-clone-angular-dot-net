@@ -22,6 +22,7 @@ import { UserCardSkeletonComponent } from './user-card-skeleton/user-card-skelet
 import { UserCardComponent } from './user-card/user-card.component';
 import { MyDatetimeFormatPipe } from '../core/Pipes/my-date-time-format.pipe';
 import { NotificationDatetimeFormatPipe } from '../core/Pipes/notification-date-time-format.pipe';
+import { AutocompleteInputComponent } from './autocomplete-input/autocomplete-input.component';
 
 @NgModule({
   declarations: [
@@ -43,6 +44,7 @@ import { NotificationDatetimeFormatPipe } from '../core/Pipes/notification-date-
     ConfirmationDialogComponent,
     MyDatetimeFormatPipe,
     NotificationDatetimeFormatPipe,
+    AutocompleteInputComponent,
   ],
   imports: [
     CommonModule,
@@ -77,6 +79,7 @@ import { NotificationDatetimeFormatPipe } from '../core/Pipes/notification-date-
     ConfirmationDialogComponent,
     MyDatetimeFormatPipe,
     NotificationDatetimeFormatPipe,
+    AutocompleteInputComponent,
   ],
 })
 export class SharedModule {}

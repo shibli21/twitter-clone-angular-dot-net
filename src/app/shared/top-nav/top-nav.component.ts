@@ -1,3 +1,4 @@
+import { NotificationService } from './../../core/services/notification.service';
 import { AuthService } from './../../core/services/auth.service';
 import { Location } from '@angular/common';
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
@@ -16,6 +17,7 @@ import { SearchService } from './../../core/services/search.service';
 export class TopNavComponent implements OnInit, OnDestroy {
   @Input() title: string = '';
   @Input() showBackButton = true;
+  @Input() notificationCount = 0;
   user$ = new Observable<IUser | null>();
   sidenavDisplay = false;
   searchQuery = '';
@@ -27,7 +29,8 @@ export class TopNavComponent implements OnInit, OnDestroy {
     private authService: AuthService,
     private searchService: SearchService,
     private confirmationService: ConfirmationService,
-    private navService: NavService
+    private navService: NavService,
+    private notificationService: NotificationService
   ) {}
 
   ngOnDestroy(): void {
@@ -92,5 +95,13 @@ export class TopNavComponent implements OnInit, OnDestroy {
 
   isSearchPage() {
     return this.location.path().includes('search');
+  }
+
+  isNotificationPage() {
+    return this.location.path().includes('notification');
+  }
+
+  markAllAsRead() {
+    this.notificationService.markAllAsRead();
   }
 }

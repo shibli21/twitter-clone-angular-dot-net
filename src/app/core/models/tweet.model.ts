@@ -15,6 +15,23 @@ export class PaginatedTweets {
     this.tweets = [];
   }
 }
+export class PaginatedHashTags {
+  lastPage: number;
+  page: number;
+  size: number;
+  totalElements: number;
+  totalPages: number;
+  hashTags: string[];
+
+  constructor() {
+    this.lastPage = 0;
+    this.page = 0;
+    this.size = 0;
+    this.totalElements = 0;
+    this.totalPages = 0;
+    this.hashTags = [];
+  }
+}
 
 export interface IPaginatedTweets {
   page: number;

@@ -1,4 +1,8 @@
-<app-top-nav title="Notifications"></app-top-nav>
+<app-top-nav
+  title="Notifications"
+  *ngIf="paginatedNotifications"
+  [notificationCount]="paginatedNotifications.totalUnread"
+></app-top-nav>
 <div class="w-full">
   <div class="">
     <div class="w-full" *ngIf="paginatedNotifications">

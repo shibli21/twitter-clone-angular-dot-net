@@ -1,11 +1,15 @@
 import { Router } from '@angular/router';
-import { PaginatedUsers } from './../models/user.model';
+import { IPaginatedHashTags, PaginatedUsers } from './../models/user.model';
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, tap } from 'rxjs';
+import { BehaviorSubject, tap, Observable, of } from 'rxjs';
 import { IPaginatedUsers } from 'src/app/core/models/user.model';
 import { environment } from 'src/environments/environment';
-import { IPaginatedTweets, PaginatedTweets } from './../models/tweet.model';
+import {
+  IPaginatedTweets,
+  PaginatedTweets,
+  PaginatedHashTags,
+} from './../models/tweet.model';
 
 @Injectable({
   providedIn: 'root',
@@ -144,9 +148,22 @@ export class SearchService {
     this.isSearchDialogOpen.next(isOpen);
   }
 
-  searchResultForAutoComplete(query: string) {
-    return this.http.get<IPaginatedUsers>(
-      `${this.baseUrl}search/search-users?searchQuery=${query}&page=0&limit=10`
-    );
+  searchResultForAutoComplete(
+    query: string
+  ): Observable<IPaginatedUsers | IPaginatedHashTags> {
+    if (query.startsWith('#')) {
+      const searchQueryWithOutHash = query.replace('#', '');
+      if (query.length > 1) {
+        return this.http.get<IPaginatedHashTags>(
+          `${this.baseUrl}search/hashtag-suggestion?searchQuery=${searchQueryWithOutHash}&page=0&limit=10`
+        );
+      } else {
+        return of(new PaginatedHashTags());
+      }
+    } else {
+      return this.http.get<IPaginatedUsers>(
+        `${this.baseUrl}search/search-users?searchQuery=${query}&page=0&limit=10`
+      );
+    }
   }
 }

@@ -12,58 +12,8 @@
       <div
         class="sticky pt-4 top-0 overflow-auto hidden lg:block w-[300px] h-screen px-2"
       >
-        <div *ngIf="!isSearchPage">
-          <div class="relative w-full mb-4">
-            <div
-              class="flex absolute inset-y-0 left-0 items-center pl-3 pointer-events-none z-10"
-            >
-              <i class="pi pi-search"></i>
-            </div>
-
-            <p-autoComplete
-              [suggestions]="results"
-              field="userName"
-              name="search"
-              (completeMethod)="searchResultForAutoComplete($event)"
-              [(ngModel)]="searchQuery"
-              placeholder="search by name or #tag"
-              (onSelect)="onSearchResultClick($event)"
-              (keydown.enter)="onSearch()"
-              scrollHeight="400px"
-            >
-              <ng-template let-user pTemplate="item">
-                <div class="cursor-pointer w-full group">
-                  <div
-                    class="grid gap-4 w-full"
-                    style="grid-template-columns: 2.5rem auto"
-                  >
-                    <!-- (click)="onSearchResultClick(user)" -->
-                    <img
-                      class="w-10 h-10 object-cover rounded-full"
-                      [src]="
-                        user.profilePictureUrl
-                          ? user.profilePictureUrl
-                          : 'https://avatars.dicebear.com/api/open-peeps/' +
-                            user.userName +
-                            '.svg'
-                      "
-                      alt="Neil image"
-                    />
-                    <div class="truncate">
-                      <p
-                        class="truncate text-sm font-medium text-gray-900 group-hover:text-indigo-600"
-                      >
-                        {{ user.firstName }} {{ user.lastName }}
-                      </p>
-                      <p class="text-sm truncate text-gray-500">
-                        {{ user.userName }}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </ng-template>
-            </p-autoComplete>
-          </div>
+        <div *ngIf="!isSearchPage" class="mb-4">
+          <app-autocomplete-input></app-autocomplete-input>
         </div>
         <app-authors-card></app-authors-card>
         <app-followers-card></app-followers-card>
