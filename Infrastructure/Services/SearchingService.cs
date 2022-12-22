@@ -180,16 +180,19 @@ namespace Infrastructure.Services
                 Builders<HashTags>.Filter.Regex(hashTag => hashTag.HashTag, $"/{searchQuery}/i")
             );
 
+
             var newFilter = _hashTagCollection.Distinct(x => x.HashTag, filter)
                 .ToListAsync().Result
                 .Skip(page * limit)
                 .Take(limit);
 
-            long totalElements = await _hashTagCollection.CountDocumentsAsync(filter);
+            List<string> hashTags = (newFilter.ToList()).Select(hashTag => hashTag).ToList();
+
+
+            long totalElements = await _hashTagCollection.Find(filter).CountDocumentsAsync();
 
             int LastPage = (int)Math.Ceiling((double)totalElements / limit) - 1;
             LastPage = LastPage < 0 ? 0 : LastPage;
-            List<string> hashTags = (newFilter.ToList()).Select(hashTag => hashTag).ToList();
             return new PaginatedTagsResponseDto
             {
                 TotalElements = totalElements,
