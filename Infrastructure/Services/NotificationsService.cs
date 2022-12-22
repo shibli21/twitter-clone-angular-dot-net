@@ -95,5 +95,17 @@ namespace Infrastructure.Services
                 return "Notification not found";
             }
         }
+
+        public async Task MarkAllNotificationAsRead()
+        {
+            var userId = _httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var notifications = await _notificationCollection.Find(x => x.UserId == userId && x.IsRead == false).ToListAsync();
+            foreach (var notification in notifications)
+            {
+                notification.IsRead = true;
+                await _notificationCollection.ReplaceOneAsync(x => x.Id == notification.Id, notification);
+            }
+            await Task.CompletedTask;
+        }
     }
 }
