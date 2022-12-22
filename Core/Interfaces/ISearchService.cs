@@ -4,8 +4,9 @@ namespace Core.Interfaces
 {
     public interface ISearchingService
     {
-         Task<PaginatedSearchedUserResponseDto> SearchUsersAsync(string searchQuery, int page, int limit);
-         Task<PaginatedTweetResponseDto> SearchTweetAsync(string searchQuery, int page, int limit);
+        Task<PaginatedSearchedUserResponseDto> SearchUsersAsync(string searchQuery, int page, int limit);
+        Task<PaginatedTweetResponseDto> SearchTweetAsync(string searchQuery, int page, int limit);
+        Task<PaginatedTagsResponseDto> HashTagSuggestionAsync(string searchQuery, int page, int limit);
 
     }
 }

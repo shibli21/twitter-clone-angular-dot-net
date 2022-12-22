@@ -174,7 +174,34 @@ namespace Infrastructure.Services
             }
             return new PaginatedSearchedUserResponseDto();
 
+        }
 
+
+
+
+        public async Task<PaginatedTagsResponseDto> HashTagSuggestionAsync(string searchQuery, int page, int limit)
+        {
+            if (_httpContextAccessor.HttpContext != null)
+            {
+                string? id = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                if (id != null)
+                {
+                    var filter = Builders<HashTags>.Filter.And(
+                        Builders<HashTags>.Filter.Regex(hashTag => hashTag.HashTag, $"/{searchQuery}/i")
+                    );
+                    var newFilter = _hashTagCollection.Distinct(x => x.HashTag , filter );
+
+                    // long totalElements = await newFilter.CountDocumentsAsync();
+                    // int LastPage = (int)Math.Ceiling((double)totalElements / limit) - 1;
+                    // LastPage = LastPage < 0 ? 0 : LastPage;
+                    
+                    List<string> hashTags = (await newFilter.ToListAsync()).Select(hashTag => hashTag).ToList();
+                    // return new PaginatedTagsResponseDto { TotalElements = totalElements, Page = page, Size = limit, LastPage = LastPage, TotalPages = LastPage + 1, HashTags = hashTags };
+                    return new PaginatedTagsResponseDto { HashTags = hashTags };
+                }
+
+            }
+            return new PaginatedTagsResponseDto();
         }
     }
-}
+} 
