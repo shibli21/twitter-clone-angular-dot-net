@@ -61,3 +61,22 @@ body {
 .pi {
   font-family: "PrimeIcons" !important;
 }
+
+.p-dialog--search .p-dialog-content {
+  @apply overflow-visible bg-transparent;
+  background: transparent !important;
+  padding: 0 !important;
+}
+
+.p-dialog--search .p-dialog-header {
+  @apply hidden;
+}
+
+html::-webkit-scrollbar {
+  width: 8px;
+  height: 0;
+}
+
+html::-webkit-scrollbar-thumb {
+  @apply shadow-indigo-700 bg-indigo-700 dark:bg-indigo-700;
+}

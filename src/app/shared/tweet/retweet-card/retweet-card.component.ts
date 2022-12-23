@@ -8,6 +8,7 @@ import { Component, Input, OnInit } from '@angular/core';
 })
 export class RetweetCardComponent implements OnInit {
   @Input() tweet!: ITweet;
+  @Input() isSolo: boolean = false;
 
   constructor() {}
 

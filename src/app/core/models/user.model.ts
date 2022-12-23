@@ -64,6 +64,14 @@ export interface IPaginatedUsers {
   totalPages: number;
   users: IUser[];
 }
+export interface IPaginatedHashTags {
+  page: number;
+  size: number;
+  totalElements: number;
+  lastPage: number;
+  totalPages: number;
+  hashTags: string[];
+}
 
 export class PaginatedUsers {
   lastPage: number;

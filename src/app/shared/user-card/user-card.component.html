@@ -23,7 +23,7 @@
       >
         {{ user.firstName }} {{ user.lastName }}
       </p>
-      <p class="text-sm truncate text-gray-500">{{ user.email }}</p>
+      <p class="text-sm truncate text-gray-500">@{{ user.userName }}</p>
     </div>
     <div *ngIf="currentUserId !== user.id">
       <p-button

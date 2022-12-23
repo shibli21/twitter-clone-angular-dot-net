@@ -15,7 +15,7 @@
 
   <div *ngIf="currentUser$ | async as currentUser">
     <ng-container *ngIf="tweet && !isLoading">
-      <div class="hover:bg-gray-50 cursor-pointer w-full transition">
+      <div class="cursor-pointer w-full transition">
         <div class="border-b px-4 py-2 items-center justify-between flex">
           <app-name-and-time-header
             [date]="tweet.createdAt"
@@ -49,7 +49,10 @@
           ></quill-view-html>
           <div *ngIf="tweet.type === 'Retweet'" class="">
             <div *ngIf="tweet.refTweet">
-              <app-retweet-card [tweet]="tweet.refTweet"></app-retweet-card>
+              <app-retweet-card
+                [isSolo]="true"
+                [tweet]="tweet.refTweet"
+              ></app-retweet-card>
             </div>
             <div
               class="text-gray-500 text-sm border border-gray-300 px-2 md:px-4 py-2 items-center justify-between flex"

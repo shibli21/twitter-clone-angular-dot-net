@@ -80,4 +80,23 @@ export class NotificationService {
   public setNotifications(value: IPaginatedNotifications) {
     this.notifications.next(value);
   }
+
+  markAllAsRead() {
+    return this.http
+      .post(this.baseUrl + 'notifications/mark-all-as-read', {})
+      .subscribe((notifications) => {
+        const prevNotifications = this.notifications.getValue();
+
+        prevNotifications.notifications.forEach((notification) => {
+          notification.isRead = true;
+        });
+
+        const updatedNotifications: IPaginatedNotifications = {
+          ...prevNotifications,
+          totalUnread: 0,
+        };
+
+        this.notifications.next(updatedNotifications);
+      });
+  }
 }

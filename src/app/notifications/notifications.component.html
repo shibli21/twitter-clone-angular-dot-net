@@ -1,4 +1,8 @@
-<app-top-nav title="Notifications"></app-top-nav>
+<app-top-nav
+  title="Notifications"
+  *ngIf="paginatedNotifications"
+  [notificationCount]="paginatedNotifications.totalUnread"
+></app-top-nav>
 <div class="w-full">
   <div class="">
     <div class="w-full" *ngIf="paginatedNotifications">
@@ -11,23 +15,30 @@
       >
         <li
           *ngFor="let notification of paginatedNotifications.notifications"
-          class="cursor-pointer hover:bg-gray-100 hover:text-indigo-600 px-4 py-4 md:px-8"
-          [ngClass]="!notification.isRead ? 'bg-gray-100' : 'bg-white'"
+          class="cursor-pointer hover:bg-slate-50 hover:text-indigo-900 px-4 py-4 md:px-6"
           (click)="markAsRead(notification)"
         >
-          <div class="flex items-center space-x-4">
+          <div class="flex items-center space-x-4 md:space-x-6">
             <div class="flex-shrink-0">
               <i
                 [ngClass]="
                   'pi pi-' + getNotificationTypeIcon(notification.type)
                 "
+                class="noti-icon"
               ></i>
             </div>
             <div class="flex-1 min-w-0">
-              <p class="">
+              <p class="font-medium leading-5">
                 {{ notification.message }}
               </p>
+              <p class="flex-shrink-0 text-gray-600 text-sm mt-0.5">
+                {{ notification.createdAt | notificationDateFormat }}
+              </p>
             </div>
+            <div
+              class="flex-shrink-0 w-2.5 h-2.5 bg-indigo-700 rounded-full"
+              *ngIf="!notification.isRead"
+            ></div>
           </div>
         </li>
       </ul>

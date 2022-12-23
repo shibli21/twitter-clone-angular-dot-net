@@ -21,6 +21,8 @@ import { TweetCardComponent } from './tweet/tweet-card/tweet-card.component';
 import { UserCardSkeletonComponent } from './user-card-skeleton/user-card-skeleton.component';
 import { UserCardComponent } from './user-card/user-card.component';
 import { MyDatetimeFormatPipe } from '../core/Pipes/my-date-time-format.pipe';
+import { NotificationDatetimeFormatPipe } from '../core/Pipes/notification-date-time-format.pipe';
+import { AutocompleteInputComponent } from './autocomplete-input/autocomplete-input.component';
 
 @NgModule({
   declarations: [
@@ -41,6 +43,8 @@ import { MyDatetimeFormatPipe } from '../core/Pipes/my-date-time-format.pipe';
     NewTweetDialogComponent,
     ConfirmationDialogComponent,
     MyDatetimeFormatPipe,
+    NotificationDatetimeFormatPipe,
+    AutocompleteInputComponent,
   ],
   imports: [
     CommonModule,
@@ -74,6 +78,8 @@ import { MyDatetimeFormatPipe } from '../core/Pipes/my-date-time-format.pipe';
     SearchDialogComponent,
     ConfirmationDialogComponent,
     MyDatetimeFormatPipe,
+    NotificationDatetimeFormatPipe,
+    AutocompleteInputComponent,
   ],
 })
 export class SharedModule {}

@@ -147,7 +147,7 @@ export class EditProfileComponent implements OnInit {
 export default class Validation {
   static fileMaxSize(control: AbstractControl) {
     const file = control.value as File;
-    if (file && file.size > 400 * 400 * 2) {
+    if (file && file.size > 400 * 1024) {
       return { fileMaxSize: true };
     }
     return null;

@@ -1,0 +1,62 @@
+<div class="relative w-full">
+  <div
+    class="flex absolute inset-y-0 left-0 items-center pl-3 pointer-events-none z-10"
+  >
+    <i class="pi pi-search"></i>
+  </div>
+
+  <p-autoComplete
+    #autocomplete
+    [suggestions]="results"
+    name="search"
+    field="userName"
+    (completeMethod)="searchResultForAutoComplete($event)"
+    [(ngModel)]="searchQuery"
+    placeholder="search by name or #tag"
+    (onSelect)="onSearchResultClick($event)"
+    (keydown.enter)="onSearch()"
+    styleClass="p-dialog--search"
+    [scrollHeight]="scrollHeight"
+  >
+    <ng-template let-user pTemplate="item">
+      <div class="cursor-pointer w-full group" *ngIf="!user.userName">
+        <div class="truncate">
+          <p
+            class="truncate text-sm font-medium text-gray-900 group-hover:text-indigo-600"
+          >
+            {{ user }}
+          </p>
+        </div>
+      </div>
+      <div class="cursor-pointer w-full group" *ngIf="user.userName">
+        <div
+          class="grid gap-4 w-full"
+          style="grid-template-columns: 2.5rem auto"
+        >
+          <!-- (click)="onSearchResultClick(user)" -->
+          <img
+            class="w-10 h-10 object-cover rounded-full"
+            [src]="
+              user.profilePictureUrl
+                ? user.profilePictureUrl
+                : 'https://avatars.dicebear.com/api/open-peeps/' +
+                  user.userName +
+                  '.svg'
+            "
+            alt="Neil image"
+          />
+          <div class="truncate">
+            <p
+              class="truncate text-sm font-medium text-gray-900 group-hover:text-indigo-600"
+            >
+              {{ user.firstName }} {{ user.lastName }}
+            </p>
+            <p class="text-sm truncate text-gray-500">
+              {{ user.userName }}
+            </p>
+          </div>
+        </div>
+      </div>
+    </ng-template>
+  </p-autoComplete>
+</div>
