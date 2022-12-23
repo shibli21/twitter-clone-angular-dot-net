@@ -1,12 +1,10 @@
 using System.Security.Claims;
-using System.Text.RegularExpressions;
 using Core.Dtos;
 using Core.Interfaces;
 using Core.Models;
 using Infrastructure.Config;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
-using MongoDB.Bson;
 using MongoDB.Driver;
 
 namespace Infrastructure.Services
@@ -136,9 +134,10 @@ namespace Infrastructure.Services
                         Builders<User>.Filter.Ne(u => u.Id, id),
                         Builders<User>.Filter.Nin(u => u.Id, blockedIds),
                         Builders<User>.Filter.Or(
-                            Builders<User>.Filter.Regex(u => u.UserName, $"/^{pattern}/i"),
-                            Builders<User>.Filter.Regex(u => u.LastName, $"/^{pattern}/i"),
-                            Builders<User>.Filter.Regex(u => u.FirstName, $"/^{pattern}/i")
+                            Builders<User>.Filter.Regex(u => u.UserName, $"/{pattern}/i"),
+                            Builders<User>.Filter.Regex(u => u.LastName, $"/{pattern}/i"),
+                            Builders<User>.Filter.Regex(u => u.FirstName, $"/{pattern}/i")
+
                         ));
 
                     var findUsers = _usersCollection.Find(searchFilter);
@@ -173,7 +172,36 @@ namespace Infrastructure.Services
             }
             return new PaginatedSearchedUserResponseDto();
 
+        }
 
+        public async Task<PaginatedTagsResponseDto> HashTagSuggestionAsync(string searchQuery, int page, int limit)
+        {
+            var filter = Builders<HashTags>.Filter.And(
+                Builders<HashTags>.Filter.Regex(hashTag => hashTag.HashTag, $"/{searchQuery}/i")
+            );
+
+
+            var newFilter = _hashTagCollection.Distinct(x => x.HashTag, filter)
+                .ToListAsync().Result
+                .Skip(page * limit)
+                .Take(limit);
+
+            List<string> hashTags = (newFilter.ToList()).Select(hashTag => hashTag).ToList();
+
+
+            long totalElements = await _hashTagCollection.Find(filter).CountDocumentsAsync();
+
+            int LastPage = (int)Math.Ceiling((double)totalElements / limit) - 1;
+            LastPage = LastPage < 0 ? 0 : LastPage;
+            return new PaginatedTagsResponseDto
+            {
+                TotalElements = totalElements,
+                Page = page,
+                Size = limit,
+                LastPage = LastPage,
+                TotalPages = LastPage + 1,
+                HashTags = hashTags
+            };
         }
     }
 }

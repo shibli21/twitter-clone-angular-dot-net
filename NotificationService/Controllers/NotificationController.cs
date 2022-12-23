@@ -22,6 +22,13 @@ public class NotificationService : ControllerBase
         return Ok(await _notificationService.GetNotifications(page, size));
     }
 
+    [HttpPost("mark-all-as-read"), Authorize]
+    public async Task<ActionResult<object>> MarkAllAsRead()
+    {
+        await _notificationService.MarkAllNotificationAsRead();
+        return Ok(new { message = "All notifications marked as read" });
+    }
+
     [HttpPut("{id}"), Authorize]
     public async Task<ActionResult<object>> MarkNotificationAsRead(string id)
     {

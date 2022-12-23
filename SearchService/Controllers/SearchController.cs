@@ -29,4 +29,11 @@ public class SearchController : ControllerBase
         return Ok(await _searchService.SearchTweetAsync(searchQuery, page, limit));
     }
 
+
+    [HttpGet("hashtag-suggestion"), Authorize]
+    public async Task<ActionResult<PaginatedTagsResponseDto>> HashTagSuggestion([FromQuery] string searchQuery, [FromQuery] int page = 0, [FromQuery] int limit = 20)
+    {
+        return Ok(await _searchService.HashTagSuggestionAsync(searchQuery, page, limit));
+    }
+
 }

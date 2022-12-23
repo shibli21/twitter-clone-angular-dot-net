@@ -468,6 +468,20 @@
       ]
     },
     {
+      "UpstreamPathTemplate": "/search/hashtag-suggestion",
+      "UpstreamHttpMethod": [
+        "Get"
+      ],
+      "DownstreamPathTemplate": "/search/hashtag-suggestion",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5214
+        }
+      ]
+    },
+    {
       "UpstreamPathTemplate": "/search/search-tweets",
       "UpstreamHttpMethod": [
         "Get"
@@ -487,6 +501,20 @@
         "Get"
       ],
       "DownstreamPathTemplate": "/notifications/all",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5215
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/notifications/mark-all-as-read",
+      "UpstreamHttpMethod": [
+        "Post"
+      ],
+      "DownstreamPathTemplate": "/notifications/mark-all-as-read",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
