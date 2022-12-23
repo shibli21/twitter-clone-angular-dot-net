@@ -17,4 +17,8 @@
   .p-sidebar-content {
     @apply bg-gray-50 flex flex-col h-full;
   }
+
+  .mark-button {
+    @apply w-auto -mr-3;
+  }
 }
