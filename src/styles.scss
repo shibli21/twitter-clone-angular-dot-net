@@ -64,6 +64,12 @@ body {
 
 .p-dialog--search .p-dialog-content {
   @apply overflow-visible bg-transparent;
+  background: transparent !important;
+  padding: 0 !important;
+}
+
+.p-dialog--search .p-dialog-header {
+  @apply hidden;
 }
 
 html::-webkit-scrollbar {

@@ -15,7 +15,8 @@
     placeholder="search by name or #tag"
     (onSelect)="onSearchResultClick($event)"
     (keydown.enter)="onSearch()"
-    scrollHeight="400px"
+    styleClass="p-dialog--search"
+    [scrollHeight]="scrollHeight"
   >
     <ng-template let-user pTemplate="item">
       <div class="cursor-pointer w-full group" *ngIf="!user.userName">

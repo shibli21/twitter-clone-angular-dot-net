@@ -64,4 +64,12 @@ export class AutocompleteInputComponent implements OnInit {
       this.autocomplete.inputEL.nativeElement.value = user;
     }
   }
+
+  get scrollHeight() {
+    if (window.innerWidth < 640) {
+      return '200px';
+    } else {
+      return '400px';
+    }
+  }
 }
